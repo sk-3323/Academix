@@ -1,0 +1,128 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id String @id @db.ObjectId @map("_id") @default(auto())
+  name String
+  email String @unique
+  password String
+  // role:
+  // 1 - admin
+  // 2 - teacher
+  // 3 - student
+  role Int @default(3)
+  avatar String?
+  phone BigInt?
+  courses Course[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Course {
+  id String @id @db.ObjectId @map("_id") @default(auto())
+  title String
+  description String
+  category String
+  price Float @default(0)
+  thumbnail String?
+  instructorId String @db.ObjectId
+  instructor User @relation(fields: [instructorId],references: [id])
+  lessons Lesson[]
+  enrollments Enrollment[]
+  posts Post[]
+  payments Payment?
+  certificate Certificate?
+  isActive Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Lesson {
+  id String @id @db.ObjectId @map("_id") @default(auto())
+  title String
+  video_url String
+  resources String //links for PDF and PPT
+  courseId String @db.ObjectId
+  course Course @relation(fields: [courseId],references: [id])
+  quiz Quiz[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Enrollment {
+  id String @id @db.ObjectId @map("_id") @default(auto())
+  userId String @db.ObjectId
+  courseId String @db.ObjectId
+  course Course @relation(fields: [courseId],references: [id])
+  enrollment_date DateTime @default(now())
+  progress Float @default(0)
+}
+
+model Quiz {
+  id String @id @db.ObjectId @map("_id") @default(auto())
+  title String
+  lessonId String @db.ObjectId
+  lesson Lesson @relation(fields: [lessonId],references: [id])
+  questions Questions[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Questions {
+  id String @id @db.ObjectId @map("_id") @default(auto())
+  quizId String @db.ObjectId
+  quiz Quiz @relation(fields: [quizId],references: [id])
+  question_text String
+  options String[]
+  correct_option String 
+  answer Answer?
+}
+
+model Answer {
+  id String @id @db.ObjectId @map("_id") @default(auto())
+  userId String @db.ObjectId
+  questionId String @db.ObjectId @unique
+  qustion Questions @relation(fields: [questionId],references: [id])
+  selected_option String
+  isCorrect Boolean
+}
+
+model Payment {
+  id String @id @db.ObjectId @map("_id") @default(auto())
+  userId String @db.ObjectId
+  courseId String @db.ObjectId @unique
+  course Course @relation(fields: [courseId],references: [id])
+  amount Float
+  payment_date DateTime @default(now())
+  status Int // 0 for fail , 1 for success
+}
+
+model Certificate {
+  id String @id @db.ObjectId @map("_id") @default(auto())
+  userId String @db.ObjectId
+  courseId String @db.ObjectId @unique
+  course Course @relation(fields: [courseId],references: [id])
+  issued_date DateTime @default(now())
+}
+
+model Post {
+  id String @id @db.ObjectId @map("_id") @default(auto())
+  title String
+  content String
+  courseId String @db.ObjectId
+  course Course @relation(fields: [courseId],references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+}

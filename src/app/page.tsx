@@ -52,14 +52,14 @@ export default function Home() {
       <ResizablePanelGroup direction="horizontal" className="w-full h-full">
         <ResizablePanel className="flex justify-center items-center">
           <iframe
-            src="https://www.youtube.com/embed/GcileX82Zos?si=qtniod03DEBg3Cy1"
+            width="1040"
+            height="540"
+            src="https://www.youtube.com/embed/-9-jzZqGB-4?si=laj27EL5ygsAjG0c"
             title="YouTube video player"
-            className="rounded-xl lg:h-[500px] lg:w-[900px] md:h-[400px] md:w-[700px]"
-            //@ts-ignore
-            frameborder="0"
+            frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin"
-            allowfullscreen
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
           ></iframe>
         </ResizablePanel>
         {/* <ResizableHandle /> */}

@@ -1,4 +1,4 @@
-// File: D:\Shubham\e-learning\src\app\page.tsx
+// File: D:\RISHI\LEARNING\Academix\src\app\page.tsx
 import * as entry from '../../../src/app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

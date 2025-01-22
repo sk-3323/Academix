@@ -8,7 +8,7 @@ const Footer = () => {
        bg-gradient-to-b from-neutral-800 dark:from-neutral-500 to-neutral-200
         dark:to-neutral-800 inset-x-0 p-7"
       >
-        E-Learning
+        Academix
       </p>
       <div className="max-w-7xl mx-auto text-sm text-neutral-500 flex flex-col sm:flex-row sm:flex-row-reverse justify-evenly items-start md:px-8">
         <div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-10 items-start mt-10 sm:mt-0 md:mt-0 place-items-center">

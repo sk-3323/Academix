@@ -1,12 +1,15 @@
 {
-  "name": "e-learning",
-  "version": "0.1.0",
+  "name": "academix",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "push": "npx prisma db push",
+    "pull": "npx prisma db pull",
+    "gen": "npx prisma generate"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -19,10 +22,14 @@
     "@radix-ui/react-separator": "^1.1.1",
     "@radix-ui/react-slot": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.1.5",
+    "axios": "^1.7.9",
+    "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "formidable": "^3.5.2",
     "framer-motion": "^11.15.0",
+    "js-cookie": "^3.0.5",
     "lucide-react": "^0.468.0",
     "mini-svg-data-uri": "^1.4.4",
     "next": "14.2.20",
@@ -39,6 +46,9 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/formidable": "^3.4.5",
+    "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

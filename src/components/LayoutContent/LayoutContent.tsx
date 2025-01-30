@@ -14,7 +14,7 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
   const { isMobile } = useSidebar();
 
   // Define routes where Navbar and Footer should be hidden
-  const noNavFooterRoutes = ["/account/login", "/account/signup"];
+  const noNavFooterRoutes = ["/account/login", "/account/signup", "/demo"];
   const hideNavFooter = noNavFooterRoutes.includes(pathname);
 
   return (

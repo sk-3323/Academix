@@ -61,13 +61,6 @@ export function apiHandler(handler: HandlerFunction) {
           error.message.split("Unknown argument")[1]?.trim()?.split("`")[1] ||
           "Unknown field"
         }`;
-        return NextResponse.json(
-          {
-            status: false,
-            message: error.message || "Internal Server Error",
-          },
-          { status: 400 }
-        );
       }
 
       return NextResponse.json(

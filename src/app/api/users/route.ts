@@ -1,11 +1,14 @@
 import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { formDataToJsonWithoutFiles } from "../../../lib/utils";
-import fs from "fs";
-import path from "path";
+import {
+  cleanupUploadedFile,
+  formDataToJsonWithoutFiles,
+  handleFileUpload,
+  hashPassword,
+  validateData,
+} from "../../../lib/utils";
 import createUserSchema from "../../../../schema/user/schema";
-import bcrypt from "bcrypt";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let result = await prisma.$transaction(async (tx) => {
@@ -41,34 +44,14 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
     let result = await prisma.$transaction(async (tx) => {
       let data = formDataToJsonWithoutFiles(formdata);
       let avatar = formdata?.get("avatar") as File;
-      data.password = await bcrypt.hash(data?.password, 10);
+      data.password = await hashPassword(data?.password);
 
-      let valid = createUserSchema.safeParse(data);
-
-      if (!valid.success) {
-        console.log(valid.error.errors);
-        let errors = valid.error.errors.map((x) => x.message);
-        throw new ErrorHandler(
-          `Validation errors :>> ${errors.join(", ")}`,
-          400
-        );
-      }
+      data = await validateData(createUserSchema, data);
 
       if (avatar) {
-        try {
-          const uniqueFileName = `${Date.now()}-${avatar.name}`;
-          const uploadPath = path.join(
-            path.resolve(process.cwd(), "uploads/images"),
-            uniqueFileName
-          );
-          const buffer = await avatar.arrayBuffer();
-          const avatarBuffer = Buffer.from(buffer);
-          await fs.writeFileSync(uploadPath, avatarBuffer);
-          uploadedFilePath = uploadPath;
-          data.avatar = uniqueFileName;
-        } catch (error: any) {
-          throw new ErrorHandler(error?.message, 500);
-        }
+        const { filePath, fileName } = await handleFileUpload(avatar);
+        data.avatar = fileName;
+        uploadedFilePath = filePath;
       }
 
       return await tx.user.create({
@@ -86,12 +69,7 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
     );
   } catch (error) {
     if (uploadedFilePath) {
-      try {
-        await fs.unlinkSync(uploadedFilePath);
-      } catch (cleanupError: any) {
-        console.error("Failed to cleanup uploaded file:", cleanupError);
-        throw new ErrorHandler(cleanupError.message, 500);
-      }
+      cleanupUploadedFile(uploadedFilePath);
     }
     throw error;
   }

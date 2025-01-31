@@ -27,7 +27,7 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
         id: "desc",
       },
       include: {
-        courses: true,
+        authoredCourses: true,
       },
     });
   });

@@ -24,7 +24,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Github } from "lucide-react";
+import { Eye, EyeOff, Github } from "lucide-react";
+import { useState } from "react";
 
 const formSchema = z.object({
   username: z.string(),
@@ -33,6 +34,7 @@ const formSchema = z.object({
 
 const page = () => {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     reValidateMode: "onBlur",
@@ -49,12 +51,14 @@ const page = () => {
       password,
       redirect: false,
     });
-
+    console.log(result, "result");
     if (result?.error) {
-      toast.error("Invalid credentials");
-    } else {
-      toast.success("Login successfully");
-      router.push("/");
+      toast.error(result?.error);
+    } else if (result?.ok) {
+      toast.success("Login successfull");
+      setTimeout(() => {
+        router.push("/");
+      }, 700);
     }
   }
   return (
@@ -82,7 +86,10 @@ const page = () => {
                   <FormItem>
                     <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input placeholder="username" {...field} />
+                      <Input
+                        placeholder="Enter your username or email"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -95,11 +102,33 @@ const page = () => {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="password"
-                        type="password"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          placeholder="Enter your password"
+                          type={showPassword ? "text" : "password"}
+                          {...field}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          <div className="relative w-4 h-4">
+                            <Eye
+                              className={`absolute transition-opacity duration-300 ${
+                                showPassword ? "opacity-0" : "opacity-100"
+                              }`}
+                            />
+                            <EyeOff
+                              className={`absolute transition-opacity duration-300 ${
+                                showPassword ? "opacity-100" : "opacity-0"
+                              }`}
+                            />
+                          </div>
+                        </Button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

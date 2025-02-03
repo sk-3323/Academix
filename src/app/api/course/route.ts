@@ -5,20 +5,22 @@ import {
   cleanupUploadedFile,
   formDataToJsonWithoutFiles,
   handleFileUpload,
-  hashPassword,
   validateData,
 } from "../../../lib/fileHandler";
-import createUserSchema from "../../../schema/user/schema";
-import { USER_UPLOAD_PATH } from "@/constants/config";
+import createCourseSchema from "../../../schema/course/schema";
+import { COURSE_UPLOAD_PATH } from "@/constants/config";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let result = await prisma.$transaction(async (tx) => {
-    return await tx.user.findMany({
+    return await tx.course.findMany({
       orderBy: {
         id: "desc",
       },
       include: {
-        authoredCourses: true,
+        instructor: true,
+        category: true,
+        chapters: true,
+        certificates: true,
       },
     });
   });
@@ -30,7 +32,7 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
   return NextResponse.json(
     {
       status: true,
-      message: "users fetched successfully",
+      message: "courses fetched successfully",
       result,
     },
     { status: 200 }
@@ -44,21 +46,20 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
   try {
     let result = await prisma.$transaction(async (tx) => {
       let data = formDataToJsonWithoutFiles(formdata);
-      let avatar = formdata?.get("avatar") as File;
-      data.password = await hashPassword(data?.password);
+      let thumbnail = formdata?.get("thumbnail") as File;
 
-      data = await validateData(createUserSchema, data);
+      data = await validateData(createCourseSchema, data);
 
-      if (avatar) {
+      if (thumbnail) {
         const { filePath, fileName } = await handleFileUpload(
-          avatar,
-          USER_UPLOAD_PATH
+          thumbnail,
+          COURSE_UPLOAD_PATH
         );
-        data.avatar = fileName;
+        data.thumbnail = fileName;
         uploadedFilePath = filePath;
       }
 
-      return await tx.user.create({
+      return await tx.course.create({
         data: data,
       });
     });
@@ -66,7 +67,7 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
     return NextResponse.json(
       {
         status: true,
-        message: "user created successfully",
+        message: "course created successfully",
         result,
       },
       { status: 201 }

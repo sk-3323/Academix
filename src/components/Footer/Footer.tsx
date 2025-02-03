@@ -10,7 +10,7 @@ const Footer = () => {
       >
         Academix
       </p>
-      <div className="max-w-7xl mx-auto text-sm text-neutral-500 flex flex-col sm:flex-row sm:flex-row-reverse justify-evenly items-start md:px-8">
+      <div className="max-w-7xl mx-auto text-sm text-neutral-500 flex flex-col sm:flex-row-reverse justify-evenly items-start md:px-8">
         <div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-10 items-start mt-10 sm:mt-0 md:mt-0 place-items-center">
           <div className="flex justify-center space-y-4 flex-col">
             <p className="transition-colors hover:text-text-neutral-800 text-neutral-600 dark:text-neutral-300 font-bold">

@@ -5,30 +5,32 @@ import {
   cleanupUploadedFile,
   formDataToJsonWithoutFiles,
   handleFileUpload,
-  hashPassword,
   validateData,
 } from "../../../../lib/fileHandler";
-import createUserSchema from "../../../../schema/user/schema";
+import createCourseSchema from "../../../../schema/course/schema";
 import path from "path";
-import { USER_UPLOAD_PATH } from "@/constants/config";
+import { COURSE_UPLOAD_PATH } from "@/constants/config";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
-  let user_id = content?.params?.id;
+  let course_id = content?.params?.id;
 
-  if (!user_id) {
+  if (!course_id) {
     throw new ErrorHandler("Not found", 400);
   }
 
   let result = await prisma.$transaction(async (tx) => {
-    return await tx.user.findFirst({
+    return await tx.course.findFirst({
       where: {
-        id: user_id,
+        id: course_id,
       },
       orderBy: {
         id: "desc",
       },
       include: {
-        authoredCourses: true,
+        instructor: true,
+        category: true,
+        chapters: true,
+        certificates: true,
       },
     });
   });
@@ -40,7 +42,7 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
   return NextResponse.json(
     {
       status: true,
-      message: "users fetched successfully",
+      message: "courses fetched successfully",
       result,
     },
     { status: 200 }
@@ -48,9 +50,9 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
 });
 
 export const PUT = apiHandler(async (request: NextRequest, content: any) => {
-  let user_id = content?.params.id;
+  let course_id = content?.params.id;
 
-  if (!user_id) {
+  if (!course_id) {
     throw new ErrorHandler("Not found", 400);
   }
 
@@ -59,41 +61,41 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
 
   try {
     let result = await prisma.$transaction(async (tx) => {
-      const userFound = await tx.user.findUnique({
+      const courseFound = await tx.course.findUnique({
         where: {
-          id: user_id,
+          id: course_id,
         },
       });
 
-      if (!userFound) {
-        throw new ErrorHandler("User not found", 404);
+      if (!courseFound) {
+        throw new ErrorHandler("Course not found", 404);
       }
 
       let data = formDataToJsonWithoutFiles(formdata);
-      let avatar = formdata?.get("avatar") as File;
+      let thumbnail = formdata?.get("thumbnail") as File;
 
-      data = await validateData(createUserSchema, data);
+      data = await validateData(createCourseSchema, data);
 
-      if (avatar) {
+      if (thumbnail) {
         const { filePath, fileName } = await handleFileUpload(
-          avatar,
-          USER_UPLOAD_PATH
+          thumbnail,
+          COURSE_UPLOAD_PATH
         );
-        data.avatar = fileName;
+        data.thumbnail = fileName;
         uploadedFilePath = filePath;
       }
 
-      let updatedUser = await tx.user.update({
+      let updatedCourse = await tx.course.update({
         data: data,
         where: {
-          id: user_id,
+          id: course_id,
         },
       });
 
-      if (updatedUser && userFound?.avatar) {
+      if (updatedCourse && courseFound?.thumbnail) {
         let oldFilePath = path.join(
-          path.resolve(process.cwd(), USER_UPLOAD_PATH),
-          userFound?.avatar
+          path.resolve(process.cwd(), COURSE_UPLOAD_PATH),
+          courseFound?.thumbnail
         );
 
         cleanupUploadedFile(oldFilePath);
@@ -103,7 +105,7 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
     return NextResponse.json(
       {
         status: true,
-        message: "user updated successfully",
+        message: "course updated successfully",
         result,
       },
       { status: 200 }
@@ -117,26 +119,26 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
 });
 
 export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
-  let user_id = content?.params?.id;
+  let course_id = content?.params?.id;
 
-  if (!user_id) {
+  if (!course_id) {
     throw new ErrorHandler("Not found", 400);
   }
 
   let result = await prisma.$transaction(async (tx) => {
-    const userFound = await tx.user.count({
+    const courseFound = await tx.course.count({
       where: {
-        id: user_id,
+        id: course_id,
       },
     });
 
-    if (userFound === 0) {
-      throw new ErrorHandler("User not found", 404);
+    if (courseFound === 0) {
+      throw new ErrorHandler("Course not found", 404);
     }
 
-    return await tx.user.delete({
+    return await tx.course.delete({
       where: {
-        id: user_id,
+        id: course_id,
       },
       select: {
         id: true,
@@ -147,7 +149,7 @@ export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
   return NextResponse.json(
     {
       status: true,
-      message: "users deleted successfully",
+      message: "courses deleted successfully",
       result,
     },
     { status: 200 }

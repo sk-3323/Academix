@@ -35,4 +35,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-uploads/images/*
+
+uploads/users/*
+uploads/courses/images/*
+uploads/courses/videos/*

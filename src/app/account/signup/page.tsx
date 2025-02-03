@@ -24,7 +24,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Github } from "lucide-react";
+import { Eye, EyeOff, Github } from "lucide-react";
+import { useState } from "react";
 
 const formSchema = z
   .object({
@@ -44,6 +45,8 @@ const formSchema = z
 
 const page = () => {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     reValidateMode: "onBlur",
@@ -68,7 +71,13 @@ const page = () => {
       console.log(resp, "resp");
 
       const data = await resp.json();
-      console.log(data, "daa");
+      if (data.status) {
+        console.log(`data :>> ${data}`);
+        toast.success(data.message);
+        setTimeout(() => {
+          router.push("/account/login");
+        }, 700);
+      }
     } catch (error: any) {
       toast.error(error.message);
       console.error(error);
@@ -126,11 +135,33 @@ const page = () => {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="password"
-                        type="password"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          placeholder="Password"
+                          type={showPassword ? "text" : "password"}
+                          {...field}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          <div className="relative w-4 h-4">
+                            <Eye
+                              className={`absolute transition-opacity duration-300 ${
+                                showPassword ? "opacity-0" : "opacity-100"
+                              }`}
+                            />
+                            <EyeOff
+                              className={`absolute transition-opacity duration-300 ${
+                                showPassword ? "opacity-100" : "opacity-0"
+                              }`}
+                            />
+                          </div>
+                        </Button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -143,11 +174,39 @@ const page = () => {
                   <FormItem>
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="confirm password"
-                        type="password"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          placeholder="Confirm Password"
+                          type={showConfirmPassword ? "text" : "password"}
+                          {...field}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                        >
+                          <div className="relative w-4 h-4">
+                            <Eye
+                              className={`absolute transition-opacity duration-300 ${
+                                showConfirmPassword
+                                  ? "opacity-0"
+                                  : "opacity-100"
+                              }`}
+                            />
+                            <EyeOff
+                              className={`absolute transition-opacity duration-300 ${
+                                showConfirmPassword
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              }`}
+                            />
+                          </div>
+                        </Button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

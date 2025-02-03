@@ -60,6 +60,7 @@ export default function Home() {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
+            className="rounded-xl lg:h-[500px] lg:w-[900px] md:h-[400px] md:w-[700px]"
           ></iframe>
         </ResizablePanel>
         {/* <ResizableHandle /> */}

@@ -25,7 +25,7 @@ import { Input } from "@/components/ui/input";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Github } from "lucide-react";
-import { APIClient } from "../../../helper/apiHelper";
+import { APIClient } from "../../helpers/apiHelper";
 
 let api = new APIClient();
 

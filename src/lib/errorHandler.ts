@@ -16,7 +16,7 @@ type HandlerFunction = (
 ) => Promise<NextResponse>;
 
 export function apiHandler(handler: HandlerFunction) {
-  return async (req: NextRequest, content: any): Promise<NextResponse> => {
+  return async (req: NextRequest, content?: any): Promise<NextResponse> => {
     try {
       return await handler(req, content);
     } catch (error: any) {

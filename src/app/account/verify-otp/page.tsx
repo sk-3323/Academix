@@ -15,8 +15,10 @@ import OtpInput from "@/components/otpInput/otpInput";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { APIClient } from "@/helpers/apiHelper";
 
 const page = () => {
+  const api = new APIClient();
   const [isVerifying, setIsVerifying] = useState(false);
   const [email, setEmail] = useState("");
 
@@ -34,26 +36,20 @@ const page = () => {
   const onSubmit = async (otp: string) => {
     setIsVerifying(true);
 
-    const res = await fetch("/api/auth/verify-otp", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, otp }),
+    const data: any = await api.create("/api/auth/verify-otp", {
+      email,
+      otp,
     });
 
-    // Simulate API call for OTP verification
-    const data = await res.json();
-    console.log(res, "Resps");
-
-    if (data?.user?.isVerified) {
+    if (data?.result?.isVerified) {
       toast.success(data.message);
-      router.push("/");
+      setTimeout(() => {
+        router.push("/");
+      }, 700);
     } else {
       toast.error(data.message);
     }
     setIsVerifying(false);
-    // Here you would typically make an API call to verify the OTP
   };
   return (
     <div className="h-[95vh] flex items-center w-full justify-center">

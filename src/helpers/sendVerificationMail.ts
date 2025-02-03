@@ -134,12 +134,7 @@ export async function sendEmailVerification(
     });
 
     console.log("Email sent: %s", emailResponse);
-    if (emailResponse.rejected.length !== 0) {
-      return {
-        status: false,
-        message: "Email was wrong.",
-      };
-    }
+
     return {
       status: true,
       message: "Email Verification Sent Successfully",

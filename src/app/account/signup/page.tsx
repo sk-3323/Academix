@@ -33,10 +33,7 @@ const formSchema = z
     password: z.string().min(8, "Password must be at least 8 characters long"),
     confirmPassword: z.string(),
     email: z.string().email({ message: "Email must be proper format" }),
-    phone: z
-      .string()
-      .transform((data) => Number(data))
-      .optional(),
+    phone: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords and confirm password doesn't match",
@@ -60,7 +57,6 @@ const page = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      console.log(values);
       const resp = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
@@ -68,14 +64,12 @@ const page = () => {
         },
         body: JSON.stringify(values),
       });
-      console.log(resp, "resp");
 
       const data = await resp.json();
       if (data.status) {
-        console.log(`data :>> ${data}`);
         toast.success(data.message);
         setTimeout(() => {
-          router.push("/account/login");
+          // router.push("/account/login");
         }, 700);
       }
     } catch (error: any) {

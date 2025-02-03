@@ -20,28 +20,19 @@ export const middleware = apiHandler(async (request: NextRequest) => {
       raw: true,
     });
 
-    if (isApiRoute && !isAuthPage) {
-      const authHeader = request.headers.get("authorization");
-      if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        throw new ErrorHandler("Missing or invalid Bearer token", 401);
+    if (!token) {
+      if (isAuthPage) {
+        return NextResponse.next();
       }
-
-      let providedToken = authHeader.split(" ")[1];
-
-      if (!token || token !== providedToken) {
-        throw new ErrorHandler("Invalid token", 401);
+      if (isApiRoute) {
+        throw new ErrorHandler("Unauthenticated : Invalid or empty token", 401);
+      } else {
+        return NextResponse.redirect(new URL("/account/login", request.url));
       }
-    }
-
-    if (isAuthPage) {
-      if (token) {
+    } else {
+      if (isAuthPage && !isApiRoute) {
         return NextResponse.redirect(new URL("/", request.url));
       }
-      return NextResponse.next();
-    }
-
-    if (!token) {
-      return NextResponse.redirect(new URL("/account/login", request.url));
     }
 
     return NextResponse.next();
@@ -51,11 +42,5 @@ export const middleware = apiHandler(async (request: NextRequest) => {
 });
 
 export const config = {
-  matcher: [
-    "/",
-    "/account/login",
-    "/account/signup",
-    "/protected/:path*",
-    "/api/:path*",
-  ],
+  matcher: ["/", "/account/login", "/account/signup", "/api/:path*"],
 };

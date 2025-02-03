@@ -11,7 +11,7 @@ export const POST = apiHandler(async (request: NextRequest) => {
   // Parse and validate the request body
   const body: User = await request.json();
   const { username, email, password, confirmPassword, phone } = body;
-  console.log(body);
+
   // Check if passwords match
   if (password !== confirmPassword) {
     throw new ErrorHandler("Passwords do not match.", 400);
@@ -19,12 +19,13 @@ export const POST = apiHandler(async (request: NextRequest) => {
   // Check if the user already exists
   const existingUserVerifiedByUsername = await prisma.user.findFirst({
     where: {
-      username: username,
-      isVerified: true,
+      email: email,
     },
   });
 
-  if (existingUserVerifiedByUsername) {
+  console.log(existingUserVerifiedByUsername);
+
+  if (!existingUserVerifiedByUsername) {
     throw new ErrorHandler("User already verified.", 400);
   }
 
@@ -73,13 +74,15 @@ export const POST = apiHandler(async (request: NextRequest) => {
     verifyCode
   );
 
-  if (!emailResponse.success) {
+  console.log("emailResponse :>>", emailResponse);
+
+  if (!emailResponse.status) {
     throw new ErrorHandler(emailResponse.message, 500);
   }
 
   return NextResponse.json(
     {
-      success: true,
+      status: true,
       message: "User Registered Successfully ,Please Verify Your Email",
     },
     {

@@ -47,6 +47,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
   // User authenticated successfully
   return NextResponse.json(
     {
+      status: true,
       message: "Login successful",
       user: {
         email: existUser.email,

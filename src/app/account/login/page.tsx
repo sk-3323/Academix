@@ -65,7 +65,7 @@ const page = () => {
     <div className="h-[95vh] grid place-items-center">
       <Card className="w-[80vw] md:w-[55vw] lg:w-[30vw]">
         <CardHeader>
-          <CardTitle className="text-2xl">SignIn Here...</CardTitle>
+          <CardTitle className="text-2xl">Welcome to Academix</CardTitle>
           <span className="tracking-tighter text-[#9e9e9e]">
             Create an account?
             <a

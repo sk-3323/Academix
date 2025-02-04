@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const createUserSchema = z
   .object({
-    name: z
+    username: z
       .string()
       .min(2, "Name must be at least 2 characters")
       .regex(/^[A-Za-z0-9_]$/, "name should not contain special characters"),

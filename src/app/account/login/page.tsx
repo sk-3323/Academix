@@ -51,7 +51,7 @@ const page = () => {
       password,
       redirect: false,
     });
-    console.log(result, "result");
+    console.log("result", result);
     if (result?.error) {
       toast.error(result?.error);
     } else if (result?.ok) {

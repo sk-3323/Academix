@@ -17,6 +17,9 @@ export const authOption: NextAuthOptions = {
   pages: {
     signIn: "/account/login",
   },
+  jwt: {
+    maxAge: 60 * 60 * 24 * 2,
+  },
   providers: [
     CredentialsProvider({
       id: "credentials",
@@ -35,22 +38,14 @@ export const authOption: NextAuthOptions = {
       },
       async authorize(credentials: any): Promise<any> {
         try {
-          console.log(`credentials :>> ${credentials}`);
-          // const username = credentials?.username;
-          // const password = credentials?.password;
-
-          // if (!username && !password) {
-          //   return null;
-          // }
-
           const user = await prisma.user.findFirst({
             where: {
               OR: [
                 {
-                  email: credentials?.identifier,
+                  email: credentials?.username,
                 },
                 {
-                  username: credentials?.identifier,
+                  username: credentials?.username,
                 },
               ],
             },
@@ -76,7 +71,7 @@ export const authOption: NextAuthOptions = {
 
           // return user;
         } catch (error: any) {
-          throw new ErrorHandler(error?.message, 500);
+          throw error;
         }
       },
     }),

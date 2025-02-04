@@ -25,29 +25,29 @@ export function apiHandler(handler: HandlerFunction) {
       // IMPORTANT FOR LOGGING ERROR IN LOGS FOLDER (UNCOMMENT WHEN PUSHING TO PROD)
       // logger.error({ status: error.status, message: error?.stack || error?.message });
 
-      if (error.code === 11000) {
-        const err = Object.keys(error.keyPattern).join(",");
+      if (error?.code === 11000) {
+        const err = Object.keys(error?.keyPattern).join(",");
         error.message = `Duplicate field - ${err}`;
         error.status = 400;
       }
 
-      if (error.name === "CastError") {
-        const errorPath = error.path;
+      if (error?.name === "CastError") {
+        const errorPath = error?.path;
         error.message = `Invalid Format of ${errorPath}`;
         error.status = 400;
       }
 
-      if (error.code === "P2003") {
-        const tableName = error.meta?.modelName || "Unknown table";
-        const columnName = error.meta?.field_name || "Unknown column";
+      if (error?.code === "P2003") {
+        const tableName = error?.meta?.modelName || "Unknown table";
+        const columnName = error?.meta?.field_name || "Unknown column";
         error.message = `Foreign key constraint violation on table: ${tableName}, column: ${columnName}`;
         error.status = 400;
       }
 
-      if (error.code === "P2002") {
-        const fields = error.meta?.target || [];
+      if (error?.code === "P2002") {
+        const fields = error?.meta?.target || [];
         if (Array.isArray(fields)) {
-          error.message = `Unique key constraint violation in fields: ${fields.join(
+          error.message = `Unique key constraint violation in fields: ${fields?.join(
             ", "
           )}`;
         } else {
@@ -56,7 +56,7 @@ export function apiHandler(handler: HandlerFunction) {
         error.status = 400;
       }
 
-      if (error instanceof Prisma.PrismaClientValidationError) {
+      if (error?.name === "PrismaClientValidationError") {
         error.message = `Invalid fields provided: ${
           error.message.split("Unknown argument")[1]?.trim()?.split("`")[1] ||
           "Unknown field"

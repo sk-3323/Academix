@@ -26,11 +26,17 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Github } from "lucide-react";
 import { useState } from "react";
+import { APIClient } from "@/helpers/apiHelper";
 
 const formSchema = z
   .object({
     username: z.string().min(3, "Username must be at least 3 characters long"),
-    password: z.string().min(8, "Password must be at least 8 characters long"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[0-9]/, "Password must contain at least one number"),
     confirmPassword: z.string(),
     email: z.string().email({ message: "Email must be proper format" }),
     phone: z.string().optional(),
@@ -57,24 +63,18 @@ const page = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const resp = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
+      let api = new APIClient();
+      let data: any = await api.create("/api/auth/signup", values);
 
-      const data = await resp.json();
       if (data.status) {
         toast.success(data.message);
         setTimeout(() => {
-          // router.push("/account/login");
+          router.push("/account/login");
         }, 700);
       }
     } catch (error: any) {
-      toast.error(error.message);
       console.error(error);
+      toast.error(error.message);
     }
   }
 
@@ -82,7 +82,7 @@ const page = () => {
     <div className="h-[95vh] grid place-items-center">
       <Card className="w-[80vw] md:w-[55vw] lg:w-[30vw]">
         <CardHeader>
-          <CardTitle>SignUp Here...</CardTitle>
+          <CardTitle>Welcome to Academix...</CardTitle>
           <span className="tracking-tighter text-[#9e9e9e]">
             Already an Account?
             <a

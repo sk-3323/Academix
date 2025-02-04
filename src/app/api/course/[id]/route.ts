@@ -7,7 +7,7 @@ import {
   handleFileUpload,
   validateData,
 } from "../../../../lib/fileHandler";
-import createCourseSchema from "../../../../schema/course/schema";
+import {createCourseSchema} from "../../../../schema/course/schema";
 import path from "path";
 import { COURSE_UPLOAD_PATH } from "@/constants/config";
 
@@ -100,6 +100,8 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
 
         cleanupUploadedFile(oldFilePath);
       }
+
+      return updatedCourse;
     });
 
     return NextResponse.json(

@@ -35,16 +35,17 @@ model User {
 }
 
 model Course {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  instructorId String   @db.ObjectId
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  instructorId String     @db.ObjectId
   title        String
   description  String
   thumbnail    String
-  categoryId   String[] @db.ObjectId
+  categoryId   String[]   @db.ObjectId
   price        Float
-  isFreeTier   Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  isFreeTier   Boolean    @default(false)
+  status       BlogStatus @default(DRAFT)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
   // Relations
   instructor   User          @relation("CourseInstructor", fields: [instructorId], references: [id])
@@ -80,15 +81,18 @@ model Enrollment {
 }
 
 model Chapter {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  courseId    String  @db.ObjectId
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  courseId    String     @db.ObjectId
   title       String
   description String
   order       Int
-  topics      Topic[]
+  status      BlogStatus @default(DRAFT)
 
   // Relations
-  course Course @relation(fields: [courseId], references: [id])
+  course Course  @relation(fields: [courseId], references: [id])
+  topics Topic[]
+
+  @@index([courseId])
 }
 
 model Topic {
@@ -99,11 +103,14 @@ model Topic {
   order         Int
   videoUrl      String
   videoDuration Int
-  resources     Resource[]
   quiz          Quiz?
+  status        BlogStatus @default(DRAFT)
 
   // Relations
-  chapter Chapter @relation(fields: [chapterId], references: [id])
+  chapter   Chapter    @relation(fields: [chapterId], references: [id])
+  resources Resource[]
+
+  @@index([chapterId])
 }
 
 model Resource {
@@ -118,15 +125,15 @@ model Resource {
 }
 
 model Quiz {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  topicId      String     @unique @db.ObjectId
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  topicId      String @unique @db.ObjectId
   title        String
-  questions    Question[]
   passingScore Float
   timeLimit    Int
 
   // Relations
-  topic Topic @relation(fields: [topicId], references: [id])
+  topic     Topic      @relation(fields: [topicId], references: [id])
+  questions Question[]
 }
 
 model Question {

@@ -23,9 +23,7 @@ export const POST = apiHandler(async (request: NextRequest) => {
     },
   });
 
-  console.log(existingUserVerifiedByUsername);
-
-  if (!existingUserVerifiedByUsername) {
+  if (existingUserVerifiedByUsername) {
     throw new ErrorHandler("User already verified.", 400);
   }
 

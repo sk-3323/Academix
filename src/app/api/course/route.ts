@@ -7,8 +7,11 @@ import {
   handleFileUpload,
   validateData,
 } from "../../../lib/fileHandler";
-import createCourseSchema from "../../../schema/course/schema";
+import { createCourseSchema } from "../../../schema/course/schema";
 import { COURSE_UPLOAD_PATH } from "@/constants/config";
+import { getSession } from "next-auth/react";
+import { getServerSession } from "next-auth";
+import { authOption } from "@/lib/auth";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let result = await prisma.$transaction(async (tx) => {

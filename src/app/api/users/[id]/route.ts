@@ -5,10 +5,9 @@ import {
   cleanupUploadedFile,
   formDataToJsonWithoutFiles,
   handleFileUpload,
-  hashPassword,
   validateData,
 } from "../../../../lib/fileHandler";
-import createUserSchema from "../../../../schema/user/schema";
+import createUserSchema from "@/schema/user/schema";
 import path from "path";
 import { USER_UPLOAD_PATH } from "@/constants/config";
 

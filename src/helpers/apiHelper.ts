@@ -1,6 +1,6 @@
 import Cookie from "js-cookie";
 import axios from "axios";
-import { NODE_APP_URL } from "../constants/config";
+import { NODE_APP_URL } from "@/constants/config";
 
 // default
 axios.defaults.baseURL = NODE_APP_URL;

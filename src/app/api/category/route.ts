@@ -1,8 +1,8 @@
 import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { validateData } from "../../../lib/fileHandler";
-import createCategorySchema from "../../../schema/category/schema";
+import { validateData } from "@/lib/fileHandler";
+import createCategorySchema from "@/schema/category/schema";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let result = await prisma.$transaction(async (tx) => {

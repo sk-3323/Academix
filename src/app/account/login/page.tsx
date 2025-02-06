@@ -37,11 +37,11 @@ const page = () => {
   const [showPassword, setShowPassword] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    reValidateMode: "onBlur",
-    // defaultValues: {
-    //   //   username: "",
-    //   //   password: "",
-    // },
+    reValidateMode: "onChange",
+    defaultValues: {
+      username: "",
+      password: "",
+    },
   });
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const username = values.username;
@@ -49,16 +49,14 @@ const page = () => {
     const result = await signIn("credentials", {
       username,
       password,
-      redirect: false,
+      redirect: true,
+      callbackUrl: "/",
     });
-    console.log("result", result);
+
     if (result?.error) {
       toast.error(result?.error);
     } else if (result?.ok) {
       toast.success("Login successfull");
-      setTimeout(() => {
-        router.push("/");
-      }, 700);
     }
   }
   return (

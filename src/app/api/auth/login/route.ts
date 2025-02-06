@@ -1,59 +1,61 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
-import { verifyPassword } from "@/lib/fileHandler";
-interface User {
-  username: string;
-  password: string;
-  phone: number;
-  confirmPassword: string;
-  email: string;
-  id: string;
-  role: number;
-  avatar: string;
-}
+import { validateData, verifyPassword } from "@/lib/fileHandler";
+import { encryptToken } from "@/lib/jwtGenerator";
+import loginSchema from "@/schema/login/schema";
+
 export const POST = apiHandler(async (req: NextRequest) => {
-  const { username, password } = await req.json();
+  let data: any = await req.json();
+  data = await validateData(loginSchema, data);
 
-  // Check if the user exists
-  if (username == "" && password == "") {
-    throw new ErrorHandler("Please fill in all fields.", 400);
-  }
-
-  var existUser = await prisma.user.findFirst({
+  let result = await prisma.user.findFirst({
     where: {
-      username: username,
+      OR: [
+        {
+          username: data.username,
+        },
+        {
+          email: data.username,
+        },
+      ],
+    },
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      avatar: true,
+      phone: true,
+      password: true,
+      role: true,
     },
   });
-  if (!existUser) {
-    var existUser = await prisma.user.findUnique({
-      where: {
-        email: username,
-      },
-    });
-  }
 
-  if (!existUser) {
+  if (!result) {
     throw new ErrorHandler("User does not exist. Please sign up.", 400);
   }
 
   // Compare passwords
-  const passwordMatch = await verifyPassword(password, existUser.password);
+  let { password, ...userData } = result;
+  const passwordMatch = await verifyPassword(data.password, password);
 
   if (!passwordMatch) {
     throw new ErrorHandler("Password is incorrect.", 400);
   }
 
-  // User authenticated successfully
+  let payload: any = { ...userData };
+
+  if (payload?.role === "ADMIN") {
+    payload.isAdmin = true;
+  }
+
+  let token = await encryptToken(userData);
+
   return NextResponse.json(
     {
       status: true,
       message: "Login successful",
-      user: {
-        email: existUser.email,
-        name: existUser.username,
-        // Add any other user data you want to return
-      },
+      token: token,
     },
     {
       status: 200,

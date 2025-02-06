@@ -1,8 +1,8 @@
 import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { validateData } from "../../../../../lib/fileHandler";
-import { createCourseSchema } from "../../../../../schema/course/schema";
+import { validateData } from "@/lib/fileHandler";
+import { createCourseSchema } from "@/schema/course/schema";
 
 export const PUT = apiHandler(async (request: NextRequest, content: any) => {
   let course_id = content?.params.id;

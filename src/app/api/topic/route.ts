@@ -7,22 +7,19 @@ import {
   handleFileUpload,
   validateData,
 } from "../../../lib/fileHandler";
+import { createTopicSchema } from "@/schema/topic/schema";
 import { COURSE_UPLOAD_PATH } from "@/constants/config";
-import { decryptToken } from "@/lib/jwtGenerator";
-import { createCourseSchema } from "@/schema/course/schema";
-import { isAuthorized } from "@/lib/roleChecker";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let result = await prisma.$transaction(async (tx) => {
-    return await tx.course.findMany({
+    return await tx.topic.findMany({
       orderBy: {
         id: "desc",
       },
       include: {
-        instructor: true,
-        category: true,
-        chapters: true,
-        certificates: true,
+        chapter: true,
+        quiz: true,
+        resources: true,
       },
     });
   });
@@ -34,7 +31,7 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
   return NextResponse.json(
     {
       status: true,
-      message: "courses fetched successfully",
+      message: "topics fetched successfully",
       result,
     },
     { status: 200 }
@@ -42,44 +39,52 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
 });
 
 export const POST = apiHandler(async (request: NextRequest, content: any) => {
-  let token: any = request.headers.get("x-user-token");
-  let { id: instructorId, ...session } = await decryptToken(token);
-
-  if (!token || !instructorId) {
-    throw new ErrorHandler("Unauthorized : invalid or empty token", 401);
-  }
-
-  isAuthorized(session, "TEACHER");
-
   let formdata = await request.formData();
   let uploadedFilePath: string | null = null;
-
   try {
     let result = await prisma.$transaction(async (tx) => {
       let data = formDataToJsonWithoutFiles(formdata);
-      data.instructorId = instructorId;
-      let thumbnail = formdata?.get("thumbnail") as File;
-
-      if (thumbnail) {
+      let video = formdata?.get("video") as File;
+      if (video) {
         const { filePath, fileName } = await handleFileUpload(
-          thumbnail,
+          video,
           COURSE_UPLOAD_PATH
         );
-        data.thumbnail = fileName;
+        data.video = fileName;
         uploadedFilePath = filePath;
       }
 
-      data = await validateData(createCourseSchema, data);
+      const chapterFound = await tx.chapter.findFirst({
+        where: {
+          id: data?.chapterId,
+        },
+        include: {
+          topics: true,
+          course: true,
+        },
+      });
 
-      return await tx.course.create({
+      if (!chapterFound) {
+        throw new ErrorHandler("Chapter not found", 404);
+      }
+
+      data.order = chapterFound.topics.length + 1;
+      data = await validateData(createTopicSchema, data);
+
+      return await prisma.topic.create({
         data: data,
+        include: {
+          chapter: true,
+          quiz: true,
+          resources: true,
+        },
       });
     });
 
     return NextResponse.json(
       {
         status: true,
-        message: "course created successfully",
+        message: "topic created successfully",
         result,
       },
       { status: 201 }

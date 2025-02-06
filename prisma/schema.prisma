@@ -85,31 +85,33 @@ model Chapter {
   courseId    String     @db.ObjectId
   title       String
   description String
-  order       Int
+  order       Int?
   status      BlogStatus @default(DRAFT)
 
   // Relations
   course Course  @relation(fields: [courseId], references: [id])
   topics Topic[]
 
+  @@unique([courseId, order]) // Composite unique constraint
   @@index([courseId])
 }
 
 model Topic {
-  id            String     @id @default(auto()) @map("_id") @db.ObjectId
-  chapterId     String     @db.ObjectId
-  title         String
-  description   String
-  order         Int
-  videoUrl      String
-  videoDuration Int
-  quiz          Quiz?
-  status        BlogStatus @default(DRAFT)
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  chapterId   String     @db.ObjectId
+  title       String
+  description String
+  order       Int?
+  video       String
+  duration    Float      @db.Double
+  status      BlogStatus @default(DRAFT)
 
   // Relations
   chapter   Chapter    @relation(fields: [chapterId], references: [id])
+  quiz      Quiz?
   resources Resource[]
 
+  @@unique([chapterId, order]) // Composite unique constraint
   @@index([chapterId])
 }
 

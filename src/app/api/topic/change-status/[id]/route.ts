@@ -2,34 +2,34 @@ import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { validateData } from "@/lib/fileHandler";
-import { changeChapterStatusSchema } from "@/schema/chapter/schema";
+import { changeTopicStatusSchema } from "@/schema/topic/schema";
 
 export const PUT = apiHandler(async (request: NextRequest, content: any) => {
-  let chapter_id = content?.params.id;
+  let topic_id = content?.params.id;
 
-  if (!chapter_id) {
+  if (!topic_id) {
     throw new ErrorHandler("Not found", 400);
   }
 
   let data = await request.json();
 
   let result = await prisma.$transaction(async (tx) => {
-    const chapterFound = await tx.chapter.findUnique({
+    const topicFound = await tx.topic.findUnique({
       where: {
-        id: chapter_id,
+        id: topic_id,
       },
     });
 
-    if (!chapterFound) {
+    if (!topicFound) {
       throw new ErrorHandler("Chapter not found", 404);
     }
 
-    data = await validateData(changeChapterStatusSchema, data);
+    data = await validateData(changeTopicStatusSchema, data);
 
-    return await tx.chapter.update({
+    return await tx.topic.update({
       data: data,
       where: {
-        id: chapter_id,
+        id: topic_id,
       },
     });
   });
@@ -39,8 +39,8 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
       status: true,
       message:
         result?.status === "DRAFT"
-          ? "chapter has sent to draft"
-          : "chapter has been published",
+          ? "topic has sent to draft"
+          : "topic has been published",
       result,
     },
     { status: 200 }

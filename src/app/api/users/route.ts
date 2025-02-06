@@ -8,10 +8,11 @@ import {
   hashPassword,
   validateData,
 } from "../../../lib/fileHandler";
-import createUserSchema from "../../../schema/user/schema";
+import createUserSchema from "@/schema/user/schema";
 import { USER_UPLOAD_PATH } from "@/constants/config";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
+
   let result = await prisma.$transaction(async (tx) => {
     return await tx.user.findMany({
       orderBy: {

@@ -1,7 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcrypt";
-import { ApiResponse } from "../../../../../types/ApiResponse";
 import { sendEmailVerification } from "@/helpers/sendVerificationMail";
 import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { hashPassword } from "@/lib/fileHandler";

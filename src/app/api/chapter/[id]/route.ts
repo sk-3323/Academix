@@ -1,8 +1,9 @@
 import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { validateData } from "../../../../lib/fileHandler";
-import {createChapterSchema} from "@/schema/chapter/schema";
+import { validateData } from "@/lib/fileHandler";
+import { createChapterSchema } from "@/schema/chapter/schema";
+import { ObjectId } from "mongodb";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let chpater_id = content?.params?.id;
@@ -43,11 +44,12 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
 export const PUT = apiHandler(async (request: NextRequest, content: any) => {
   let chpater_id = content?.params.id;
 
-  if (!chpater_id) {
-    throw new ErrorHandler("Not found", 400);
+  if (!chpater_id || ObjectId.isValid(chpater_id)) {
+    throw new ErrorHandler("Not found", 404);
   }
 
   let data = await request.json();
+  data = await validateData(createChapterSchema, data);
 
   let result = await prisma.$transaction(async (tx) => {
     const chapterFound = await tx.chapter.findUnique({
@@ -60,7 +62,18 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
       throw new ErrorHandler("Chapter not found", 404);
     }
 
-    data = await validateData(createChapterSchema, data);
+    const courseFound = await tx.course.findFirst({
+      where: {
+        id: data?.courseId,
+      },
+      include: {
+        chapters: true,
+      },
+    });
+
+    if (!courseFound) {
+      throw new ErrorHandler("Course not found", 404);
+    }
 
     return await tx.chapter.update({
       data: data,

@@ -1,36 +1,36 @@
-import path from "path";
-import { NextRequest, NextResponse } from "next/server";
 import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { prisma } from "@/lib/prisma";
-import { createCourseSchema } from "@/schema/course/schema";
-import { COURSE_UPLOAD_PATH } from "@/constants/config";
+import { NextRequest, NextResponse } from "next/server";
 import {
   cleanupUploadedFile,
   formDataToJsonWithoutFiles,
   handleFileUpload,
   validateData,
 } from "@/lib/fileHandler";
+import { ObjectId } from "mongodb";
+import { createTopicSchema } from "@/schema/topic/schema";
+import { COURSE_UPLOAD_PATH } from "@/constants/config";
+import path from "path";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
-  let course_id = content?.params?.id;
+  let topic_id = content?.params?.id;
 
-  if (!course_id) {
+  if (!topic_id) {
     throw new ErrorHandler("Not found", 400);
   }
 
   let result = await prisma.$transaction(async (tx) => {
-    return await tx.course.findFirst({
+    return await tx.topic.findFirst({
       where: {
-        id: course_id,
+        id: topic_id,
       },
       orderBy: {
         id: "desc",
       },
       include: {
-        instructor: true,
-        category: true,
-        chapters: true,
-        certificates: true,
+        chapter: true,
+        quiz: true,
+        resources: true,
       },
     });
   });
@@ -42,7 +42,7 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
   return NextResponse.json(
     {
       status: true,
-      message: "courses fetched successfully",
+      message: "topic fetched successfully",
       result,
     },
     { status: 200 }
@@ -50,10 +50,10 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
 });
 
 export const PUT = apiHandler(async (request: NextRequest, content: any) => {
-  let course_id = content?.params.id;
+  let topic_id = content?.params.id;
 
-  if (!course_id) {
-    throw new ErrorHandler("Not found", 400);
+  if (!topic_id || ObjectId.isValid(topic_id)) {
+    throw new ErrorHandler("Not found", 404);
   }
 
   let formdata = await request.formData();
@@ -61,53 +61,56 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
 
   try {
     let result = await prisma.$transaction(async (tx) => {
-      const courseFound = await tx.course.findUnique({
+      const topicFound = await tx.topic.findUnique({
         where: {
-          id: course_id,
+          id: topic_id,
         },
       });
 
-      if (!courseFound) {
-        throw new ErrorHandler("Course not found", 404);
+      if (!topicFound) {
+        throw new ErrorHandler("Topic not found", 404);
       }
 
       let data = formDataToJsonWithoutFiles(formdata);
-      let thumbnail = formdata?.get("thumbnail") as File;
+      let video = formdata?.get("video") as File;
 
-      data = await validateData(createCourseSchema, data);
-
-      if (thumbnail) {
+      if (video) {
         const { filePath, fileName } = await handleFileUpload(
-          thumbnail,
+          video,
           COURSE_UPLOAD_PATH
         );
-        data.thumbnail = fileName;
+        data.video = fileName;
         uploadedFilePath = filePath;
       }
 
-      let updatedCourse = await tx.course.update({
+      data = await validateData(createTopicSchema, data);
+
+      let updatedTopic = await tx.topic.update({
         data: data,
         where: {
-          id: course_id,
+          id: topic_id,
+        },
+        include: {
+          chapter: true,
+          quiz: true,
+          resources: true,
         },
       });
 
-      if (updatedCourse && courseFound?.thumbnail) {
+      if (updatedTopic && topicFound?.video) {
         let oldFilePath = path.join(
           path.resolve(process.cwd(), COURSE_UPLOAD_PATH),
-          courseFound?.thumbnail
+          topicFound?.video
         );
 
         cleanupUploadedFile(oldFilePath);
       }
-
-      return updatedCourse;
     });
 
     return NextResponse.json(
       {
         status: true,
-        message: "course updated successfully",
+        message: "topic updated successfully",
         result,
       },
       { status: 200 }
@@ -121,26 +124,26 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
 });
 
 export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
-  let course_id = content?.params?.id;
+  let topic_id = content?.params?.id;
 
-  if (!course_id) {
+  if (!topic_id) {
     throw new ErrorHandler("Not found", 400);
   }
 
   let result = await prisma.$transaction(async (tx) => {
-    const courseFound = await tx.course.count({
+    const topicFound = await tx.topic.count({
       where: {
-        id: course_id,
+        id: topic_id,
       },
     });
 
-    if (courseFound === 0) {
-      throw new ErrorHandler("Course not found", 404);
+    if (topicFound === 0) {
+      throw new ErrorHandler("Topic not found", 404);
     }
 
-    return await tx.course.delete({
+    return await tx.topic.delete({
       where: {
-        id: course_id,
+        id: topic_id,
       },
       select: {
         id: true,
@@ -151,7 +154,7 @@ export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
   return NextResponse.json(
     {
       status: true,
-      message: "courses deleted successfully",
+      message: "topic deleted successfully",
       result,
     },
     { status: 200 }

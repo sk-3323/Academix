@@ -1,8 +1,8 @@
 import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { validateData } from "../../../lib/fileHandler";
-import { createChapterSchema } from "../../../schema/chapter/schema";
+import { validateData } from "@/lib/fileHandler";
+import { createChapterSchema } from "@/schema/chapter/schema";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let result = await prisma.$transaction(async (tx) => {
@@ -32,11 +32,12 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
 
 export const POST = apiHandler(async (request: NextRequest, content: any) => {
   let data = await request.json();
+  data = await validateData(createChapterSchema, data);
 
   let result = await prisma.$transaction(async (tx) => {
-    const courseFound = await tx.course.findUnique({
+    const courseFound = await tx.course.findFirst({
       where: {
-        id: data?.course_id,
+        id: data?.courseId,
       },
       include: {
         chapters: true,
@@ -48,8 +49,6 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
     }
 
     data.order = courseFound.chapters.length + 1;
-
-    data = await validateData(createChapterSchema, data);
 
     return await prisma.chapter.create({
       data: data,

@@ -2,49 +2,51 @@ import { VALID_STATUS } from "@/constants/config";
 import { ObjectId } from "mongodb";
 import { z } from "zod";
 
-export const createChapterSchema = z
+export const createTopicSchema = z
   .object({
-    courseId: z
+    chapterId: z
       .string()
-      .min(1, "course is required")
+      .min(1, "chapter is required")
       .refine((val) => ObjectId.isValid(val), {
-        message: "Invalid instructor id provided",
+        message: "Invalid chapter id provided",
       }),
     title: z.string().min(1, "Title is required"),
     order: z.number().int().positive().optional(),
     description: z.string().min(1, "Description is required"),
+    video: z.string().min(1, "Description is required"),
+    videoDuration: z.number().positive(),
     status: z.enum(VALID_STATUS).optional(),
   })
   .strict();
 
-export const changeChapterStatusSchema = z
+export const changeTopicStatusSchema = z
   .object({
     status: z.enum(VALID_STATUS),
   })
   .strict();
 
-export const changeChapterOrderSchema = z
+export const changeTopicOrderSchema = z
   .object({
-    courseId: z
+    chapterId: z
       .string()
-      .min(1, "course is required")
+      .min(1, "chapter is required")
       .refine((val) => ObjectId.isValid(val), {
-        message: "Invalid course id provided",
+        message: "Invalid chapter id provided",
       }),
-    chapters: z
+    topics: z
       .array(
         z
           .object({
             id: z
               .string()
-              .min(1, "course is required")
+              .min(1, "topic is required")
               .refine((val) => ObjectId.isValid(val), {
-                message: "Invalid chapter id provided",
+                message: "Invalid topic id provided",
               }),
             order: z.number().int().positive(),
           })
           .strict()
       )
-      .min(2, "at least two chapter is required"),
+      .min(2, "at least two topic is required"),
   })
   .strict();

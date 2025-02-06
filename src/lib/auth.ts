@@ -4,6 +4,7 @@ import { EmailProvider } from "next-auth/providers/email";
 import GithubProvider from "next-auth/providers/github";
 import { NextAuthOptions } from "next-auth";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import jwt from "jsonwebtoken";
 import { prisma } from "./prisma";
 import { ErrorHandler } from "./errorHandler";
 import { verifyPassword } from "./fileHandler";
@@ -19,6 +20,28 @@ export const authOption: NextAuthOptions = {
   },
   jwt: {
     maxAge: 60 * 60 * 24 * 2,
+    async encode({ secret, token }) {
+      if (!token) {
+        throw new ErrorHandler("Token not provided", 401);
+      }
+      return jwt.sign(token, secret, {
+        algorithm: "HS256",
+      });
+    },
+    async decode({ secret, token }) {
+      try {
+        if (!token) {
+          throw new ErrorHandler("Token not provided", 401);
+        }
+
+        const decoded: any = await jwt.verify(token, secret); // Verify and decode the JWT
+
+        return decoded;
+      } catch (error: any) {
+        console.error(error);
+        throw new ErrorHandler(error.message, 401);
+      }
+    },
   },
   providers: [
     CredentialsProvider({
@@ -36,7 +59,7 @@ export const authOption: NextAuthOptions = {
           type: "password",
         },
       },
-      async authorize(credentials: any): Promise<any> {
+      authorize: async (credentials: any): Promise<any> => {
         try {
           const user = await prisma.user.findFirst({
             where: {
@@ -68,9 +91,8 @@ export const authOption: NextAuthOptions = {
           } else {
             throw new ErrorHandler("This password is incorrect", 401);
           }
-
-          // return user;
         } catch (error: any) {
+          console.error(error);
           throw error;
         }
       },

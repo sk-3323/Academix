@@ -1,33 +1,54 @@
 import { NextRequest, NextResponse } from "next/server";
-import { decode, getToken } from "next-auth/jwt";
+import { getToken } from "next-auth/jwt";
 import { apiHandler, ErrorHandler } from "./lib/errorHandler";
-import { getServerSession } from "next-auth";
-// import { authOption } from "./lib/auth";
 
 export { default } from "next-auth/middleware";
 
 // This function can be marked `async` if using `await` inside
-export const middleware = apiHandler(async (request: any) => {
-  // const token = await getToken({
-  //   req: request,
-  //   secret: process.env.NEXTAUTH_SECRET,
-  //   // raw: true,
-  // });
+export const middleware = apiHandler(async (request: NextRequest) => {
+  let path = request.nextUrl.pathname;
+  const isApiRoute = path.startsWith("/api/");
+  const isAuthRoute = path.startsWith("/api/auth/");
+  const isAccountRoute = path.startsWith("/account/");
 
-  // console.log("token :>> ", token);
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+    raw: true,
+  });
 
-  // if (token) {
-  //   let session = await decode({
-  //     token: token,
-  //     secret: process.env.NEXTAUTH_SECRET as string,
-  //   });
+  if (token) {
+    request.headers.set("x-user-token", token);
+  }
 
-  //   console.log("session :>> ", session);
-  // }
+  if (!token) {
+    if (isApiRoute) {
+      if (isAuthRoute)
+        return NextResponse.next({
+          request: request,
+        });
+      throw new ErrorHandler("Unauthorized : empty token.", 401);
+    }
+    if (isAccountRoute)
+      return NextResponse.next({
+        request: request,
+      });
+    return NextResponse.redirect(new URL("/account/login", request.nextUrl));
+  }
 
-  return NextResponse.next();
+  if (isApiRoute)
+    return NextResponse.next({
+      request: request,
+    });
+  if (isAccountRoute)
+    return NextResponse.redirect(new URL("/", request.nextUrl));
+
+  return NextResponse.next({
+    request: request,
+  });
 });
 
 export const config = {
-  matcher: ["/", "/account/login", "/account/signup", "/api/:path*"],
+  matcher:
+    "/((?!favicon.ico|_next/static|_next/image|sitemap.xml|robots.txt).*)",
 };

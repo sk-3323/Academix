@@ -1,3 +1,4 @@
+import { VALID_ROLES } from "@/constants/config";
 import { z } from "zod";
 
 const createUserSchema = z
@@ -18,6 +19,7 @@ const createUserSchema = z
       .regex(/^\d{10}$/, "Invalid phone number")
       .optional()
       .nullable(),
+    role: z.enum(VALID_ROLES).optional(),
   })
   .strict();
 

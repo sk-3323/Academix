@@ -37,9 +37,9 @@ export const POST = apiHandler(async (req: NextRequest) => {
 
   // Compare passwords
   let { password, ...userData } = result;
-  const passwordMatch = await verifyPassword(data.password, password);
+  const isVerified = await verifyPassword(data.password, password);
 
-  if (!passwordMatch) {
+  if (!isVerified) {
     throw new ErrorHandler("Password is incorrect.", 400);
   }
 

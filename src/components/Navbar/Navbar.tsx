@@ -1,11 +1,34 @@
 "use client";
-import { Moon, Sun, User2 } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { Button } from "../ui/button";
 import { useTheme } from "next-themes";
 import { NavigationMenuDemo } from "./NavMenuItems";
+import { useEffect, useState } from "react";
 
 const Navbar = ({ isMobile }: { isMobile: boolean }) => {
   const { setTheme, theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Only render theme toggle after component is mounted
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Prevent hydration mismatch by not rendering theme toggle until mounted
+  if (!mounted) {
+    return (
+      <>
+        <div>
+          <h1 className="font-extrabold">Acedemix</h1>
+        </div>
+        {!isMobile && (
+          <div>
+            <NavigationMenuDemo />
+          </div>
+        )}
+      </>
+    );
+  }
 
   return (
     <>
@@ -20,11 +43,11 @@ const Navbar = ({ isMobile }: { isMobile: boolean }) => {
       <div className="flex justify-center">
         {theme === "dark" ? (
           <Button variant={"outline"} onClick={() => setTheme("light")}>
-            <Sun></Sun>
+            <Sun />
           </Button>
         ) : (
           <Button variant={"outline"} onClick={() => setTheme("dark")}>
-            <Moon></Moon>
+            <Moon />
           </Button>
         )}
       </div>

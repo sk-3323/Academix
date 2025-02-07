@@ -3,7 +3,7 @@ import axios from "axios";
 import { NODE_APP_URL } from "@/constants/config";
 
 // default
-axios.defaults.baseURL = NODE_APP_URL;
+axios.defaults.baseURL = `${NODE_APP_URL}/api`;
 
 // content type
 axios.defaults.headers.common["Content-Type"] = "application/json";
@@ -44,14 +44,28 @@ export class APIClient {
   /**
    * post given data to url
    */
-  create = async (url: string, data = {}, headers = {}) => {
+  create = async (
+    url: string,
+    data = {},
+    headers = {},
+    requiredFields: string[] = []
+  ) => {
+    url += "?";
+    requiredFields.forEach((el) => (url += `${el}=true&`));
     return await axios.post(url, data, { headers: headers });
   };
 
   /**
    * Updates data
    */
-  update = async (url: string, data = {}, headers = {}) => {
+  update = async (
+    url: string,
+    data = {},
+    headers = {},
+    requiredFields: string[] = []
+  ) => {
+    url += "?";
+    requiredFields.forEach((el) => (url += `${el}=true&`));
     return await axios.put(url, data, { headers: headers });
   };
 

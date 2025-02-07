@@ -3,7 +3,7 @@ const page = () => {
     <div>
       <div className="min-h-screen flex justify-center items-center">
         <section className="py-16 px-6 lg:px-32">
-          <h1 className="text-4xl font-bold text-center mb-8">Contact Us</h1>
+          <h1 className="text-4xl font-bold text-center mb-8">Contact Us </h1>
           <p className="text-center max-w-2xl mx-auto mb-12">
             Have a question or need assistance? Feel free to reach out to us,
             and we'll get back to you as soon as possible.

@@ -42,11 +42,19 @@ export function verifyPassword(password: string, storedHash: string): boolean {
   return hashedPassword === hash;
 }
 
-export const validateData = async (schema: any, data: any) => {
+export const validateData = async (
+  schema: any,
+  data: any,
+  requiredFields: any = {}
+) => {
   if (!data || typeof data !== "object" || Object.keys(data).length === 0) {
     throw new ErrorHandler(`Invalid or empty JSON object`, 400);
   } else {
-    const valid = await schema.safeParse(data);
+    let obj = {};
+    requiredFields.forEach((value: string, key: string) => {
+      obj = { ...obj, [key]: Boolean(value) };
+    });
+    const valid = await schema.required(obj).safeParse(data);
     if (!valid.success) {
       const errors = valid.error.errors.map(
         (x: any) => `${x?.path?.[0]}: ${x?.message}`

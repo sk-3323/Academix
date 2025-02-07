@@ -12,7 +12,7 @@ export const createCourseSchema = z
       }),
     title: z.string().min(1, "Title is required"),
     description: z.string().min(1, "Description is required"),
-    thumbnail: z.string().optional(),
+    thumbnail: z.string(),
     categoryId: z.union([
       z.string().transform((val) => {
         try {
@@ -38,17 +38,18 @@ export const createCourseSchema = z
       .transform((val) => Number(val))
       .refine((num) => !isNaN(num) && num >= 0, {
         message: "Price must be a positive number",
-      })
-      .optional(),
+      }),
     isFreeTier: z
       .union([z.string(), z.boolean()])
       .transform((val) => Boolean(val)),
-    status: z.enum(VALID_STATUS).optional(),
+    status: z.enum(VALID_STATUS),
   })
-  .strict();
+  .strict()
+  .partial();
 
 export const changeCourseStatusSchema = z
   .object({
     status: z.enum(VALID_STATUS),
   })
-  .strict();
+  .strict()
+  .partial();

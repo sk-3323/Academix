@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { ThemeProvider } from "next-themes";
-import { Toaster } from "sonner";
 import { LayoutContent } from "@/components/LayoutContent/LayoutContent";
 import AuthProvider from "@/context/AuthProvider";
+import { Providers } from "@/components/Providers/Providers";
+import StoreProvider from "@/context/StoreProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -19,8 +18,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Dashboard",
-  description: "Your application dashboard",
+  title: "Academix | Welcome",
+  description: "Welcome to academix.",
 };
 
 export default function RootLayout({
@@ -30,23 +29,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <AuthProvider>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
+      <StoreProvider>
+        <AuthProvider>
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
-            <SidebarProvider>
+            <Providers>
               <LayoutContent>{children}</LayoutContent>
-              <Toaster />
-            </SidebarProvider>
-          </ThemeProvider>
-        </body>
-      </AuthProvider>
+            </Providers>
+          </body>
+        </AuthProvider>
+      </StoreProvider>
     </html>
   );
 }

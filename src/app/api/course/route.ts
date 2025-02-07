@@ -11,6 +11,7 @@ import { COURSE_UPLOAD_PATH } from "@/constants/config";
 import { decryptToken } from "@/lib/jwtGenerator";
 import { createCourseSchema } from "@/schema/course/schema";
 import { isAuthorized } from "@/lib/roleChecker";
+import { Key } from "lucide-react";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let result = await prisma.$transaction(async (tx) => {
@@ -69,11 +70,14 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
         uploadedFilePath = filePath;
       }
 
-      data = await validateData(createCourseSchema, data);
+      let requiredFields = request?.nextUrl?.searchParams;
+
+      data = await validateData(createCourseSchema, data, requiredFields);
 
       return await tx.course.create({
         data: data,
       });
+      return null;
     });
 
     return NextResponse.json(

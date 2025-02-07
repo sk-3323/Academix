@@ -9,47 +9,50 @@ generator client {
 }
 
 model User {
-  id                 String              @id @default(auto()) @map("_id") @db.ObjectId
-  email              String              @unique
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  email              String    @unique
   password           String
   username           String
-  phone              String?             @unique
+  role               Role      @default(STUDENT)
+  phone              String?   @unique
   avatar             String?
-  role               Role                @default(STUDENT)
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  isVerified         Boolean?            @default(false)
   verifyCode         String?
   verifyCodeExpiry   DateTime?
-  subscriptionStatus SubscriptionStatus?
-  completedCourses   String[]            @db.ObjectId // References to Course
-  earnedCertificates String[]            @db.ObjectId // References to Certificate
-  gamificationPoints Int                 @default(0)
+  gamificationPoints Int       @default(0)
+  isVerified         Boolean   @default(false)
+  completedCourses   String[]  @db.ObjectId // References to Course
+  earnedCertificates String[]  @db.ObjectId // References to Certificate
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  authoredCourses Course[]      @relation("CourseInstructor")
-  enrollments     Enrollment[]
-  certificates    Certificate[]
-  blogs           Blog[]
-  liveClasses     LiveClass[]
+  subscriptionStatus SubscriptionStatus?
+  authoredCourses    Course[]            @relation("CourseInstructor")
+  enrollments        Enrollment[]
+  certificates       Certificate[]
+  blogs              Blog[]
+  liveClasses        LiveClass[]
 }
 
 model Course {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  instructorId String     @db.ObjectId
-  title        String
-  description  String
-  thumbnail    String
-  categoryId   String[]   @db.ObjectId
-  price        Float
-  isFreeTier   Boolean    @default(false)
-  status       BlogStatus @default(DRAFT)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  thumbnail   String?
+  price       Float?
+  isFree      Boolean    @default(false)
+  status      BlogStatus @default(DRAFT)
 
   // Relations
-  instructor   User          @relation("CourseInstructor", fields: [instructorId], references: [id])
-  category     Category?     @relation(fields: [categoryId], references: [id])
+  instructorId String    @db.ObjectId
+  instructor   User      @relation("CourseInstructor", fields: [instructorId], references: [id])
+  categoryId   String[]  @db.ObjectId
+  category     Category? @relation(fields: [categoryId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   chapters     Chapter[]
   enrollments  Enrollment[]
   liveClasses  LiveClass[]
@@ -57,39 +60,46 @@ model Course {
 }
 
 model Category {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  course    Course[]
+
+  course Course[]
 }
 
 // Explicit relation model for User-Course enrollment
 model Enrollment {
-  id         String           @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String           @db.ObjectId
-  courseId   String           @db.ObjectId
-  enrolledAt DateTime         @default(now())
-  status     EnrollmentStatus @default(ACTIVE)
-  progress   Float            @default(0)
+  id     String           @id @default(auto()) @map("_id") @db.ObjectId
+  status EnrollmentStatus @default(ACTIVE)
 
   // Relations
-  user   User   @relation(fields: [userId], references: [id])
-  course Course @relation(fields: [courseId], references: [id])
+  userId   String @db.ObjectId
+  user     User   @relation(fields: [userId], references: [id])
+  courseId String @db.ObjectId
+  course   Course @relation(fields: [courseId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, courseId])
 }
 
 model Chapter {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  courseId    String     @db.ObjectId
   title       String
-  description String
+  description String?
   order       Int?
   status      BlogStatus @default(DRAFT)
 
   // Relations
-  course Course  @relation(fields: [courseId], references: [id])
+  courseId String @db.ObjectId
+  course   Course @relation(fields: [courseId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   topics Topic[]
 
   @@unique([courseId, order]) // Composite unique constraint
@@ -98,80 +108,102 @@ model Chapter {
 
 model Topic {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  chapterId   String     @db.ObjectId
   title       String
-  description String
+  description String?
   order       Int?
-  video       String
-  duration    Float      @db.Double
+  video       String?
+  duration    Float?     @db.Double
   status      BlogStatus @default(DRAFT)
+  isFree      Boolean    @default(false)
 
   // Relations
-  chapter   Chapter    @relation(fields: [chapterId], references: [id])
+  chapterId String  @db.ObjectId
+  chapter   Chapter @relation(fields: [chapterId], references: [id])
+
   quiz      Quiz?
   resources Resource[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  muxData      muxData?
+  userProgress userProgress[]
 
   @@unique([chapterId, order]) // Composite unique constraint
   @@index([chapterId])
 }
 
 model Resource {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  topicId   String   @db.ObjectId
-  title     String
-  url       String
-  documents String[]
+  id    String  @id @default(auto()) @map("_id") @db.ObjectId
+  title String
+  url   String?
 
   // Relations
-  topic Topic @relation(fields: [topicId], references: [id])
+  topicId String @db.ObjectId
+  topic   Topic  @relation(fields: [topicId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([topicId])
 }
 
 model Quiz {
   id           String @id @default(auto()) @map("_id") @db.ObjectId
-  topicId      String @unique @db.ObjectId
   title        String
-  passingScore Float
-  timeLimit    Int
+  passingScore Float?
+  timeLimit    Int?
 
   // Relations
-  topic     Topic      @relation(fields: [topicId], references: [id])
+  topicId String @unique @db.ObjectId
+  topic   Topic  @relation(fields: [topicId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   questions Question[]
 }
 
 model Question {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  quizId        String   @db.ObjectId
   text          String
   options       String[]
   correctAnswer Int
-  points        Int
+  points        Int?
 
   // Relations
-  quiz Quiz @relation(fields: [quizId], references: [id])
+  quizId String @db.ObjectId
+  quiz   Quiz   @relation(fields: [quizId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model LiveClass {
-  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
-  courseId             String   @db.ObjectId
-  instructorId         String   @db.ObjectId
+  id                   String    @id @default(auto()) @map("_id") @db.ObjectId
+  courseId             String    @db.ObjectId
+  instructorId         String    @db.ObjectId
   title                String
-  description          String
-  scheduledAt          DateTime
-  duration             Int
-  meetingUrl           String
-  maxParticipants      Int
-  enrolledParticipants String[] @db.ObjectId // References to User
+  description          String?
+  scheduledAt          DateTime?
+  duration             Int?
+  meetingUrl           String?
+  maxParticipants      Int?
+  enrolledParticipants String[]  @db.ObjectId // References to User
 
   // Relations
   course     Course @relation(fields: [courseId], references: [id])
   instructor User   @relation(fields: [instructorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Blog {
   id            String     @id @default(auto()) @map("_id") @db.ObjectId
   authorId      String     @db.ObjectId
   title         String
-  content       String
+  content       String?
   tags          String[]
   publishedAt   DateTime?
   status        BlogStatus @default(DRAFT)
@@ -179,46 +211,85 @@ model Blog {
 
   // Relations
   author User @relation(fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Certificate {
-  id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId           String   @db.ObjectId
-  courseId         String   @db.ObjectId
-  issueDate        DateTime @default(now())
-  template         String
-  verificationCode String   @unique
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  issueDate        DateTime? @default(now())
+  template         String?
+  verificationCode String?   @unique
 
   // Relations
-  user   User   @relation(fields: [userId], references: [id])
-  course Course @relation(fields: [courseId], references: [id])
+  userId   String @db.ObjectId
+  user     User   @relation(fields: [userId], references: [id])
+  courseId String @db.ObjectId
+  course   Course @relation(fields: [courseId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model SubscriptionPlan {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
   name           String
   price          Float
-  duration       Int
-  maxFreeCourses Int
+  duration       Int?
+  maxFreeCourses Int?
   features       String[]
   isActive       Boolean  @default(true)
 
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
   // Relations
   subscriptionStatuses SubscriptionStatus[]
 }
 
 model SubscriptionStatus {
   id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId          String   @unique @db.ObjectId
-  planId          String   @db.ObjectId
   startDate       DateTime
   endDate         DateTime
   isActive        Boolean  @default(true)
   freeCourseCount Int      @default(0)
 
   // Relations
-  user User             @relation(fields: [userId], references: [id])
-  plan SubscriptionPlan @relation(fields: [planId], references: [id])
+  userId String           @unique @db.ObjectId
+  user   User             @relation(fields: [userId], references: [id])
+  planId String           @db.ObjectId
+  plan   SubscriptionPlan @relation(fields: [planId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model muxData {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  assetId    String
+  playbackId String?
+
+  topicId String @unique @db.ObjectId
+  topic   Topic  @relation(fields: [topicId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model userProgress {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String @db.ObjectId
+  topicId String @db.ObjectId
+
+  topic Topic @relation(fields: [topicId], references: [id])
+
+  isCompleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, topicId])
+  @@index([topicId])
 }
 
 enum Role {

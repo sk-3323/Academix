@@ -50,7 +50,10 @@ export default function Home() {
         </h1>
       </div>
       <ResizablePanelGroup direction="horizontal" className="w-full h-full">
-        <ResizablePanel className="flex justify-center items-center">
+        <ResizablePanel
+          defaultSize={100}
+          className="flex justify-center items-center"
+        >
           <iframe
             width="1040"
             height="540"

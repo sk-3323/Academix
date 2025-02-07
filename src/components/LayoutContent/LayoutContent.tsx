@@ -34,7 +34,11 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
               <main className="flex-1 p-4 overflow-x-hidden w-full">
                 {children}
               </main>
-              {!hideNavFooter && <Footer />}
+              {!hideNavFooter && 
+              <footer className="flex justify-center items-center p-4 w-full">
+                <Footer />
+              </footer>
+              }
             </HeroHighlight>
           </SidebarInset>
         </div>

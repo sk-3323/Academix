@@ -13,7 +13,6 @@ import {
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let course_id = content?.params?.id;
-
   if (!course_id) {
     throw new ErrorHandler("Not found", 400);
   }

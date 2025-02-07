@@ -7,7 +7,8 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import jwt from "jsonwebtoken";
 import { prisma } from "./prisma";
 import { ErrorHandler } from "./errorHandler";
-import { verifyPassword } from "./fileHandler";
+import { validateData, verifyPassword } from "./fileHandler";
+import loginSchema from "@/schema/login/schema";
 
 export const authOption: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -61,35 +62,48 @@ export const authOption: NextAuthOptions = {
       },
       authorize: async (credentials: any): Promise<any> => {
         try {
+          let data = await validateData(loginSchema, {
+            username: credentials?.username,
+            password: credentials?.password,
+          });
+
           const user = await prisma.user.findFirst({
             where: {
               OR: [
                 {
-                  email: credentials?.username,
+                  email: data?.username,
                 },
                 {
-                  username: credentials?.username,
+                  username: data?.username,
                 },
               ],
+            },
+            select: {
+              id: true,
+              email: true,
+              username: true,
+              avatar: true,
+              phone: true,
+              password: true,
+              role: true,
             },
           });
 
           if (!user) {
-            throw new ErrorHandler(
-              "No user found with this email or username",
-              401
-            );
+            throw new ErrorHandler("User does not exist. Please sign up.", 401);
           }
 
-          let isVerified = verifyPassword(
-            credentials?.password,
-            user?.password
-          );
+          let isVerified = verifyPassword(data?.password, user?.password);
 
           if (isVerified) {
-            return user;
+            let payload: any = { ...user };
+            if (payload?.role === "ADMIN") {
+              payload.isAdmin = true;
+            }
+
+            return payload;
           } else {
-            throw new ErrorHandler("This password is incorrect", 401);
+            throw new ErrorHandler("Password is incorrect", 401);
           }
         } catch (error: any) {
           console.error(error);
@@ -122,6 +136,7 @@ export const authOption: NextAuthOptions = {
         token.username = user.username;
         token.avatar = user.avatar;
         token.phone = user.phone;
+        token.isAdmin = user.isAdmin;
       }
       return token;
     },
@@ -132,6 +147,7 @@ export const authOption: NextAuthOptions = {
         session.user.username = token.username;
         session.user.avatar = token.avatar;
         session.user.phone = token.phone;
+        session.user.isAdmin = token.isAdmin;
       }
       return session;
     },

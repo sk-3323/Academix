@@ -45,7 +45,7 @@ export function verifyPassword(password: string, storedHash: string): boolean {
 export const validateData = async (
   schema: any,
   data: any,
-  requiredFields: any = {}
+  requiredFields: any = new Map()
 ) => {
   if (!data || typeof data !== "object" || Object.keys(data).length === 0) {
     throw new ErrorHandler(`Invalid or empty JSON object`, 400);

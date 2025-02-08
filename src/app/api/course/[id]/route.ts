@@ -56,7 +56,7 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
   }
 
   let formdata = await request.formData();
-  let uploadedFilePath: string | null = null;
+  // let uploadedFilePath: string | null = null;
 
   try {
     let result = await prisma.$transaction(async (tx) => {
@@ -71,18 +71,18 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
       }
 
       let data = formDataToJsonWithoutFiles(formdata);
-      let thumbnail = formdata?.get("thumbnail") as File;
+      // let thumbnail = formdata?.get("thumbnail") as File;
 
       data = await validateData(createCourseSchema, data);
 
-      if (thumbnail) {
-        const { filePath, fileName } = await handleFileUpload(
-          thumbnail,
-          COURSE_UPLOAD_PATH
-        );
-        data.thumbnail = fileName;
-        uploadedFilePath = filePath;
-      }
+      // if (thumbnail) {
+      //   const { filePath, fileName } = await handleFileUpload(
+      //     thumbnail,
+      //     COURSE_UPLOAD_PATH
+      //   );
+      //   data.thumbnail = fileName;
+      //   uploadedFilePath = filePath;
+      // }
 
       let updatedCourse = await tx.course.update({
         data: data,
@@ -91,14 +91,14 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
         },
       });
 
-      if (updatedCourse && courseFound?.thumbnail) {
-        let oldFilePath = path.join(
-          path.resolve(process.cwd(), COURSE_UPLOAD_PATH),
-          courseFound?.thumbnail
-        );
+      // if (updatedCourse && courseFound?.thumbnail) {
+      //   let oldFilePath = path.join(
+      //     path.resolve(process.cwd(), COURSE_UPLOAD_PATH),
+      //     courseFound?.thumbnail
+      //   );
 
-        cleanupUploadedFile(oldFilePath);
-      }
+      //   cleanupUploadedFile(oldFilePath);
+      // }
 
       return updatedCourse;
     });
@@ -112,9 +112,9 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
       { status: 200 }
     );
   } catch (error) {
-    if (uploadedFilePath) {
-      cleanupUploadedFile(uploadedFilePath);
-    }
+    // if (uploadedFilePath) {
+    //   cleanupUploadedFile(uploadedFilePath);
+    // }
     throw error;
   }
 });

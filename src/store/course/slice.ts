@@ -124,7 +124,6 @@ const CourseSlice = createSlice({
         state.loading = false;
         state.status = action.payload.status;
         state.message = action.payload.message;
-        state.singleData = action.payload.result;
       })
       .addCase(AddCourseApi.rejected, (state, action: any) => {
         state.loading = false;

@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import svgToDataUri from "mini-svg-data-uri";
+import { withUt } from "uploadthing/tw";
 //@ts-ignore
 import { default as flattenColorPalette } from "tailwindcss/lib/util/flattenColorPalette";
 
@@ -120,4 +121,5 @@ function addVariablesForColors({ addBase, theme }: any) {
     ":root": newVars,
   });
 }
-export default config;
+
+export default withUt(config);

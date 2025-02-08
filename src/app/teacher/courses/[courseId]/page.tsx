@@ -1,12 +1,14 @@
 "use client";
 
 import DescriptionForm from "@/components/Course/description-form";
+import ThumbnailForm from "@/components/Course/thumbnail-form";
 import TitleForm from "@/components/Course/title-form";
 import { IconBadge } from "@/components/icon-badge";
-import { GetSingleCourseApi } from "@/store/course/slice";
+import { useDynamicToast } from "@/hooks/DynamicToastHook";
+import { clearCourseState, GetSingleCourseApi } from "@/store/course/slice";
 import { AppDispatch } from "@/store/store";
 import { LayoutDashboard } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const CourseIdPage = ({ params }: { params: { courseId: string } }) => {
@@ -16,6 +18,13 @@ const CourseIdPage = ({ params }: { params: { courseId: string } }) => {
   useEffect(() => {
     dispatch(GetSingleCourseApi({ id: params?.courseId }));
   }, []);
+
+  const [actions, setActions] = useState({
+    clearState: clearCourseState,
+    callbackFunction: () => {},
+  });
+
+  useDynamicToast("CourseStore", actions);
 
   const requiredFields = [
     singleData?.title,
@@ -34,22 +43,29 @@ const CourseIdPage = ({ params }: { params: { courseId: string } }) => {
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-y-2">
           <h1 className="text-2xl font-medium">Course setup</h1>
-          <span className="text-sm">Complete all fields {completionText}</span>
+          <span className="text-sm">Complete all fields {completionText} </span>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
         <div>
           <div className="flex items-center gap-x-2">
             <IconBadge icon={LayoutDashboard} />
-            <h2 className="text-xl">Customize your course</h2>
+            <h2 className="text-xl">Customize your course </h2>
           </div>
           <TitleForm
             initialData={{ title: singleData?.title }}
             courseId={params?.courseId}
+            setActions={setActions}
           />
           <DescriptionForm
             initialData={{ description: singleData?.description }}
             courseId={params?.courseId}
+            setActions={setActions}
+          />
+          <ThumbnailForm
+            initialData={{ thumbnail: singleData?.thumbnail }}
+            courseId={params?.courseId}
+            setActions={setActions}
           />
         </div>
       </div>

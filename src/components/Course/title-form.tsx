@@ -6,34 +6,27 @@ import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useDynamicToast } from "@/hooks/DynamicToastHook";
-import {
-  AddCourseApi,
-  clearCourseState,
-  EditCourseApi,
-  GetCourseApi,
-  GetSingleCourseApi,
-} from "@/store/course/slice";
-import { useDispatch, useSelector } from "react-redux";
+import { EditCourseApi, GetSingleCourseApi } from "@/store/course/slice";
+import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { toast } from "sonner";
 import { Pencil } from "lucide-react";
-import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { memo, useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+import { Course } from "@prisma/client";
+
+type CourseFormValues = Pick<Course, "title">;
 
 interface TitleFormProps {
-  initialData: {
-    title: string;
-  };
+  initialData: CourseFormValues;
   courseId: string;
+  setActions: any;
 }
 
 const formSchema = z.object({
@@ -42,38 +35,46 @@ const formSchema = z.object({
   }),
 });
 
-const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
+const TitleForm = ({ initialData, courseId, setActions }: TitleFormProps) => {
   const dispatch = useDispatch<AppDispatch>();
-  const pathname = usePathname();
 
   const [isEditing, setIsEditing] = useState(false);
-  const toggleEdit = () => setIsEditing((current) => !current);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: initialData?.title,
+      title: initialData?.title || "",
     },
   });
+
+  useEffect(() => {
+    if (initialData) {
+      form.reset({
+        title: initialData?.title || "",
+      });
+    }
+  }, [initialData?.title]);
+
   const { isSubmitting, isValid } = form.formState;
 
-  useDynamicToast(
-    "CourseStore",
-    {
-      clearState: clearCourseState,
-      callbackDispatches: [
-        { thunk: GetSingleCourseApi, args: { id: courseId } },
-      ],
-      callbackFunctions: [toggleEdit],
-    },
-    pathname
-  );
+  const toggleEdit = () => {
+    form.setValue("title", initialData?.title || "");
+    setIsEditing((current) => !current);
+  };
+
+  const handleSuccess = () => {
+    dispatch(GetSingleCourseApi({ id: courseId }));
+  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const formdata = new FormData();
       Object.entries(values).forEach(([key, val]) => {
         formdata.append(key, val);
+      });
+
+      setActions((current: any) => {
+        return { ...current, callbackFunction: handleSuccess };
       });
 
       await dispatch(
@@ -83,6 +84,7 @@ const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
           requiredFields: ["title"],
         })
       );
+      setIsEditing(false);
     } catch (error: any) {
       console.error(error);
       toast.error(error.message);
@@ -118,8 +120,6 @@ const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
               <FormField
                 control={form.control}
                 name="title"
-                // defaultValue={form.getValues("title")}
-                defaultValue={initialData?.title}
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
@@ -147,10 +147,17 @@ const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
           </form>
         </Form>
       ) : (
-        <p className="text-sm mt-2">{initialData?.title}</p>
+        <p
+          className={cn(
+            "text-sm mt-2",
+            !initialData?.title && "text-slate-500 italic"
+          )}
+        >
+          {initialData?.title || "No Title"}
+        </p>
       )}
     </div>
   );
 };
 
-export default TitleForm;
+export default memo(TitleForm);

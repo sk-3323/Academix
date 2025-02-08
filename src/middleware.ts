@@ -50,5 +50,5 @@ export const middleware = apiHandler(async (request: NextRequest) => {
 
 export const config = {
   matcher:
-    "/((?!favicon.ico|_next/static|_next/image|sitemap.xml|robots.txt).*)",
+    "/((?!favicon.ico|_next/static|_next/image|sitemap.xml|robots.txt|api/uploadthing).*)",
 };

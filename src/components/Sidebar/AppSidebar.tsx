@@ -16,6 +16,9 @@ import {
   LogIn,
   Info,
   Contact,
+  VideoIcon,
+  TvMinimalPlay,
+  MessageCircleQuestion,
 } from "lucide-react";
 
 import {
@@ -38,12 +41,30 @@ import {
 import { Button } from "../ui/button";
 import Link from "next/link";
 
-const menuItems = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/" },
-  { icon: BookOpen, label: "My Courses", href: "/users" },
-  { icon: ShieldCheck, label: "Certificates", href: "/settings" },
-  { icon: User, label: "Profile", href: "/help" },
-  { icon: CreditCard, label: "Payment", href: "/help" },
+const adminMenuItems = [
+  { icon: LayoutDashboard, label: "Dashboard", href: "/admin/dashboard" },
+  { icon: BookOpen, label: "Payment", href: "/admin/payment" },
+  { icon: ShieldCheck, label: "Certificates", href: "/admin/certificate" },
+  { icon: User, label: "Users", href: "/admin/user" },
+  { icon: CreditCard, label: "Payment", href: "/admin/payment" },
+];
+const teacherMenuItems = [
+  { icon: LayoutDashboard, label: "Dashboard", href: "/teacher/dashboard" },
+  { icon: BookOpen, label: "Courses", href: "/teacher/course" },
+  { icon: ShieldCheck, label: "Certificates", href: "/teacher/certificate" },
+  { icon: User, label: "Students", href: "/teacher/student" },
+  { icon: CreditCard, label: "Wallet", href: "/teacher/wallet" },
+  { icon: TvMinimalPlay, label: "Live Class", href: "/teacher/live-class" },
+  { icon: MessageCircleQuestion, label: "Quiz", href: "/teacher/quiz" },
+];
+const studentmenuItems = [
+  { icon: LayoutDashboard, label: "Dashboard", href: "/student/dashboard" },
+  { icon: BookOpen, label: "Courses", href: "/student/course" },
+  { icon: ShieldCheck, label: "Certificates", href: "/student/certificate" },
+  { icon: User, label: "Profile", href: "/student/profile" },
+  { icon: CreditCard, label: "Payment", href: "/student/payment" },
+  { icon: VideoIcon, label: "Video Lectures", href: "/student/video" },
+  { icon: MessageCircleQuestion, label: "Quiz", href: "/student/quiz" },
 ];
 
 export function ResponsiveSidebarWithAutoOpen() {
@@ -87,7 +108,7 @@ export function ResponsiveSidebarWithAutoOpen() {
         <SidebarHeader className="p-2">{isHovering && "Sidebar"}</SidebarHeader>
         <SidebarContent className="p-2">
           <SidebarMenu>
-            {menuItems.map((item) => (
+            {adminMenuItems.map((item) => (
               <SidebarMenuItem key={item.label}>
                 <Tooltip>
                   <TooltipTrigger asChild>

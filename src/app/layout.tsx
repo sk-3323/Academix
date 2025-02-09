@@ -5,6 +5,7 @@ import { LayoutContent } from "@/components/LayoutContent/LayoutContent";
 import AuthProvider from "@/context/AuthProvider";
 import { Providers } from "@/components/Providers/Providers";
 import StoreProvider from "@/context/StoreProvider";
+import type React from "react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

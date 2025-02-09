@@ -14,7 +14,7 @@ model User {
   password           String
   username           String
   role               Role      @default(STUDENT)
-  phone              String?   @unique
+  phone              BigInt?   @unique
   avatar             String?
   verifyCode         String?
   verifyCodeExpiry   DateTime?

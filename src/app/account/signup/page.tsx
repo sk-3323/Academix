@@ -64,13 +64,12 @@ const page = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       let api = new APIClient();
-      let data: any = await api.create("/api/auth/signup", values);
+      let data: any = await api.create("/auth/signup", values);
+      console.log(data, "datata");
 
       if (data.status) {
         toast.success(data.message);
-        setTimeout(() => {
-          router.push("/account/login");
-        }, 700);
+        router.push("/account/verify-otp");
       }
     } catch (error: any) {
       console.error(error);

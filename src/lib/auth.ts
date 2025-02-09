@@ -137,6 +137,7 @@ export const authOption: NextAuthOptions = {
         token.avatar = user.avatar;
         token.phone = user.phone;
         token.isAdmin = user.isAdmin;
+        token.role = user.role;
       }
       return token;
     },
@@ -148,6 +149,7 @@ export const authOption: NextAuthOptions = {
         session.user.avatar = token.avatar;
         session.user.phone = token.phone;
         session.user.isAdmin = token.isAdmin;
+        session.user.role = token.role;
       }
       return session;
     },

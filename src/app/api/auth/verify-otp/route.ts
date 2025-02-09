@@ -13,7 +13,7 @@ export const POST = apiHandler(async (request: NextRequest) => {
   // Verify the OTP and update the user's account status
   const userExistByEmail = await prisma.user.findUnique({
     where: {
-      id,
+      email: id,
     },
   });
 
@@ -35,7 +35,7 @@ export const POST = apiHandler(async (request: NextRequest) => {
 
   const updatedUser = await prisma.user.update({
     where: {
-      id,
+      email: id,
     },
     data: {
       isVerified: true,

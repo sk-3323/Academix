@@ -36,7 +36,7 @@ const page = () => {
   const onSubmit = async (otp: string) => {
     setIsVerifying(true);
 
-    const data: any = await api.create("/api/auth/verify-otp", {
+    const data: any = await api.create("/auth/verify-otp", {
       email,
       otp,
     });

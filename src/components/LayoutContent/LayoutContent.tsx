@@ -8,37 +8,54 @@ import MobileMenu from "@/components/MobileMenu/MobileMenu";
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer/Footer";
 import { CustomCursor } from "@/components/CustomCursor/CustomCursor";
+import { useSession } from "next-auth/react";
+import React, { useEffect } from "react";
 
 export function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { isMobile } = useSidebar();
+  const [isSidebar, setIsSidebar] = React.useState(false);
+  const data = useSession();
+  useEffect(() => {
+    if (data.data?.user == null || data.status == "unauthenticated") {
+      setIsSidebar(false);
+    } else {
+      setIsSidebar(true);
+    }
+  }, []);
 
   // Define routes where Navbar and Footer should be hidden
-  const noNavFooterRoutes = ["/account/login", "/account/signup", "/demo"];
+  const noNavFooterRoutes = [
+    "/account/login",
+    "/account/signup",
+    "/account/verify-otp",
+  ];
   const hideNavFooter = noNavFooterRoutes.includes(pathname);
 
   return (
     <>
       {!hideNavFooter && <CustomCursor />}
       <div className="flex min-h-screen w-full overflow-x-hidden">
-        {!hideNavFooter && !isMobile && <ResponsiveSidebarWithAutoOpen />}
+        {!hideNavFooter && !isMobile && !isSidebar && (
+          <ResponsiveSidebarWithAutoOpen />
+        )}
         <div className="flex flex-col flex-1">
           <SidebarInset>
             <HeroHighlight>
               {!hideNavFooter && (
                 <header className="flex justify-between items-center p-4 border-b w-full">
                   <Navbar isMobile={isMobile} />
-                  {isMobile && <MobileMenu />}
+                  {isMobile && !isSidebar && <MobileMenu />}
                 </header>
               )}
               <main className="flex-1 p-4 overflow-x-hidden w-full">
                 {children}
               </main>
-              {!hideNavFooter && 
-              <footer className="flex justify-center items-center p-4 w-full">
-                <Footer />
-              </footer>
-              }
+              {!hideNavFooter && (
+                <footer className="flex justify-center items-center p-4 w-full">
+                  <Footer />
+                </footer>
+              )}
             </HeroHighlight>
           </SidebarInset>
         </div>

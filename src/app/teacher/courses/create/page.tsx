@@ -19,7 +19,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDynamicToast } from "@/hooks/DynamicToastHook";
 import type { AppDispatch } from "@/store/store"; // Adjust this import based on your store location
-import { AddCourseApi, clearCourseState, GetCourseApi } from "@/store/course/slice";
+import {
+  AddCourseApi,
+  clearCourseState,
+  GetCourseApi,
+} from "@/store/course/slice";
 
 const formSchema = z.object({
   title: z.string().min(1, {
@@ -28,10 +32,9 @@ const formSchema = z.object({
 });
 
 const CreateCoursePage = () => {
-  
   const dispatch = useDispatch<AppDispatch>();
-  const { singleData } = useSelector((state:any) => state["CourseStore"]);
-  
+  const { singleData } = useSelector((state: any) => state["CourseStore"]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -40,21 +43,25 @@ const CreateCoursePage = () => {
   });
   const { isSubmitting, isValid } = form.formState;
 
-  useDynamicToast("CourseStore", {
-    clearState: clearCourseState,
-    callbackDispatches: [GetCourseApi],
-  },`/teacher/courses/${singleData?.id}`);
+  useDynamicToast(
+    "CourseStore",
+    {
+      clearState: clearCourseState,
+      callbackDispatches: [GetCourseApi],
+    },
+    `/teacher/courses/${singleData?.id}`
+  );
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-
       const formdata = new FormData();
       Object.entries(values).forEach(([key, val]) => {
         formdata.append(key, val);
       });
 
-      await dispatch(AddCourseApi({formdata:formdata,requiredFields:["title"]}))
-     
+      await dispatch(
+        AddCourseApi({ formdata: formdata, requiredFields: ["title"] })
+      );
     } catch (error: any) {
       console.error(error);
       toast.error(error.message);

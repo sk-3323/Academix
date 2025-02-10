@@ -13,26 +13,12 @@ export const createCourseSchema = z
     title: z.string().min(1, "Title is required"),
     description: z.string().min(1, "Description is required"),
     thumbnail: z.string(),
-    categoryId: z.union([
-      z.string().transform((val) => {
-        try {
-          const parsed = JSON.parse(val);
-          return Array.isArray(parsed) ? parsed : [];
-        } catch {
-          return [];
-        }
+    categoryId: z
+      .string()
+      .min(1, "category is required")
+      .refine((val) => ObjectId.isValid(val), {
+        message: "Invalid category id provided",
       }),
-      z
-        .array(
-          z
-            .string()
-            .min(1, "course is required")
-            .refine((val) => ObjectId.isValid(val), {
-              message: "Invalid category id",
-            })
-        )
-        .nonempty("At least one category id is required"),
-    ]),
     price: z
       .union([z.string(), z.number()])
       .transform((val) => Number(val))
@@ -43,6 +29,26 @@ export const createCourseSchema = z
       .union([z.string(), z.boolean()])
       .transform((val) => Boolean(val)),
     status: z.enum(VALID_STATUS),
+    // categoryId: z.union([
+    //   z.string().transform((val) => {
+    //     try {
+    //       const parsed = JSON.parse(val);
+    //       return Array.isArray(parsed) ? parsed : [];
+    //     } catch {
+    //       return [];
+    //     }
+    //   }),
+    //   z
+    //     .array(
+    //       z
+    //         .string()
+    //         .min(1, "category is required")
+    //         .refine((val) => ObjectId.isValid(val), {
+    //           message: "Invalid category id",
+    //         })
+    //     )
+    //     .nonempty("At least one category id is required"),
+    // ]),
   })
   .strict()
   .partial();

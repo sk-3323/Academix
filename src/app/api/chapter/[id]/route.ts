@@ -6,22 +6,26 @@ import { createChapterSchema } from "@/schema/chapter/schema";
 import { ObjectId } from "mongodb";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
-  let chpater_id = content?.params?.id;
+  let chapter_id = content?.params?.id;
 
-  if (!chpater_id) {
+  if (!chapter_id) {
     throw new ErrorHandler("Not found", 400);
   }
 
   let result = await prisma.$transaction(async (tx) => {
     return await tx.chapter.findFirst({
       where: {
-        id: chpater_id,
+        id: chapter_id,
       },
       orderBy: {
         id: "desc",
       },
       include: {
-        topics: true,
+        topics: {
+          orderBy: {
+            order: "asc",
+          },
+        },
         course: true,
       },
     });
@@ -42,9 +46,9 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
 });
 
 export const PUT = apiHandler(async (request: NextRequest, content: any) => {
-  let chpater_id = content?.params.id;
+  let chapter_id = content?.params.id;
 
-  if (!chpater_id || ObjectId.isValid(chpater_id)) {
+  if (!chapter_id) {
     throw new ErrorHandler("Not found", 404);
   }
 
@@ -54,7 +58,7 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
   let result = await prisma.$transaction(async (tx) => {
     const chapterFound = await tx.chapter.findUnique({
       where: {
-        id: chpater_id,
+        id: chapter_id,
       },
     });
 
@@ -78,7 +82,7 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
     return await tx.chapter.update({
       data: data,
       where: {
-        id: chpater_id,
+        id: chapter_id,
       },
     });
   });
@@ -94,16 +98,16 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
 });
 
 export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
-  let chpater_id = content?.params?.id;
+  let chapter_id = content?.params?.id;
 
-  if (!chpater_id) {
+  if (!chapter_id) {
     throw new ErrorHandler("Not found", 400);
   }
 
   let result = await prisma.$transaction(async (tx) => {
     const chapterFound = await tx.chapter.count({
       where: {
-        id: chpater_id,
+        id: chapter_id,
       },
     });
 
@@ -113,7 +117,7 @@ export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
 
     return await tx.chapter.delete({
       where: {
-        id: chpater_id,
+        id: chapter_id,
       },
       select: {
         id: true,

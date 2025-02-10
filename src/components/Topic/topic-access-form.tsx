@@ -6,12 +6,12 @@ import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { EditCourseApi, GetSingleCourseApi } from "@/store/course/slice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { toast } from "sonner";
@@ -19,27 +19,31 @@ import { Pencil } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
-import { Course } from "@prisma/client";
+import { Topic } from "@prisma/client";
+import { EditTopicApi, GetSingleTopicApi } from "@/store/topic/slice";
+import Editor from "../editor";
+import Preview from "../preview";
+import { Checkbox } from "../ui/checkbox";
 
-type CourseFormValues = Pick<Course, "description">;
+type TopicFormValues = Pick<Topic, "isFree">;
 
-interface DescriptionFormProps {
-  initialData: CourseFormValues;
-  courseId: string;
+interface TopicAccessFormProps {
+  initialData: TopicFormValues;
+  topicId: string;
+  chapterId: string;
   setActions: any;
 }
 
 const formSchema = z.object({
-  description: z.string().min(1, {
-    message: "Description is required",
-  }),
+  isFree: z.boolean(),
 });
 
-const DescriptionForm = ({
+const TopicAccessForm = ({
   initialData,
-  courseId,
+  topicId,
+  chapterId,
   setActions,
-}: DescriptionFormProps) => {
+}: TopicAccessFormProps) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -47,34 +51,34 @@ const DescriptionForm = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      description: initialData?.description || "",
+      isFree: !!initialData?.isFree,
     },
   });
 
   useEffect(() => {
     if (initialData) {
       form.reset({
-        description: initialData?.description || "",
+        isFree: !!initialData?.isFree,
       });
     }
-  }, [initialData?.description]);
+  }, [initialData?.isFree]);
 
   const { isSubmitting, isValid } = form.formState;
 
   const toggleEdit = () => {
-    form.setValue("description", initialData?.description || "");
+    form.setValue("isFree", !!initialData?.isFree);
     setIsEditing((current) => !current);
   };
 
   const handleSuccess = () => {
-    dispatch(GetSingleCourseApi({ id: courseId }));
+    dispatch(GetSingleTopicApi({ id: topicId }));
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const formdata = new FormData();
       Object.entries(values).forEach(([key, val]) => {
-        formdata.append(key, val);
+        formdata.append(key, val.toString());
       });
 
       setActions((current: any) => {
@@ -82,10 +86,10 @@ const DescriptionForm = ({
       });
 
       await dispatch(
-        EditCourseApi({
-          id: courseId,
+        EditTopicApi({
+          id: topicId,
           formdata: formdata,
-          requiredFields: ["description"],
+          requiredFields: ["isFree"],
         })
       );
       setIsEditing(false);
@@ -98,7 +102,7 @@ const DescriptionForm = ({
   return (
     <div className="mt-6 bg-slate-100 dark:bg-gray-800 rounded-lg shadow-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Course Description
+        Topic access settings
         <Button
           variant={"ghost"}
           onClick={toggleEdit}
@@ -109,7 +113,7 @@ const DescriptionForm = ({
           ) : (
             <>
               <Pencil className="h-4 w-4 mr-2" />
-              Edit Description
+              Edit access
             </>
           )}
         </Button>
@@ -123,17 +127,21 @@ const DescriptionForm = ({
             <div className="grid grid-cols-1 gap-6 mb-6">
               <FormField
                 control={form.control}
-                name="description"
+                name="isFree"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
                     <FormControl>
-                      <Textarea
-                        className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-                        disabled={isSubmitting}
-                        placeholder="e.g. 'This course is about'"
-                        {...field}
+                      <Checkbox
+                        checked={field?.value}
+                        onCheckedChange={field.onChange}
                       />
                     </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormDescription>
+                        Check this box if you want to make this topic free for
+                        preview
+                      </FormDescription>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -154,14 +162,17 @@ const DescriptionForm = ({
         <p
           className={cn(
             "text-sm mt-2",
-            !initialData?.description && "text-slate-500 italic"
+            !initialData?.isFree && "text-slate-500 italic"
           )}
         >
-          {initialData?.description || "No Description"}
+          {initialData?.isFree
+            ? "This topic is free for preview"
+            : "This topic is not free"}
+          {/* {initialData?.isFree && <Preview value={initialData?.isFree} />} */}
         </p>
       )}
     </div>
   );
 };
 
-export default memo(DescriptionForm);
+export default memo(TopicAccessForm);

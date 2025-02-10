@@ -43,11 +43,15 @@ const CreateCoursePage = () => {
   });
   const { isSubmitting, isValid } = form.formState;
 
+  const handleSuccess = () => {
+    dispatch(GetCourseApi());
+  };
+
   useDynamicToast(
     "CourseStore",
     {
       clearState: clearCourseState,
-      callbackDispatches: [GetCourseApi],
+      callbackFunction: handleSuccess,
     },
     `/teacher/courses/${singleData?.id}`
   );

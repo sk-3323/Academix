@@ -8,20 +8,22 @@ export const createChapterSchema = z
       .string()
       .min(1, "course is required")
       .refine((val) => ObjectId.isValid(val), {
-        message: "Invalid instructor id provided",
+        message: "Invalid course id provided",
       }),
     title: z.string().min(1, "Title is required"),
-    order: z.number().int().positive().optional(),
+    order: z.number().int().positive(),
     description: z.string().min(1, "Description is required"),
-    status: z.enum(VALID_STATUS).optional(),
+    status: z.enum(VALID_STATUS),
   })
-  .strict();
+  .strict()
+  .partial();
 
 export const changeChapterStatusSchema = z
   .object({
     status: z.enum(VALID_STATUS),
   })
-  .strict();
+  .strict()
+  .partial();
 
 export const changeChapterOrderSchema = z
   .object({

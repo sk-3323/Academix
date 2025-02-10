@@ -11,7 +11,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { EditCourseApi, GetSingleCourseApi } from "@/store/course/slice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { toast } from "sonner";
@@ -19,13 +18,16 @@ import { Pencil } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
-import { Course } from "@prisma/client";
+import { Topic } from "@prisma/client";
+import { EditTopicApi, GetSingleTopicApi } from "@/store/topic/slice";
+import Editor from "../editor";
+import Preview from "../preview";
 
-type CourseFormValues = Pick<Course, "description">;
+type TopicFormValues = Pick<Topic, "description">;
 
 interface DescriptionFormProps {
-  initialData: CourseFormValues;
-  courseId: string;
+  initialData: TopicFormValues;
+  topicId: string;
   setActions: any;
 }
 
@@ -37,7 +39,7 @@ const formSchema = z.object({
 
 const DescriptionForm = ({
   initialData,
-  courseId,
+  topicId,
   setActions,
 }: DescriptionFormProps) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -67,7 +69,7 @@ const DescriptionForm = ({
   };
 
   const handleSuccess = () => {
-    dispatch(GetSingleCourseApi({ id: courseId }));
+    dispatch(GetSingleTopicApi({ id: topicId }));
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -82,8 +84,8 @@ const DescriptionForm = ({
       });
 
       await dispatch(
-        EditCourseApi({
-          id: courseId,
+        EditTopicApi({
+          id: topicId,
           formdata: formdata,
           requiredFields: ["description"],
         })
@@ -98,7 +100,7 @@ const DescriptionForm = ({
   return (
     <div className="mt-6 bg-slate-100 dark:bg-gray-800 rounded-lg shadow-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Course Description
+        Topic Description
         <Button
           variant={"ghost"}
           onClick={toggleEdit}
@@ -127,12 +129,7 @@ const DescriptionForm = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Textarea
-                        className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-                        disabled={isSubmitting}
-                        placeholder="e.g. 'This course is about'"
-                        {...field}
-                      />
+                      <Editor disabled={isSubmitting} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -157,7 +154,10 @@ const DescriptionForm = ({
             !initialData?.description && "text-slate-500 italic"
           )}
         >
-          {initialData?.description || "No Description"}
+          {!initialData?.description && "No Description"}
+          {initialData?.description && (
+            <Preview value={initialData?.description} />
+          )}
         </p>
       )}
     </div>

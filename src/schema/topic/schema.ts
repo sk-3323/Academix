@@ -11,19 +11,22 @@ export const createTopicSchema = z
         message: "Invalid chapter id provided",
       }),
     title: z.string().min(1, "Title is required"),
-    order: z.number().int().positive().optional(),
+    order: z.number().int().positive(),
     description: z.string().min(1, "Description is required"),
     video: z.string().min(1, "Description is required"),
-    videoDuration: z.number().positive(),
-    status: z.enum(VALID_STATUS).optional(),
+    duration: z.number().positive(),
+    status: z.enum(VALID_STATUS),
+    isFree: z.union([z.string(), z.boolean()]).transform((val) => Boolean(val)),
   })
-  .strict();
+  .strict()
+  .partial();
 
 export const changeTopicStatusSchema = z
   .object({
     status: z.enum(VALID_STATUS),
   })
-  .strict();
+  .strict()
+  .partial();
 
 export const changeTopicOrderSchema = z
   .object({

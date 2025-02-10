@@ -33,36 +33,15 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
     if (!courseFound) {
       throw new ErrorHandler("Course not found", 404);
     }
-
-    let existingChapterIds = courseFound?.chapters.map((ch) => ch?.id);
-
-    let isInvalidIds = data?.chapters?.filter(
-      (chapter: any) => !existingChapterIds.includes(chapter?.id)
-    );
-
-    if (isInvalidIds.length !== 0) {
-      throw new ErrorHandler("Invalid Chapter Id is provided", 400);
-    }
     let { chapters } = data;
 
-    let updatedChapters: any = await tx.chapter.updateMany({
-      data: {
-        order: {
-          multiply: -1,
-        },
-      }, // Temporarily reset all orders
-      where: { courseId: course_id },
-    });
-
-    updatedChapters = await Promise.all(
-      chapters.map(async (chapter: any, index: number) => {
+    let updatedChapters = await Promise.all(
+      chapters.map(async (chapter: any) => {
         return await tx.chapter.update({
           data: {
             order: chapter?.order,
           },
-          where: {
-            id: chapter?.id,
-          },
+          where: { id: chapter?.id },
         });
       })
     );

@@ -10,6 +10,7 @@ import {
   handleFileUpload,
   validateData,
 } from "@/lib/fileHandler";
+import { decryptToken } from "@/lib/jwtGenerator";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let course_id = content?.params?.id;
@@ -17,10 +18,14 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
     throw new ErrorHandler("Not found", 400);
   }
 
+  let token: any = request.headers.get("x-user-token");
+  let { id: instructorId, ...session } = await decryptToken(token);
+
   let result = await prisma.$transaction(async (tx) => {
     return await tx.course.findFirst({
       where: {
         id: course_id,
+        instructorId: instructorId,
       },
       orderBy: {
         id: "desc",
@@ -28,7 +33,11 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
       include: {
         instructor: true,
         category: true,
-        chapters: true,
+        chapters: {
+          orderBy: {
+            order: "asc",
+          },
+        },
         certificates: true,
       },
     });
@@ -88,6 +97,14 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
         data: data,
         where: {
           id: course_id,
+        },
+        include: {
+          chapters: {
+            orderBy: {
+              order: "asc",
+            },
+          },
+          category: true,
         },
       });
 

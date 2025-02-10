@@ -20,26 +20,22 @@ import { memo, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
 import { Course } from "@prisma/client";
+import { Input } from "../ui/input";
+import { formatPrice } from "@/lib/format";
 
-type CourseFormValues = Pick<Course, "description">;
+type CourseFormValues = Pick<Course, "price">;
 
-interface DescriptionFormProps {
+interface PriceFormProps {
   initialData: CourseFormValues;
   courseId: string;
   setActions: any;
 }
 
 const formSchema = z.object({
-  description: z.string().min(1, {
-    message: "Description is required",
-  }),
+  price: z.coerce.number({ message: "Price is required to be a number" }),
 });
 
-const DescriptionForm = ({
-  initialData,
-  courseId,
-  setActions,
-}: DescriptionFormProps) => {
+const PriceForm = ({ initialData, courseId, setActions }: PriceFormProps) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -47,22 +43,22 @@ const DescriptionForm = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      description: initialData?.description || "",
+      price: initialData?.price || 0,
     },
   });
 
   useEffect(() => {
     if (initialData) {
       form.reset({
-        description: initialData?.description || "",
+        price: initialData?.price || 0,
       });
     }
-  }, [initialData?.description]);
+  }, [initialData?.price]);
 
   const { isSubmitting, isValid } = form.formState;
 
   const toggleEdit = () => {
-    form.setValue("description", initialData?.description || "");
+    form.setValue("price", initialData?.price || 0);
     setIsEditing((current) => !current);
   };
 
@@ -74,7 +70,7 @@ const DescriptionForm = ({
     try {
       const formdata = new FormData();
       Object.entries(values).forEach(([key, val]) => {
-        formdata.append(key, val);
+        formdata.append(key, val.toString());
       });
 
       setActions((current: any) => {
@@ -85,7 +81,7 @@ const DescriptionForm = ({
         EditCourseApi({
           id: courseId,
           formdata: formdata,
-          requiredFields: ["description"],
+          requiredFields: ["price"],
         })
       );
       setIsEditing(false);
@@ -98,7 +94,7 @@ const DescriptionForm = ({
   return (
     <div className="mt-6 bg-slate-100 dark:bg-gray-800 rounded-lg shadow-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Course Description
+        Course Price
         <Button
           variant={"ghost"}
           onClick={toggleEdit}
@@ -109,7 +105,7 @@ const DescriptionForm = ({
           ) : (
             <>
               <Pencil className="h-4 w-4 mr-2" />
-              Edit Description
+              Edit Price
             </>
           )}
         </Button>
@@ -123,14 +119,16 @@ const DescriptionForm = ({
             <div className="grid grid-cols-1 gap-6 mb-6">
               <FormField
                 control={form.control}
-                name="description"
+                name="price"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Textarea
+                      <Input
+                        type="number"
+                        step="0.01"
                         className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
                         disabled={isSubmitting}
-                        placeholder="e.g. 'This course is about'"
+                        placeholder="Set a pricce for the course"
                         {...field}
                       />
                     </FormControl>
@@ -154,14 +152,14 @@ const DescriptionForm = ({
         <p
           className={cn(
             "text-sm mt-2",
-            !initialData?.description && "text-slate-500 italic"
+            !initialData?.price && "text-slate-500 italic"
           )}
         >
-          {initialData?.description || "No Description"}
+          {initialData?.price ? formatPrice(initialData?.price) : "No Price"}
         </p>
       )}
     </div>
   );
 };
 
-export default memo(DescriptionForm);
+export default memo(PriceForm);

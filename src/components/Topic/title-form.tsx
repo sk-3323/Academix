@@ -10,36 +10,32 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { EditCourseApi, GetSingleCourseApi } from "@/store/course/slice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { toast } from "sonner";
 import { Pencil } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { Textarea } from "../ui/textarea";
-import { Course } from "@prisma/client";
+import { Topic } from "@prisma/client";
+import { EditTopicApi, GetSingleTopicApi } from "@/store/topic/slice";
 
-type CourseFormValues = Pick<Course, "description">;
+type TopicFormValues = Pick<Topic, "title">;
 
-interface DescriptionFormProps {
-  initialData: CourseFormValues;
-  courseId: string;
+interface TitleFormProps {
+  initialData: TopicFormValues;
+  topicId: string;
   setActions: any;
 }
 
 const formSchema = z.object({
-  description: z.string().min(1, {
-    message: "Description is required",
+  title: z.string().min(1, {
+    message: "Title is required",
   }),
 });
 
-const DescriptionForm = ({
-  initialData,
-  courseId,
-  setActions,
-}: DescriptionFormProps) => {
+const TitleForm = ({ initialData, topicId, setActions }: TitleFormProps) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -47,27 +43,27 @@ const DescriptionForm = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      description: initialData?.description || "",
+      title: initialData?.title || "",
     },
   });
 
   useEffect(() => {
     if (initialData) {
       form.reset({
-        description: initialData?.description || "",
+        title: initialData?.title || "",
       });
     }
-  }, [initialData?.description]);
+  }, [initialData?.title]);
 
   const { isSubmitting, isValid } = form.formState;
 
   const toggleEdit = () => {
-    form.setValue("description", initialData?.description || "");
+    form.setValue("title", initialData?.title || "");
     setIsEditing((current) => !current);
   };
 
   const handleSuccess = () => {
-    dispatch(GetSingleCourseApi({ id: courseId }));
+    dispatch(GetSingleTopicApi({ id: topicId }));
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -82,10 +78,10 @@ const DescriptionForm = ({
       });
 
       await dispatch(
-        EditCourseApi({
-          id: courseId,
+        EditTopicApi({
+          id: topicId,
           formdata: formdata,
-          requiredFields: ["description"],
+          requiredFields: ["title"],
         })
       );
       setIsEditing(false);
@@ -98,7 +94,7 @@ const DescriptionForm = ({
   return (
     <div className="mt-6 bg-slate-100 dark:bg-gray-800 rounded-lg shadow-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Course Description
+        Topic Title
         <Button
           variant={"ghost"}
           onClick={toggleEdit}
@@ -109,7 +105,7 @@ const DescriptionForm = ({
           ) : (
             <>
               <Pencil className="h-4 w-4 mr-2" />
-              Edit Description
+              Edit Title
             </>
           )}
         </Button>
@@ -123,14 +119,14 @@ const DescriptionForm = ({
             <div className="grid grid-cols-1 gap-6 mb-6">
               <FormField
                 control={form.control}
-                name="description"
+                name="title"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Textarea
+                      <Input
                         className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
                         disabled={isSubmitting}
-                        placeholder="e.g. 'This course is about'"
+                        placeholder="e.g. 'Introduction of the topic'"
                         {...field}
                       />
                     </FormControl>
@@ -154,14 +150,14 @@ const DescriptionForm = ({
         <p
           className={cn(
             "text-sm mt-2",
-            !initialData?.description && "text-slate-500 italic"
+            !initialData?.title && "text-slate-500 italic"
           )}
         >
-          {initialData?.description || "No Description"}
+          {initialData?.title || "No Title"}
         </p>
       )}
     </div>
   );
 };
 
-export default memo(DescriptionForm);
+export default memo(TitleForm);

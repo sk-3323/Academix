@@ -3,56 +3,32 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useDynamicToast } from "@/hooks/DynamicToastHook";
-import {
-  AddCourseApi,
-  clearCourseState,
-  EditCourseApi,
-  GetCourseApi,
-  GetSingleCourseApi,
-} from "@/store/course/slice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { toast } from "sonner";
-import { ImageIcon, Loader2, Pencil, PlusCircle } from "lucide-react";
+import { Pencil, PlusCircle, VideoIcon } from "lucide-react";
 import { memo, useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { Textarea } from "../ui/textarea";
-import { Course } from "@prisma/client";
-import Image from "next/image";
+import { muxData, Topic } from "@prisma/client";
 import { FileUpload } from "../file-upload";
+import { EditTopicApi, GetSingleTopicApi } from "@/store/topic/slice";
 
-type CourseFormValues = Pick<Course, "thumbnail">;
+type TopicFormValues = Pick<Topic, "video">;
 
-interface ThumbnailFormProps {
-  initialData: CourseFormValues;
-  courseId: string;
+interface VideoFormProps {
+  initialData: TopicFormValues & { muxData?: muxData };
+  // initialData: TopicFormValues & { muxData: muxData };
+  topicId: string;
   setActions: any;
 }
 
 const formSchema = z.object({
-  thumbnail: z.string().min(1, {
-    message: "Thumbnail is required",
+  video: z.string().min(1, {
+    message: "Video is required",
   }),
 });
 
-const ThumbnailForm = ({
-  initialData,
-  courseId,
-  setActions,
-}: ThumbnailFormProps) => {
+const VideoForm = ({ initialData, topicId, setActions }: VideoFormProps) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -60,27 +36,27 @@ const ThumbnailForm = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      thumbnail: initialData?.thumbnail || "",
+      video: initialData?.video || "",
     },
   });
 
   useEffect(() => {
     if (initialData) {
       form.reset({
-        thumbnail: initialData?.thumbnail || "",
+        video: initialData?.video || "",
       });
     }
-  }, [initialData?.thumbnail]);
+  }, [initialData?.video]);
 
   const { isSubmitting, isValid } = form.formState;
 
   const toggleEdit = () => {
-    form.setValue("thumbnail", initialData?.thumbnail || "");
+    form.setValue("video", initialData?.video || "");
     setIsEditing((current) => !current);
   };
 
   const handleSuccess = () => {
-    dispatch(GetSingleCourseApi({ id: courseId }));
+    dispatch(GetSingleTopicApi({ id: topicId }));
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -95,10 +71,10 @@ const ThumbnailForm = ({
       });
 
       await dispatch(
-        EditCourseApi({
-          id: courseId,
+        EditTopicApi({
+          id: topicId,
           formdata: formdata,
-          requiredFields: ["thumbnail"],
+          requiredFields: ["video"],
         })
       );
 
@@ -112,62 +88,59 @@ const ThumbnailForm = ({
   return (
     <div className="mt-6 bg-slate-100 dark:bg-gray-800 rounded-lg shadow-md p-4">
       <div className="font-medium flex items-center justify-between mb-2">
-        Course Thumbnail
+        Course Video
         <Button
           variant={"ghost"}
           onClick={toggleEdit}
           className="hover:bg-[#a1a1aa]"
         >
           {isEditing && <>Cancel</>}{" "}
-          {!isEditing && initialData?.thumbnail && (
+          {!isEditing && initialData?.video && (
             <>
               <Pencil className="h-4 w-4 mr-2" />
-              Edit Thumbnail
+              Edit Video
             </>
           )}
-          {!isEditing && !initialData?.thumbnail && (
+          {!isEditing && !initialData?.video && (
             <>
               <PlusCircle className="h-4 w-4 mr-2" />
-              Add Thumbnail
+              Add Video
             </>
           )}
         </Button>
       </div>
       {!isEditing &&
-        (!initialData?.thumbnail ? (
+        (!initialData?.video ? (
           <div className="flex items-center justify-center h-60 bg-slate-300 dark:bg-gray-500 rounded-md">
-            <ImageIcon className="h-10 w-10" />
+            <VideoIcon className="h-10 w-10" />
           </div>
         ) : (
-          <div className="relative aspect-video mt-2">
-            <Image
-              alt="Upload"
-              fill
-              className="object-cover rounded-md"
-              src={initialData?.thumbnail}
-              blurDataURL="L0CZx1xu00tR%NfQj[fQ01ay~pj["
-              placeholder="blur"
-            />
-          </div>
+          <div className="relative aspect-video mt-2">Video Uploaded!</div>
         ))}
 
       {isEditing && (
         <div>
           <FileUpload
-            endpoint="courseThumbnail"
+            endpoint="topicVideo"
             onChange={(url) => {
               if (url) {
-                onSubmit({ thumbnail: url });
+                onSubmit({ video: url });
               }
             }}
           />
           <div className="text-xs text-muted-foreground mt-4 italic">
-            16:9 aspect ratio recommended
+            Upload this topic&apos;s video
           </div>
+        </div>
+      )}
+      {initialData?.video && !isEditing && (
+        <div className="text-xs text-muted-foreground mt-2">
+          Videos can take few minutes to process.Refresh the page if video does
+          not appear
         </div>
       )}
     </div>
   );
 };
 
-export default memo(ThumbnailForm);
+export default memo(VideoForm);

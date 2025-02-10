@@ -31,30 +31,12 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
     });
 
     if (!chapterFound) {
-      throw new ErrorHandler("Course not found", 404);
+      throw new ErrorHandler("Chapter not found", 404);
     }
 
-    let existingTopicIds = chapterFound?.topics.map((tp) => tp?.id);
-
-    let isInvalidIds = data?.topics?.filter(
-      (topic: any) => !existingTopicIds.includes(topic?.id)
-    );
-
-    if (isInvalidIds.length !== 0) {
-      throw new ErrorHandler("Invalid Topic Id is provided", 400);
-    }
     let { topics } = data;
 
-    let updatedTopics: any = await tx.topic.updateMany({
-      data: {
-        order: {
-          multiply: -1,
-        },
-      }, // Temporarily reset all orders
-      where: { chapterId: chapter_id },
-    });
-
-    updatedTopics = await Promise.all(
+    let updatedTopics = await Promise.all(
       topics.map(async (topic: any) => {
         return await tx.topic.update({
           data: {

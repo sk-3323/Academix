@@ -11,7 +11,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { EditCourseApi, GetSingleCourseApi } from "@/store/course/slice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { toast } from "sonner";
@@ -19,13 +18,14 @@ import { Pencil } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
-import { Course } from "@prisma/client";
+import { Chapter } from "@prisma/client";
+import { EditChapterApi, GetSingleChapterApi } from "@/store/chapter/slice";
 
-type CourseFormValues = Pick<Course, "description">;
+type ChapterFormValues = Pick<Chapter, "description">;
 
 interface DescriptionFormProps {
-  initialData: CourseFormValues;
-  courseId: string;
+  initialData: ChapterFormValues;
+  chapterId: string;
   setActions: any;
 }
 
@@ -37,7 +37,7 @@ const formSchema = z.object({
 
 const DescriptionForm = ({
   initialData,
-  courseId,
+  chapterId,
   setActions,
 }: DescriptionFormProps) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -67,24 +67,19 @@ const DescriptionForm = ({
   };
 
   const handleSuccess = () => {
-    dispatch(GetSingleCourseApi({ id: courseId }));
+    dispatch(GetSingleChapterApi({ id: chapterId }));
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const formdata = new FormData();
-      Object.entries(values).forEach(([key, val]) => {
-        formdata.append(key, val);
-      });
-
       setActions((current: any) => {
         return { ...current, callbackFunction: handleSuccess };
       });
 
       await dispatch(
-        EditCourseApi({
-          id: courseId,
-          formdata: formdata,
+        EditChapterApi({
+          id: chapterId,
+          values: values,
           requiredFields: ["description"],
         })
       );
@@ -98,7 +93,7 @@ const DescriptionForm = ({
   return (
     <div className="mt-6 bg-slate-100 dark:bg-gray-800 rounded-lg shadow-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Course Description
+        Chapter Description
         <Button
           variant={"ghost"}
           onClick={toggleEdit}
@@ -130,7 +125,7 @@ const DescriptionForm = ({
                       <Textarea
                         className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
                         disabled={isSubmitting}
-                        placeholder="e.g. 'This course is about'"
+                        placeholder="e.g. 'This chapter is about'"
                         {...field}
                       />
                     </FormControl>

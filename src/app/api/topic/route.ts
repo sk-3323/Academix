@@ -68,7 +68,17 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
         throw new ErrorHandler("Chapter not found", 404);
       }
 
-      data.order = chapterFound.topics.length + 1;
+      let lastTopic = await prisma.topic.findFirst({
+        where: {
+          chapterId: chapterFound?.id,
+        },
+        orderBy: {
+          order: "desc",
+        },
+      });
+
+      data.order = lastTopic?.order ? lastTopic?.order + 1 : 1;
+
       data = await validateData(createTopicSchema, data);
 
       return await prisma.topic.create({

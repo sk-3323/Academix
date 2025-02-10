@@ -14,7 +14,7 @@ model User {
   password           String
   username           String
   role               Role      @default(STUDENT)
-  phone              BigInt?   @unique
+  phone              String?   @unique
   avatar             String?
   verifyCode         String?
   verifyCodeExpiry   DateTime?
@@ -47,7 +47,7 @@ model Course {
   // Relations
   instructorId String    @db.ObjectId
   instructor   User      @relation("CourseInstructor", fields: [instructorId], references: [id])
-  categoryId   String[]  @db.ObjectId
+  categoryId   String?   @db.ObjectId
   category     Category? @relation(fields: [categoryId], references: [id])
 
   createdAt DateTime @default(now())
@@ -102,7 +102,6 @@ model Chapter {
 
   topics Topic[]
 
-  @@unique([courseId, order]) // Composite unique constraint
   @@index([courseId])
 }
 
@@ -129,7 +128,6 @@ model Topic {
   muxData      muxData?
   userProgress userProgress[]
 
-  @@unique([chapterId, order]) // Composite unique constraint
   @@index([chapterId])
 }
 

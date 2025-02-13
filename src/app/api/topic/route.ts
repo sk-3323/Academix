@@ -20,6 +20,8 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
         chapter: true,
         quiz: true,
         resources: true,
+        muxData: true,
+        userProgress: true,
       },
     });
   });

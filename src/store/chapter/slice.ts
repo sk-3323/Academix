@@ -102,6 +102,32 @@ export const ChangeChapterOrderApi = createAsyncThunk(
   }
 );
 
+// %%%%%%%%%% CHANGE CHAPTER STATUS API %%%%%%%%%%%%
+export const ChangeChapterStatusApi = createAsyncThunk(
+  "ChangeChapterStatusApi",
+  async ({
+    id,
+    values,
+    requiredFields = [],
+  }: {
+    id: string;
+    values: any;
+    requiredFields?: string[];
+  }) => {
+    try {
+      const response = await api.update(
+        `${URL_CHAPTER}/change-status/${id}`,
+        values,
+        requiredFields
+      );
+      return response;
+    } catch (error) {
+      console.error("error", error);
+      return error;
+    }
+  }
+);
+
 // %%%%%%%%%% DELETE CHAPTER API %%%%%%%%%%%%
 export const DeleteChapterApi = createAsyncThunk(
   "DeleteChapterApi",
@@ -202,6 +228,21 @@ const ChapterSlice = createSlice({
         state.message = action.payload.message;
       })
       .addCase(ChangeChapterOrderApi.rejected, (state, action: any) => {
+        state.loading = false;
+        state.status = action.payload.status;
+        state.message = action.payload.message;
+      })
+
+      //%%%%%%%%%% CHANGE CHAPTER STATUS API HANDLE %%%%%%%%%%%%%%%%%%%%
+      .addCase(ChangeChapterStatusApi.pending, (state, action: any) => {
+        state.loading = true;
+      })
+      .addCase(ChangeChapterStatusApi.fulfilled, (state, action: any) => {
+        state.loading = false;
+        state.status = action.payload.status;
+        state.message = action.payload.message;
+      })
+      .addCase(ChangeChapterStatusApi.rejected, (state, action: any) => {
         state.loading = false;
         state.status = action.payload.status;
         state.message = action.payload.message;

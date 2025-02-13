@@ -7,16 +7,17 @@ import { Button } from "@/components/ui/button";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { toast } from "sonner";
-import { Pencil, PlusCircle, VideoIcon } from "lucide-react";
+import { Loader2, Pencil, PlusCircle, VideoIcon } from "lucide-react";
 import { memo, useEffect, useState } from "react";
-import { muxData, Topic } from "@prisma/client";
+import { MuxData, Topic } from "@prisma/client";
 import { FileUpload } from "../file-upload";
 import { EditTopicApi, GetSingleTopicApi } from "@/store/topic/slice";
+import MuxPlayer from "@mux/mux-player-react";
 
 type TopicFormValues = Pick<Topic, "video">;
 
 interface VideoFormProps {
-  initialData: TopicFormValues & { muxData?: muxData };
+  initialData: TopicFormValues & { muxData?: MuxData | null };
   // initialData: TopicFormValues & { muxData: muxData };
   topicId: string;
   setActions: any;
@@ -32,6 +33,7 @@ const VideoForm = ({ initialData, topicId, setActions }: VideoFormProps) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,9 +48,8 @@ const VideoForm = ({ initialData, topicId, setActions }: VideoFormProps) => {
         video: initialData?.video || "",
       });
     }
+    console.info(" initialData :>> ", initialData);
   }, [initialData?.video]);
-
-  const { isSubmitting, isValid } = form.formState;
 
   const toggleEdit = () => {
     form.setValue("video", initialData?.video || "");
@@ -61,6 +62,7 @@ const VideoForm = ({ initialData, topicId, setActions }: VideoFormProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      setIsUpdating(true);
       const formdata = new FormData();
       Object.entries(values).forEach(([key, val]) => {
         formdata.append(key, val);
@@ -82,11 +84,18 @@ const VideoForm = ({ initialData, topicId, setActions }: VideoFormProps) => {
     } catch (error: any) {
       console.error(error);
       toast.error(error.message);
+    } finally {
+      setIsUpdating(false);
     }
   };
 
   return (
-    <div className="mt-6 bg-slate-100 dark:bg-gray-800 rounded-lg shadow-md p-4">
+    <div className="relative mt-6 bg-slate-100 dark:bg-gray-800 rounded-lg shadow-md p-4">
+      {isUpdating && (
+        <div className="absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-m flex items-center justify-center">
+          <Loader2 className="animate-spin h-10 w-10 text-[#27E0B3]" />
+        </div>
+      )}
       <div className="font-medium flex items-center justify-between mb-2">
         Course Video
         <Button
@@ -115,7 +124,17 @@ const VideoForm = ({ initialData, topicId, setActions }: VideoFormProps) => {
             <VideoIcon className="h-10 w-10" />
           </div>
         ) : (
-          <div className="relative aspect-video mt-2">Video Uploaded!</div>
+          <div className="relative aspect-video mt-2">
+            <MuxPlayer
+              playbackId={initialData?.muxData?.playbackId || ""}
+              metadata={{
+                video_title: "Topic Video",
+              }}
+              streamType="on-demand"
+              onLoadStart={() => console.info("loaded")}
+              onError={(e) => console.error("Mux Player Error:", e)}
+            />
+          </div>
         ))}
 
       {isEditing && (

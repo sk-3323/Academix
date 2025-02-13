@@ -18,10 +18,27 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
       where: {
         id: course_id,
       },
+      include: {
+        chapters: {
+          where: {
+            status: "PUBLISHED",
+          },
+        },
+      },
     });
 
     if (!courseFound) {
       throw new ErrorHandler("Course not found", 404);
+    }
+
+    if (
+      !courseFound?.title ||
+      !courseFound?.description ||
+      !courseFound?.price ||
+      !courseFound?.thumbnail ||
+      !courseFound?.chapters?.length
+    ) {
+      throw new ErrorHandler("Missing fields are required!", 400);
     }
 
     data = await validateData(createCourseSchema, data);

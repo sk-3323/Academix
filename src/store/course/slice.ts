@@ -84,6 +84,32 @@ export const EditCourseApi = createAsyncThunk(
   }
 );
 
+// %%%%%%%%%% CHANGE COURSE STATUS API %%%%%%%%%%%%
+export const ChangeCourseStatusApi = createAsyncThunk(
+  "ChangeCourseStatusApi",
+  async ({
+    id,
+    values,
+    requiredFields = [],
+  }: {
+    id: string;
+    values: any;
+    requiredFields?: string[];
+  }) => {
+    try {
+      const response = await api.update(
+        `${URL_COURSE}/change-status/${id}`,
+        values,
+        requiredFields
+      );
+      return response;
+    } catch (error) {
+      console.error("error", error);
+      return error;
+    }
+  }
+);
+
 // %%%%%%%%%% DELETE COURSE API %%%%%%%%%%%%
 export const DeleteCourseApi = createAsyncThunk(
   "DeleteCourseApi",
@@ -169,6 +195,21 @@ const CourseSlice = createSlice({
         state.message = action.payload.message;
       })
       .addCase(EditCourseApi.rejected, (state, action: any) => {
+        state.loading = false;
+        state.status = action.payload.status;
+        state.message = action.payload.message;
+      })
+
+      //%%%%%%%%%% CHANGE COURSE STATUS API HANDLE %%%%%%%%%%%%%%%%%%%%
+      .addCase(ChangeCourseStatusApi.pending, (state, action: any) => {
+        state.loading = true;
+      })
+      .addCase(ChangeCourseStatusApi.fulfilled, (state, action: any) => {
+        state.loading = false;
+        state.status = action.payload.status;
+        state.message = action.payload.message;
+      })
+      .addCase(ChangeCourseStatusApi.rejected, (state, action: any) => {
         state.loading = false;
         state.status = action.payload.status;
         state.message = action.payload.message;

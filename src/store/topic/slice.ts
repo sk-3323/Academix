@@ -112,6 +112,32 @@ export const ChangeTopicOrderApi = createAsyncThunk(
   }
 );
 
+// %%%%%%%%%% CHANGE TOPIC STATUS API %%%%%%%%%%%%
+export const ChangeTopicStatusApi = createAsyncThunk(
+  "ChangeTopicStatusApi",
+  async ({
+    id,
+    values,
+    requiredFields = [],
+  }: {
+    id: string;
+    values: any;
+    requiredFields?: string[];
+  }) => {
+    try {
+      const response = await api.update(
+        `${URL_TOPIC}/change-status/${id}`,
+        values,
+        requiredFields
+      );
+      return response;
+    } catch (error) {
+      console.error("error", error);
+      return error;
+    }
+  }
+);
+
 // %%%%%%%%%% DELETE TOPIC API %%%%%%%%%%%%
 export const DeleteTopicApi = createAsyncThunk(
   "DeleteTopicApi",
@@ -212,6 +238,21 @@ const TopicSlice = createSlice({
         state.message = action.payload.message;
       })
       .addCase(ChangeTopicOrderApi.rejected, (state, action: any) => {
+        state.loading = false;
+        state.status = action.payload.status;
+        state.message = action.payload.message;
+      })
+
+      //%%%%%%%%%% CHANGE TOPIC STATUS API HANDLE %%%%%%%%%%%%%%%%%%%%
+      .addCase(ChangeTopicStatusApi.pending, (state, action: any) => {
+        state.loading = true;
+      })
+      .addCase(ChangeTopicStatusApi.fulfilled, (state, action: any) => {
+        state.loading = false;
+        state.status = action.payload.status;
+        state.message = action.payload.message;
+      })
+      .addCase(ChangeTopicStatusApi.rejected, (state, action: any) => {
         state.loading = false;
         state.status = action.payload.status;
         state.message = action.payload.message;

@@ -1,7 +1,7 @@
 import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { validateData } from "@/lib/fileHandler";
+import { validateData, videoAsset } from "@/lib/fileHandler";
 import { createChapterSchema } from "@/schema/chapter/schema";
 import { ObjectId } from "mongodb";
 
@@ -105,14 +105,28 @@ export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
   }
 
   let result = await prisma.$transaction(async (tx) => {
-    const chapterFound = await tx.chapter.count({
+    const chapterFound = await tx.chapter.findFirst({
       where: {
         id: chapter_id,
       },
+      include: {
+        topics: {
+          include: {
+            muxData: true,
+          },
+        },
+      },
     });
 
-    if (chapterFound === 0) {
+    if (!chapterFound) {
       throw new ErrorHandler("Chapter not found", 404);
+    }
+
+    for (let topic of chapterFound?.topics) {
+      if (topic?.muxData?.assetId) {
+        console.log("aave aave aave :>>")
+        await videoAsset.assets.delete(topic?.muxData?.assetId);
+      }
     }
 
     return await tx.chapter.delete({

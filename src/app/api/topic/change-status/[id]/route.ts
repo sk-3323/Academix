@@ -18,20 +18,52 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
       where: {
         id: topic_id,
       },
+      include: {
+        muxData: true,
+      },
     });
 
     if (!topicFound) {
       throw new ErrorHandler("Chapter not found", 404);
     }
 
+    if (
+      !topicFound?.title ||
+      !topicFound?.description ||
+      !topicFound?.video ||
+      !topicFound?.muxData
+    ) {
+      throw new ErrorHandler("Missing fields are required!", 400);
+    }
+
     data = await validateData(changeTopicStatusSchema, data);
 
-    return await tx.topic.update({
+    let updatedTopic = await tx.topic.update({
       data: data,
       where: {
         id: topic_id,
       },
     });
+
+    let updatedTopicFound = await tx.topic.findMany({
+      where: {
+        id: topic_id,
+        status: "PUBLISHED",
+      },
+    });
+
+    if (!updatedTopicFound?.length) {
+      await tx.chapter.update({
+        data: {
+          status: "DRAFT",
+        },
+        where: {
+          id: updatedTopic?.chapterId,
+        },
+      });
+    }
+
+    return updatedTopic;
   });
 
   return NextResponse.json(

@@ -16,7 +16,9 @@ export const createTopicSchema = z
     video: z.string().min(1, "Description is required"),
     duration: z.number().positive(),
     status: z.enum(VALID_STATUS),
-    isFree: z.union([z.string(), z.boolean()]).transform((val) => Boolean(val)),
+    isFree: z
+      .union([z.string(), z.boolean()])
+      .transform((val) => val == "true"),
   })
   .strict()
   .partial();

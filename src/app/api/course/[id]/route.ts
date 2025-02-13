@@ -9,6 +9,7 @@ import {
   formDataToJsonWithoutFiles,
   handleFileUpload,
   validateData,
+  videoAsset,
 } from "@/lib/fileHandler";
 import { decryptToken } from "@/lib/jwtGenerator";
 
@@ -144,14 +145,33 @@ export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
   }
 
   let result = await prisma.$transaction(async (tx) => {
-    const courseFound = await tx.course.count({
+    const courseFound = await tx.course.findFirst({
       where: {
         id: course_id,
       },
+      include: {
+        chapters: {
+          select: {
+            topics: {
+              select: {
+                muxData: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    if (courseFound === 0) {
+    if (!courseFound) {
       throw new ErrorHandler("Course not found", 404);
+    }
+
+    for (let chapter of courseFound?.chapters) {
+      for (let topic of chapter?.topics) {
+        if (topic?.muxData?.assetId) {
+          await videoAsset.assets.delete(topic?.muxData?.assetId);
+        }
+      }
     }
 
     return await tx.course.delete({

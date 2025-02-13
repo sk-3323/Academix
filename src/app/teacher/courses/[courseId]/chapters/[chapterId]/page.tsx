@@ -1,5 +1,7 @@
 "use client";
 
+import { Banner } from "@/components/banner";
+import { ChapterActions } from "@/components/Chapter/chapter-actions";
 import DescriptionForm from "@/components/Chapter/description-form";
 import TitleForm from "@/components/Chapter/title-form";
 import TopicsForm from "@/components/Chapter/topics-form";
@@ -8,7 +10,8 @@ import { useDynamicToast } from "@/hooks/DynamicToastHook";
 import { clearChapterState, GetSingleChapterApi } from "@/store/chapter/slice";
 import { AppDispatch } from "@/store/store";
 import { clearTopicState } from "@/store/topic/slice";
-import { LayoutDashboard, ListChecks } from "lucide-react";
+import { ArrowLeft, LayoutDashboard, ListChecks } from "lucide-react";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -48,47 +51,73 @@ const page = ({
   const completedFields = requiredFields.filter(Boolean).length;
   const completionText = `(${completedFields} / ${totalFields})`;
 
+  const isComplete = requiredFields.every(Boolean);
+
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-y-2">
-          <h1 className="text-2xl font-medium">Chapter setup</h1>
-          <span className="text-sm">Complete all fields {completionText} </span>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
-        <div>
-          <div className="flex items-center gap-x-2">
-            <IconBadge icon={LayoutDashboard} />
-            <h2 className="text-xl">Customize your chapter </h2>
+    <>
+      {singleData?.status && singleData?.status === "DRAFT" && (
+        <Banner
+          variant="warning"
+          label=" This chapter is unpublished. It will not be visible in the course. "
+        />
+      )}
+      <div className="w-full p-6">
+        <Link
+          href={`/teacher/courses/${params?.courseId}`}
+          className="flex items-center text-sm hover:opacity-75 transition mb-6"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to course setup
+        </Link>
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-y-2">
+            <h1 className="text-2xl font-medium">Chapter setup</h1>
+            <span className="text-sm">
+              Complete all fields {completionText}{" "}
+            </span>
           </div>
-          <TitleForm
-            initialData={{ title: singleData?.title }}
+          <ChapterActions
+            disabled={!isComplete}
+            courseId={params?.courseId}
             chapterId={params?.chapterId}
-            setActions={setChapterActions}
-          />
-          <DescriptionForm
-            initialData={{ description: singleData?.description }}
-            chapterId={params?.chapterId}
+            status={singleData?.status}
             setActions={setChapterActions}
           />
         </div>
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
           <div>
             <div className="flex items-center gap-x-2">
-              <IconBadge icon={ListChecks} />
-              <h2 className="text-xl">Course Chapters</h2>
+              <IconBadge icon={LayoutDashboard} />
+              <h2 className="text-xl">Customize your chapter </h2>
             </div>
-            <TopicsForm
-              initialData={{ topics: singleData?.topics }}
-              courseId={params?.courseId}
+            <TitleForm
+              initialData={{ title: singleData?.title }}
               chapterId={params?.chapterId}
-              setActions={setTopicActions}
+              setActions={setChapterActions}
             />
+            <DescriptionForm
+              initialData={{ description: singleData?.description }}
+              chapterId={params?.chapterId}
+              setActions={setChapterActions}
+            />
+          </div>
+          <div className="space-y-6">
+            <div>
+              <div className="flex items-center gap-x-2">
+                <IconBadge icon={ListChecks} />
+                <h2 className="text-xl">Course Chapters</h2>
+              </div>
+              <TopicsForm
+                initialData={{ topics: singleData?.topics }}
+                courseId={params?.courseId}
+                chapterId={params?.chapterId}
+                setActions={setTopicActions}
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

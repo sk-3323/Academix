@@ -1,7 +1,13 @@
 import { pbkdf2Sync, randomBytes } from "crypto";
 import { ErrorHandler } from "./errorHandler";
 import path from "path";
+import Mux from "@mux/mux-node";
 import { existsSync, unlinkSync, writeFileSync } from "fs";
+
+export const { video: videoAsset } = new Mux({
+  tokenId: process.env.MUX_TOKEN_ID,
+  tokenSecret: process.env.MUX_TOKEN_SECRET,
+});
 
 interface FileUploadResult {
   filePath: string;
@@ -96,4 +102,12 @@ export const cleanupUploadedFile = async (filePath: string): Promise<void> => {
     console.error("Failed to cleanup uploaded file:", error);
     throw new ErrorHandler(error.message, 500);
   }
+};
+
+export const createVideoAsset = async (input: any) => {
+  return await videoAsset.assets.create({
+    input: input,
+    playback_policy: ["public"],
+    test: false,
+  });
 };

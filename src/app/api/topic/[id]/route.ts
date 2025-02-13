@@ -3,9 +3,11 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import {
   cleanupUploadedFile,
+  createVideoAsset,
   formDataToJsonWithoutFiles,
   handleFileUpload,
   validateData,
+  videoAsset,
 } from "@/lib/fileHandler";
 import { ObjectId } from "mongodb";
 import { createTopicSchema } from "@/schema/topic/schema";
@@ -31,6 +33,8 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
         chapter: true,
         quiz: true,
         resources: true,
+        muxData: true,
+        userProgress: true,
       },
     });
   });
@@ -97,6 +101,34 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
         },
       });
 
+      if (updatedTopic?.video) {
+        const muxDataFound = await tx.muxData.findUnique({
+          where: {
+            topicId: topicFound?.id,
+          },
+        });
+
+        if (muxDataFound) {
+          await videoAsset.assets.delete(muxDataFound?.assetId);
+          await tx.muxData.delete({
+            where: {
+              id: muxDataFound?.id,
+            },
+          });
+        }
+
+        const asset = await createVideoAsset(updatedTopic?.video);
+
+        await tx.muxData.create({
+          data: {
+            assetId: asset?.id,
+            topicId: updatedTopic?.id,
+            playbackId: asset?.playback_ids?.[0]?.id,
+          },
+        });
+      }
+
+      return updatedTopic;
       // if (updatedTopic && topicFound?.video) {
       //   let oldFilePath = path.join(
       //     path.resolve(process.cwd(), COURSE_UPLOAD_PATH),
@@ -131,24 +163,68 @@ export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
   }
 
   let result = await prisma.$transaction(async (tx) => {
-    const topicFound = await tx.topic.count({
+    const topicFound = await tx.topic.findFirst({
       where: {
         id: topic_id,
       },
+      include: {
+        chapter: true,
+        quiz: true,
+        resources: true,
+        muxData: true,
+        userProgress: true,
+      },
     });
 
-    if (topicFound === 0) {
+    if (!topicFound) {
       throw new ErrorHandler("Topic not found", 404);
     }
 
-    return await tx.topic.delete({
+    if (topicFound?.video && topicFound?.muxData?.assetId) {
+      videoAsset.assets.delete(topicFound?.muxData?.assetId);
+      await tx.muxData.delete({
+        where: {
+          id: topicFound?.muxData?.id,
+        },
+      });
+    }
+
+    let deletedTopic = await tx.topic.delete({
       where: {
         id: topic_id,
       },
       select: {
         id: true,
+        chapterId: true,
       },
     });
+
+    let updatedTopics = await tx.topic.findMany({
+      where: {
+        chapterId: deletedTopic?.chapterId,
+        status: "PUBLISHED",
+      },
+      include: {
+        chapter: true,
+        quiz: true,
+        resources: true,
+        muxData: true,
+        userProgress: true,
+      },
+    });
+
+    if (!updatedTopics?.length) {
+      await tx.chapter.update({
+        where: {
+          id: deletedTopic?.chapterId,
+        },
+        data: {
+          status: "DRAFT",
+        },
+      });
+    }
+
+    return deletedTopic;
   });
 
   return NextResponse.json(

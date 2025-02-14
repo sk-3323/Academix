@@ -20,6 +20,8 @@ import { memo, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
 import { Course } from "@prisma/client";
+import Editor from "../editor";
+import Preview from "../preview";
 
 type CourseFormValues = Pick<Course, "description">;
 
@@ -127,12 +129,7 @@ const DescriptionForm = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Textarea
-                        className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-                        disabled={isSubmitting}
-                        placeholder="e.g. 'This course is about'"
-                        {...field}
-                      />
+                      <Editor disabled={isSubmitting} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -157,7 +154,10 @@ const DescriptionForm = ({
             !initialData?.description && "text-slate-500 italic"
           )}
         >
-          {initialData?.description || "No Description"}
+          {!initialData?.description && "No Description"}
+          {initialData?.description && (
+            <Preview value={initialData?.description} />
+          )}
         </p>
       )}
     </div>

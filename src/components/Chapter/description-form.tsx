@@ -20,6 +20,8 @@ import { cn } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
 import { Chapter } from "@prisma/client";
 import { EditChapterApi, GetSingleChapterApi } from "@/store/chapter/slice";
+import Editor from "../editor";
+import Preview from "../preview";
 
 type ChapterFormValues = Pick<Chapter, "description">;
 
@@ -122,12 +124,7 @@ const DescriptionForm = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Textarea
-                        className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-                        disabled={isSubmitting}
-                        placeholder="e.g. 'This chapter is about'"
-                        {...field}
-                      />
+                      <Editor disabled={isSubmitting} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -152,7 +149,10 @@ const DescriptionForm = ({
             !initialData?.description && "text-slate-500 italic"
           )}
         >
-          {initialData?.description || "No Description"}
+          {!initialData?.description && "No Description"}
+          {initialData?.description && (
+            <Preview value={initialData?.description} />
+          )}
         </p>
       )}
     </div>

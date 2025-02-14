@@ -1,6 +1,7 @@
 import { ErrorHandler } from "./errorHandler";
 
 export const isAuthorized = (data: any, role = "STUDENT"): boolean => {
+  console.log("data ;>> ", data);
   if (!role) {
     throw new ErrorHandler("Access denied", 403);
   }

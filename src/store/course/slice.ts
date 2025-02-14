@@ -6,15 +6,18 @@ const URL_COURSE = "/course";
 const api = new APIClient();
 
 // %%%%%%%%%% GET COURSE API %%%%%%%%%%%%
-export const GetCourseApi = createAsyncThunk("GetCourseApi", async () => {
-  try {
-    const response = await api.get(URL_COURSE);
-    return response;
-  } catch (error) {
-    console.error("error", error);
-    return error;
+export const GetCourseApi = createAsyncThunk(
+  "GetCourseApi",
+  async ({ searchParams = {} }: { searchParams: Record<string, any> }) => {
+    try {
+      const response = await api.get(URL_COURSE, searchParams);
+      return response;
+    } catch (error) {
+      console.error("error", error);
+      return error;
+    }
   }
-});
+);
 
 // %%%%%%%%%% GET SINGLE COURSE API %%%%%%%%%%%%
 export const GetSingleCourseApi = createAsyncThunk(
@@ -150,6 +153,7 @@ const CourseSlice = createSlice({
         state.loading = false;
         state.status = action.payload.status;
         state.message = action.payload.message;
+        state.singleData = action.payload?.result ? action.payload?.result : {};
       })
       .addCase(AddCourseApi.rejected, (state, action: any) => {
         state.loading = false;

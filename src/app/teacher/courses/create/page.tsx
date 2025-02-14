@@ -44,7 +44,7 @@ const CreateCoursePage = () => {
   const { isSubmitting, isValid } = form.formState;
 
   const handleSuccess = () => {
-    dispatch(GetCourseApi());
+    form.reset();
   };
 
   useDynamicToast(
@@ -53,7 +53,7 @@ const CreateCoursePage = () => {
       clearState: clearCourseState,
       callbackFunction: handleSuccess,
     },
-    `/teacher/courses/${singleData?.id}`
+    `/teacher/courses`
   );
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {

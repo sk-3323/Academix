@@ -11,11 +11,54 @@ import { COURSE_UPLOAD_PATH } from "@/constants/config";
 import { decryptToken } from "@/lib/jwtGenerator";
 import { createCourseSchema } from "@/schema/course/schema";
 import { isAuthorized } from "@/lib/roleChecker";
-import { Key } from "lucide-react";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
+  let token: any = request.headers.get("x-user-token");
+  let { id, isAdmin } = await decryptToken(token);
+
+  const searchParams = request.nextUrl.searchParams;
+  let conditions: any = {};
+
+  const instructorId = searchParams.get("instructorId");
+
+  if (instructorId) {
+    if (!isAdmin && id !== instructorId) {
+      throw new ErrorHandler("Forbidden Access", 403);
+    }
+    conditions.instructorId = instructorId;
+  }
+
+  const status = searchParams.get("status");
+
+  if (status) {
+    conditions.status = status;
+  }
+
+  const categoryId = searchParams.get("categoryId");
+
+  if (categoryId) {
+    conditions.categoryId = categoryId;
+  }
+
+  const isFree = searchParams.get("isFree");
+
+  if (isFree) {
+    conditions.isFree = isFree;
+  }
+
+  const from_price = searchParams.get("from_price");
+  const to_price = searchParams.get("to_price");
+
+  if (from_price && to_price) {
+    conditions.price = {
+      gte: from_price,
+      lte: to_price,
+    };
+  }
+
   let result = await prisma.$transaction(async (tx) => {
     return await tx.course.findMany({
+      where: conditions,
       orderBy: {
         id: "desc",
       },
@@ -44,7 +87,8 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
 
 export const POST = apiHandler(async (request: NextRequest, content: any) => {
   let token: any = request.headers.get("x-user-token");
-  let { id: instructorId, ...session } = await decryptToken(token);
+  let session = await decryptToken(token);
+  let { id: instructorId } = session;
 
   if (!token || !instructorId) {
     throw new ErrorHandler("Unauthorized : invalid or empty token", 401);
@@ -77,7 +121,6 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
       return await tx.course.create({
         data: data,
       });
-      return null;
     });
 
     return NextResponse.json(

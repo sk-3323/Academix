@@ -18,9 +18,9 @@ import {
   ArrowLeft,
   CircleDollarSign,
   LayoutDashboard,
-  Link,
   ListChecks,
 } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 

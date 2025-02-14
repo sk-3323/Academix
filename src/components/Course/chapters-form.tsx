@@ -74,6 +74,7 @@ const ChaptersForm = ({
   const toggleCreate = () => {
     form.reset({
       title: "",
+      courseId: courseId || "",
     });
     setIsCreating((current) => !current);
   };
@@ -82,6 +83,7 @@ const ChaptersForm = ({
     dispatch(GetSingleCourseApi({ id: courseId }));
     form.reset({
       title: "",
+      courseId: courseId || "",
     });
   };
 

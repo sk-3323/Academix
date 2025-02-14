@@ -86,7 +86,7 @@ const ChapterList = ({ items, onReorder, onEdit }: ChapterListProps) => {
                       className={cn(
                         "px-2 py-3 border-r bg-slate-200 dark:bg-gray-700 hover:bg-slate-300 border-r-slate-300 dark:border-r-gray-600  dark:hover:bg-gray-600 rounded-l-md transition",
                         chapter?.status === "PUBLISHED" &&
-                          "border-r-sky-200 dark:border-r-sky-800 hover:bg-sky-200 dark:hover:bg-sky-800"
+                          "border-r-sky-200 dark:border-r-sky-800bg-sky-100 dark:bg-sky-900 hover:bg-sky-200 dark:hover:bg-sky-800"
                       )}
                       {...provided.dragHandleProps}
                     >

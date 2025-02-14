@@ -3,33 +3,13 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useDynamicToast } from "@/hooks/DynamicToastHook";
-import {
-  AddCourseApi,
-  clearCourseState,
-  EditCourseApi,
-  GetCourseApi,
-  GetSingleCourseApi,
-} from "@/store/course/slice";
-import { useDispatch, useSelector } from "react-redux";
+import { EditCourseApi, GetSingleCourseApi } from "@/store/course/slice";
+import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { toast } from "sonner";
-import { ImageIcon, Loader2, Pencil, PlusCircle } from "lucide-react";
+import { ImageIcon, Pencil, PlusCircle } from "lucide-react";
 import { memo, useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { Textarea } from "../ui/textarea";
 import { Course } from "@prisma/client";
 import Image from "next/image";
 import { FileUpload } from "../file-upload";
@@ -71,8 +51,6 @@ const ThumbnailForm = ({
       });
     }
   }, [initialData?.thumbnail]);
-
-  const { isSubmitting, isValid } = form.formState;
 
   const toggleEdit = () => {
     form.setValue("thumbnail", initialData?.thumbnail || "");

@@ -37,7 +37,13 @@ export class APIClient {
   /**
    * Fetches data from given url
    */
-  get = async (url: string) => {
+  get = async (url: string, searchParams: Record<string, any> = {}) => {
+    url += "?";
+
+    Object.entries(searchParams).forEach(([key, value]) => {
+      url += `${key}=${value}&`;
+    });
+
     return await axios.get(url);
   };
 

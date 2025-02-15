@@ -22,13 +22,13 @@ export const SearchInput = () => {
       {
         url: pathname,
         query: {
-          categoryId: currentCategoryId,
           title: debouncedValue,
+          categoryId: currentCategoryId,
         },
       },
       { skipNull: true, skipEmptyString: true }
     );
-    router.push(url);
+    router.replace(url);
   }, [debouncedValue, currentCategoryId, router, pathname]);
 
   return (

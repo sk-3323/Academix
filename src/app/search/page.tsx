@@ -4,7 +4,7 @@ import { GetCategoryApi } from "@/store/category/slice";
 import { AppDispatch } from "@/store/store";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Categories from "../api/course/_components/categories";
+import Categories from "./_components/categories";
 import { SearchInput } from "@/components/Navbar/search-input";
 
 const searchPage = () => {

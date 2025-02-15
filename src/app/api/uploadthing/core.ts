@@ -35,7 +35,7 @@ export const ourFileRouter = {
       return { uploadedBy: metadata.userId };
     }),
 
-  topicResources: f(["text", "image", "audio", "video", "pdf"])
+  chapterResources: f(["text", "image", "audio", "video", "pdf"])
     .middleware(async ({ req }) => await handleAuth({ req }))
     .onUploadComplete(async ({ metadata, file }) => {
       console.log("Upload complete for userId:", metadata.userId);

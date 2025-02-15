@@ -12,7 +12,17 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
         id: "desc",
       },
       include: {
-        topics: true,
+        topics: {
+          orderBy: {
+            order: "asc",
+          },
+        },
+        resources: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+        course: true,
       },
     });
   });

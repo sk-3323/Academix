@@ -132,6 +132,7 @@ const ThumbnailForm = ({
       {isEditing && (
         <div>
           <FileUpload
+            disabled={false}
             endpoint="courseThumbnail"
             onChange={(url) => {
               if (url) {

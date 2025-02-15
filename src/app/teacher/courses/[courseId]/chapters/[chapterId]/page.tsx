@@ -3,14 +3,16 @@
 import { Banner } from "@/components/banner";
 import { ChapterActions } from "@/components/Chapter/chapter-actions";
 import DescriptionForm from "@/components/Chapter/description-form";
+import ResourceForm from "@/components/Chapter/resource-form";
 import TitleForm from "@/components/Chapter/title-form";
 import TopicsForm from "@/components/Chapter/topics-form";
 import { IconBadge } from "@/components/icon-badge";
 import { useDynamicToast } from "@/hooks/DynamicToastHook";
 import { clearChapterState, GetSingleChapterApi } from "@/store/chapter/slice";
+import { clearResourceState } from "@/store/resource/slice";
 import { AppDispatch } from "@/store/store";
 import { clearTopicState } from "@/store/topic/slice";
-import { ArrowLeft, LayoutDashboard, ListChecks } from "lucide-react";
+import { ArrowLeft, File, LayoutDashboard, ListChecks } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,6 +35,13 @@ const page = ({
   });
 
   useDynamicToast("ChapterStore", chapterActions);
+
+  const [resourceActions, setResourceActions] = useState({
+    clearState: clearResourceState,
+    callbackFunction: () => {},
+  });
+
+  useDynamicToast("ResourceStore", resourceActions);
 
   const [topicActions, setTopicActions] = useState({
     clearState: clearTopicState,
@@ -112,6 +121,17 @@ const page = ({
                 courseId={params?.courseId}
                 chapterId={params?.chapterId}
                 setActions={setTopicActions}
+              />
+            </div>
+            <div>
+              <div className="flex items-center gap-x-2">
+                <IconBadge icon={File} />
+                <h2 className="text-xl">Resources</h2>
+              </div>
+              <ResourceForm
+                initialData={{ resources: singleData?.resources }}
+                chapterId={params?.chapterId}
+                setActions={setResourceActions}
               />
             </div>
           </div>

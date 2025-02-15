@@ -100,7 +100,8 @@ model Chapter {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  topics Topic[]
+  topics    Topic[]
+  resources Resource[]
 
   @@index([courseId])
 }
@@ -119,8 +120,7 @@ model Topic {
   chapterId String  @db.ObjectId
   chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
-  quiz      Quiz?
-  resources Resource[]
+  quiz Quiz?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -137,13 +137,13 @@ model Resource {
   url   String?
 
   // Relations
-  topicId String @db.ObjectId
-  topic   Topic  @relation(fields: [topicId], references: [id])
+  chapterId String  @db.ObjectId
+  chapter   Chapter @relation(fields: [chapterId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([topicId])
+  @@index([chapterId])
 }
 
 model Quiz {

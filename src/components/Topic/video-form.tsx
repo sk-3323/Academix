@@ -140,6 +140,7 @@ const VideoForm = ({ initialData, topicId, setActions }: VideoFormProps) => {
       {isEditing && (
         <div>
           <FileUpload
+            disabled={false}
             endpoint="topicVideo"
             onChange={(url) => {
               if (url) {

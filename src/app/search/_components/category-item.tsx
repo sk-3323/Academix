@@ -27,7 +27,7 @@ const CategoryItem = ({ label, icon: Icon, value }: CategoryItemProps) => {
       {
         url: pathname,
         query: {
-          title: currentTitle,
+          title: currentTitle || undefined,
           categoryId: isSelected ? null : value,
         },
       },

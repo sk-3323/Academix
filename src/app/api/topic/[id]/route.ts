@@ -32,7 +32,6 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
       include: {
         chapter: true,
         quiz: true,
-        resources: true,
         muxData: true,
         userProgress: true,
       },
@@ -97,7 +96,6 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
         include: {
           chapter: true,
           quiz: true,
-          resources: true,
         },
       });
 
@@ -170,7 +168,6 @@ export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
       include: {
         chapter: true,
         quiz: true,
-        resources: true,
         muxData: true,
         userProgress: true,
       },
@@ -207,7 +204,6 @@ export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
       include: {
         chapter: true,
         quiz: true,
-        resources: true,
         muxData: true,
         userProgress: true,
       },

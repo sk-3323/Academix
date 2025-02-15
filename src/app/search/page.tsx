@@ -5,6 +5,7 @@ import { AppDispatch } from "@/store/store";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Categories from "../api/course/_components/categories";
+import { SearchInput } from "@/components/Navbar/search-input";
 
 const searchPage = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -15,9 +16,14 @@ const searchPage = () => {
   }, []);
 
   return (
-    <div className="p-6">
-      <Categories items={data} />
-    </div>
+    <>
+      <div className="px-6 pt-6 md:hidden md:mb-0 block">
+        <SearchInput />
+      </div>
+      <div className="p-6">
+        <Categories items={data} />
+      </div>
+    </>
   );
 };
 

@@ -53,6 +53,25 @@ export const createCourseSchema = z
   .strict()
   .partial();
 
+export const createCourseWithProgressSchema = z
+  .object({
+    userId: z
+      .string()
+      .min(1, "user is required")
+      .refine((val) => ObjectId.isValid(val), {
+        message: "Invalid user id provided",
+      }),
+    categoryId: z
+      .string()
+      .min(1, "category is required")
+      .refine((val) => ObjectId.isValid(val), {
+        message: "Invalid category id provided",
+      }),
+    title: z.string().min(1, "Title is required"),
+  })
+  .strict()
+  .partial();
+
 export const changeCourseStatusSchema = z
   .object({
     status: z.enum(VALID_STATUS),

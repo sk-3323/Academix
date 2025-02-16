@@ -1,4 +1,4 @@
-import { Course } from "@prisma/client";
+import { Category, Course, User } from "@prisma/client";
 
 type CourseFormValues = Pick<Course, "categoryId">;
 
@@ -13,3 +13,10 @@ export interface CategoryFormProps {
   setActions: any;
   options: Option[];
 }
+
+export type CourseWithProgressWithCategory = Course & {
+  category: Category | null;
+  chapters: { id: string; topics: { id: string }[] }[];
+  instructor: User | null;
+  progress: number | null;
+};

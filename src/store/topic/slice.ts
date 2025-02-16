@@ -30,6 +30,30 @@ export const GetSingleTopicApi = createAsyncThunk(
   }
 );
 
+// %%%%%%%%%% GET SINGLE COURSE WITH PROGRESS BY TOPIC API %%%%%%%%%%%%
+export const GetSingleCourseWithProgressByTopicApi = createAsyncThunk(
+  "GetSingleCourseWithProgressByTopicApi",
+  async ({
+    courseId,
+    chapterId,
+    topicId,
+  }: {
+    courseId: string;
+    chapterId: string;
+    topicId: string;
+  }) => {
+    try {
+      const response = await api.create(
+        `courses/${courseId}/chapters/${chapterId}/topicId/${topicId}`
+      );
+      return response;
+    } catch (error) {
+      console.error("error", error);
+      return error;
+    }
+  }
+);
+
 // %%%%%%%%%% CREATE TOPIC API %%%%%%%%%%%%
 export const AddTopicApi = createAsyncThunk(
   "AddTopicApi",
@@ -212,6 +236,31 @@ const TopicSlice = createSlice({
         state.status = action.payload.status;
         state.message = action.payload.message;
       })
+
+      //%%%%%%%%%% GET SINGLE COURSE WITH PROGRESS BY TOPIC API HANDLE %%%%%%%%%%%%%%%%%%%
+      .addCase(
+        GetSingleCourseWithProgressByTopicApi.pending,
+        (state, action: any) => {
+          state.loading = true;
+        }
+      )
+      .addCase(
+        GetSingleCourseWithProgressByTopicApi.fulfilled,
+        (state, action: any) => {
+          state.loading = false;
+          state.singleData = action.payload?.result
+            ? action.payload?.result
+            : {};
+        }
+      )
+      .addCase(
+        GetSingleCourseWithProgressByTopicApi.rejected,
+        (state, action: any) => {
+          state.loading = false;
+          state.status = action.payload.status;
+          state.message = action.payload.message;
+        }
+      )
 
       //%%%%%%%%%% EDIT TOPIC API HANDLE %%%%%%%%%%%%%%%%%%%%
       .addCase(EditTopicApi.pending, (state, action: any) => {

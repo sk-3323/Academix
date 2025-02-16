@@ -19,12 +19,61 @@ export const GetCourseApi = createAsyncThunk(
   }
 );
 
+// %%%%%%%%%% GET COURSES WITH PROGRESS API %%%%%%%%%%%%
+export const GetCourseWithProgressApi = createAsyncThunk(
+  "GetCourseWithProgressApi",
+  async ({
+    userId,
+    title,
+    categoryId,
+    requiredFields = [],
+  }: {
+    userId: string;
+    title?: string;
+    categoryId?: string;
+    requiredFields?: string[];
+  }) => {
+    try {
+      const response = await api.create(
+        `${URL_COURSE}/with-progress`,
+        { userId, title, categoryId },
+        {},
+        requiredFields
+      );
+      return response;
+    } catch (error) {
+      console.error("error", error);
+      return error;
+    }
+  }
+);
+
 // %%%%%%%%%% GET SINGLE COURSE API %%%%%%%%%%%%
 export const GetSingleCourseApi = createAsyncThunk(
   "GetSingleCourseApi",
+  async ({
+    id,
+    searchParams = {},
+  }: {
+    id: string;
+    searchParams: Record<string, any>;
+  }) => {
+    try {
+      const response = await api.get(`${URL_COURSE}/${id}`, searchParams);
+      return response;
+    } catch (error) {
+      console.error("error", error);
+      return error;
+    }
+  }
+);
+
+// %%%%%%%%%% GET SINGLE COURSE WITH PROGRESS API %%%%%%%%%%%%
+export const GetSingleCourseWithProgressApi = createAsyncThunk(
+  "GetSingleCourseWithProgressApi",
   async ({ id }: { id: string }) => {
     try {
-      const response = await api.get(`${URL_COURSE}/${id}`);
+      const response = await api.create(`${URL_COURSE}/${id}`);
       return response;
     } catch (error) {
       console.error("error", error);
@@ -175,6 +224,20 @@ const CourseSlice = createSlice({
         state.message = action.payload.message;
       })
 
+      //%%%%%%%%%% GET COURSE WITH PROGRESS API HANDLE %%%%%%%%%%%%%%%%%%%
+      .addCase(GetCourseWithProgressApi.pending, (state, action: any) => {
+        state.loading = true;
+      })
+      .addCase(GetCourseWithProgressApi.fulfilled, (state, action: any) => {
+        state.loading = false;
+        state.data = action.payload?.result ? action.payload?.result : [];
+      })
+      .addCase(GetCourseWithProgressApi.rejected, (state, action: any) => {
+        state.loading = false;
+        state.status = action.payload.status;
+        state.message = action.payload.message;
+      })
+
       //%%%%%%%%%% GET SINGLE COURSE API HANDLE %%%%%%%%%%%%%%%%%%%
       .addCase(GetSingleCourseApi.pending, (state, action: any) => {
         state.loading = true;
@@ -188,6 +251,28 @@ const CourseSlice = createSlice({
         state.status = action.payload.status;
         state.message = action.payload.message;
       })
+
+      //%%%%%%%%%% GET SINGLE COURSE WITH PROGRESS API HANDLE %%%%%%%%%%%%%%%%%%%
+      .addCase(GetSingleCourseWithProgressApi.pending, (state, action: any) => {
+        state.loading = true;
+      })
+      .addCase(
+        GetSingleCourseWithProgressApi.fulfilled,
+        (state, action: any) => {
+          state.loading = false;
+          state.singleData = action.payload?.result
+            ? action.payload?.result
+            : {};
+        }
+      )
+      .addCase(
+        GetSingleCourseWithProgressApi.rejected,
+        (state, action: any) => {
+          state.loading = false;
+          state.status = action.payload.status;
+          state.message = action.payload.message;
+        }
+      )
 
       //%%%%%%%%%% EDIT COURSE API HANDLE %%%%%%%%%%%%%%%%%%%%
       .addCase(EditCourseApi.pending, (state, action: any) => {

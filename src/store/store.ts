@@ -4,6 +4,8 @@ import CategorySlice from "@/store/category/slice";
 import ChapterSlice from "@/store/chapter/slice";
 import TopicSlice from "@/store/topic/slice";
 import ResourceSlice from "@/store/resource/slice";
+import UserProgressSlice from "@/store/user-progress/slice";
+import EnrollmentSlice from "@/store/enrollment/slice";
 
 const store = configureStore({
   reducer: {
@@ -12,6 +14,8 @@ const store = configureStore({
     ChapterStore: ChapterSlice,
     TopicStore: TopicSlice,
     ResourceStore: ResourceSlice,
+    UserProgressStore: UserProgressSlice,
+    EnrollmentStore: EnrollmentSlice,
   },
 });
 export default store;

@@ -12,6 +12,7 @@ import {
   videoAsset,
 } from "@/lib/fileHandler";
 import { decryptToken } from "@/lib/jwtGenerator";
+import { getProgress } from "../with-progress/route";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let course_id = content?.params?.id;
@@ -42,6 +43,76 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
         certificates: true,
       },
     });
+  });
+
+  if (!result) {
+    throw new ErrorHandler("No data found", 404);
+  }
+
+  return NextResponse.json(
+    {
+      status: true,
+      message: "courses fetched successfully",
+      result,
+    },
+    { status: 200 }
+  );
+});
+
+export const POST = apiHandler(async (request: NextRequest, content: any) => {
+  let course_id = content?.params?.id;
+  if (!course_id) {
+    throw new ErrorHandler("Not found", 400);
+  }
+
+  let token: any = request.headers.get("x-user-token");
+  let { id: userId, ...session } = await decryptToken(token);
+
+  let result = await prisma.$transaction(async (tx) => {
+    let course: any = await tx.course.findFirst({
+      where: {
+        id: course_id,
+      },
+      orderBy: {
+        id: "desc",
+      },
+      include: {
+        instructor: true,
+        category: true,
+        chapters: {
+          where: {
+            status: "PUBLISHED",
+          },
+          include: {
+            resources: true,
+            topics: {
+              where: {
+                status: "PUBLISHED",
+              },
+              include: {
+                muxData: true,
+                userProgress: {
+                  where: {
+                    userId: userId,
+                  },
+                },
+              },
+              orderBy: {
+                order: "asc",
+              },
+            },
+          },
+          orderBy: {
+            order: "asc",
+          },
+        },
+        certificates: true,
+      },
+    });
+
+    let progressCount = await getProgress(userId, course?.id!);
+    course.progressCount = progressCount;
+    return course;
   });
 
   if (!result) {

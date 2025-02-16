@@ -29,8 +29,11 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
     "/account/login",
     "/account/signup",
     "/account/verify-otp",
+    "/courses/",
   ];
-  const hideNavFooter = noNavFooterRoutes.includes(pathname);
+  // const hideNavFooter = noNavFooterRoutes.includes(pathname);
+  const hideNavFooter =
+    pathname?.startsWith("/account/") || pathname?.startsWith("/courses/");
 
   return (
     <>

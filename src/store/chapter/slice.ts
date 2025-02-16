@@ -6,15 +6,18 @@ const URL_CHAPTER = "/chapter";
 const api = new APIClient();
 
 // %%%%%%%%%% GET CHAPTER API %%%%%%%%%%%%
-export const GetChapterApi = createAsyncThunk("GetChapterApi", async () => {
-  try {
-    const response = await api.get(URL_CHAPTER);
-    return response;
-  } catch (error) {
-    console.error("error", error);
-    return error;
+export const GetChapterApi = createAsyncThunk(
+  "GetChapterApi",
+  async ({ searchParams = {} }: { searchParams: Record<string, any> }) => {
+    try {
+      const response = await api.get(URL_CHAPTER, searchParams);
+      return response;
+    } catch (error) {
+      console.error("error", error);
+      return error;
+    }
   }
-});
+);
 
 // %%%%%%%%%% GET SINGLE CHAPTER API %%%%%%%%%%%%
 export const GetSingleChapterApi = createAsyncThunk(

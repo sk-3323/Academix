@@ -7,7 +7,23 @@ import { decryptToken } from "@/lib/jwtGenerator";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let result = await prisma.$transaction(async (tx) => {
+    const searchParams = request.nextUrl.searchParams;
+    let conditions: any = {};
+
+    const status = searchParams.get("status");
+
+    if (status) {
+      conditions.status = status;
+    }
+
+    const courseId = searchParams.get("courseId");
+
+    if (courseId) {
+      conditions.courseId = courseId;
+    }
+
     return await tx.chapter.findMany({
+      where: conditions,
       orderBy: {
         id: "desc",
       },

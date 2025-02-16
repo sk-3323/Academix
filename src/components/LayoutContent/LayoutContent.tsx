@@ -34,10 +34,13 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
   ];
   const isAdminRoute = pathname.startsWith("/admin");
   const isTeacherRoute = pathname.startsWith("/teacher");
-  // const hideNavFooter =
-    noNavFooterRoutes.includes(pathname) || isAdminRoute || isTeacherRoute;
+
   const hideNavFooter =
-    pathname?.startsWith("/account/") || pathname?.startsWith("/courses/");
+    noNavFooterRoutes.includes(pathname) ||
+    isAdminRoute ||
+    isTeacherRoute ||
+    pathname?.startsWith("/account/") ||
+    pathname?.startsWith("/courses/");
 
   return (
     <>

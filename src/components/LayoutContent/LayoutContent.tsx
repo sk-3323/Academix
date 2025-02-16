@@ -16,6 +16,7 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
   const { isMobile } = useSidebar();
   const [isSidebar, setIsSidebar] = React.useState(false);
   const data = useSession();
+
   useEffect(() => {
     if (data.data?.user == null || data.status == "unauthenticated") {
       setIsSidebar(false);
@@ -31,7 +32,10 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
     "/account/verify-otp",
     "/courses/",
   ];
-  // const hideNavFooter = noNavFooterRoutes.includes(pathname);
+  const isAdminRoute = pathname.startsWith("/admin");
+  const isTeacherRoute = pathname.startsWith("/teacher");
+  // const hideNavFooter =
+    noNavFooterRoutes.includes(pathname) || isAdminRoute || isTeacherRoute;
   const hideNavFooter =
     pathname?.startsWith("/account/") || pathname?.startsWith("/courses/");
 
@@ -39,9 +43,7 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
     <>
       {!hideNavFooter && <CustomCursor />}
       <div className="flex min-h-screen w-full overflow-x-hidden">
-        {!hideNavFooter && !isMobile && !isSidebar && (
-          <ResponsiveSidebarWithAutoOpen />
-        )}
+        {!noNavFooterRoutes && <ResponsiveSidebarWithAutoOpen />}
         <div className="flex flex-col flex-1">
           <SidebarInset>
             <HeroHighlight>

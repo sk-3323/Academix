@@ -49,16 +49,8 @@ export const authOption: NextAuthOptions = {
       id: "credentials",
       name: "Credentials",
       credentials: {
-        username: {
-          label: "Username",
-          placeholder: "Enter your username",
-          type: "text",
-        },
-        password: {
-          label: "Password",
-          placeholder: "Enter your password",
-          type: "password",
-        },
+        username: {},
+        password: {},
       },
       authorize: async (credentials: any): Promise<any> => {
         try {

@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSession } from "next-auth/react";
 
 const users = [
   { id: 1, name: "John Doe", email: "john@example.com", role: "Student" },
@@ -23,6 +24,8 @@ const users = [
 ];
 
 export default function UserManagement() {
+  // const { data: session } = useSession();
+  // console.log(session);
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">User Management</h1>

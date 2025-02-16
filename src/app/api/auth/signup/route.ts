@@ -13,7 +13,6 @@ export const POST = apiHandler(async (request: NextRequest) => {
   console.log(body, "body");
 
   const { username, email, password, confirmPassword, phone } = body;
-  console.log("start");
 
   // Check if passwords match
   if (password !== confirmPassword) {
@@ -81,9 +80,14 @@ export const POST = apiHandler(async (request: NextRequest) => {
     throw new ErrorHandler(emailResponse.message, 500);
   }
 
+  const userId = await prisma.user.findUnique({
+    where: { email },
+  });
+
   return NextResponse.json(
     {
       status: true,
+      data: userId?.id,
       message: "User Registered Successfully ,Please Verify Your Email",
     },
     {

@@ -70,20 +70,7 @@ export default function Home() {
         {/* <ResizablePanel>Two</ResizablePanel> */}
       </ResizablePanelGroup>
 
-      {/* <div className="youtube w-full flex justify-center my-5">
-        <iframe
-          width="860"
-          height="515"
-          src="https://www.youtube.com/embed/GcileX82Zos?si=qtniod03DEBg3Cy1"
-          title="YouTube video player"
-          className="rounded-xl"
-          //@ts-ignore
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerpolicy="strict-origin-when-cross-origin"
-          allowfullscreen
-        ></iframe>
-      </div> */}
+    
     </div>
   );
 }

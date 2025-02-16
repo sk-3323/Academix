@@ -65,11 +65,12 @@ const page = () => {
     try {
       let api = new APIClient();
       let data: any = await api.create("/auth/signup", values);
-      console.log(data, "datata");
+      let id = data.data;
+      console.log(id);
 
       if (data.status) {
         toast.success(data.message);
-        router.push("/account/verify-otp");
+        router.push(`/account/verify-otp?uid=${id}`);
       }
     } catch (error: any) {
       console.error(error);

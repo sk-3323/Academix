@@ -33,6 +33,18 @@ const page = () => {
   }, [searchParams]);
 
   console.log(email);
+
+  const handleResendOtp = async () => {
+    const res: any = await api.update("/auth/verify-otp", {
+      id: email,
+    });
+    if (res.status) {
+      toast.success("Verification code has been resent.");
+    } else {
+      toast.error(res.message);
+    }
+  };
+
   const onSubmit = async (otp: string) => {
     setIsVerifying(true);
 
@@ -82,7 +94,11 @@ const page = () => {
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
             Didn't receive the code?{" "}
-            <Button variant="link" className="p-0 h-auto">
+            <Button
+              variant="link"
+              className="p-0 h-auto"
+              onClick={handleResendOtp}
+            >
               Resend OTP
             </Button>
           </p>

@@ -25,7 +25,6 @@ export const ResourceBar = ({
               <p className="line-clamp-1">{res?.title}</p>
             </a>
           ))}
-          ;
         </>
       )}
       {isLocked && (

@@ -53,6 +53,20 @@ export const AddEnrollmentApi = createAsyncThunk(
   }
 );
 
+// %%%%%%%%%% CHECKOUT COURSE API %%%%%%%%%%%%
+export const CheckoutCourseApi = createAsyncThunk(
+  "CheckoutCourseApi",
+  async ({ id }: { id: string }) => {
+    try {
+      const response = await api.create(`/course/${id}`);
+      return response;
+    } catch (error) {
+      console.error("error", error);
+      return error;
+    }
+  }
+);
+
 // %%%%%%%%%% EDIT ENROLLMENT API %%%%%%%%%%%%
 export const EditEnrollmentApi = createAsyncThunk(
   "EditEnrollmentApi",
@@ -121,6 +135,22 @@ const EnrollmentSlice = createSlice({
         state.message = action.payload.message;
       })
       .addCase(AddEnrollmentApi.rejected, (state, action: any) => {
+        state.loading = false;
+        state.status = action.payload.status;
+        state.message = action.payload.message;
+      })
+
+      //%%%%%%%%%% CHECKOUT COURSE API HANDLE %%%%%%%%%%%%%%%%%%%%
+      .addCase(CheckoutCourseApi.pending, (state, action: any) => {
+        state.loading = true;
+      })
+      .addCase(CheckoutCourseApi.fulfilled, (state, action: any) => {
+        state.loading = false;
+        state.status = action.payload.status;
+        state.message = action.payload.message;
+        state.singleData = action.payload?.result ? action.payload?.result : {};
+      })
+      .addCase(CheckoutCourseApi.rejected, (state, action: any) => {
         state.loading = false;
         state.status = action.payload.status;
         state.message = action.payload.message;

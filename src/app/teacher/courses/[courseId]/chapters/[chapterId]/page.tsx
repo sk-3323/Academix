@@ -126,7 +126,7 @@ const page = ({
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={File} />
-                <h2 className="text-xl">Resources</h2>
+                <h2 className="text-xl">Resources & Attachments</h2>
               </div>
               <ResourceForm
                 initialData={{ resources: singleData?.resources }}

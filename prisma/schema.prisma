@@ -74,8 +74,12 @@ model Category {
 
 // Explicit relation model for User-Course enrollment
 model Enrollment {
-  id     String           @id @default(auto()) @map("_id") @db.ObjectId
-  status EnrollmentStatus @default(ACTIVE)
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  status         EnrollmentStatus @default(PENDING)
+  orderId        String?
+  price          Float?           @default(0)
+  receipt        String?
+  payment_status PaymentStatus?    @default(PENDING)
 
   // Relations
   userId   String @db.ObjectId
@@ -88,15 +92,6 @@ model Enrollment {
 
   @@unique([userId, courseId])
   @@index([courseId])
-}
-
-model StripeCustomer {
-  id               String @id @default(auto()) @map("_id") @db.ObjectId
-  userId           String @unique
-  stripeCustomerId String @unique
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model Chapter {
@@ -316,7 +311,13 @@ enum BlogStatus {
 }
 
 enum EnrollmentStatus {
+  PENDING
   ACTIVE
   COMPLETED
   DROPPED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
 }

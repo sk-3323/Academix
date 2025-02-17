@@ -46,24 +46,8 @@ const VideoPlayer = ({
             onCanPlay={() => setIsReady(true)}
             onEnded={() => {}}
             autoPlay
-            streamType="on-demand"
-            metadata={{
-              video_title: title,
-            }}
             playbackId={playbackId}
           />
-          <button
-            onClick={() =>
-              window.open(
-                `https://stream.mux.com/${playbackId}/video.mp4?download=true`,
-                "_blank"
-              )
-            }
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md flex items-center gap-2"
-          >
-            <DownloadIcon className="w-4 h-4" />
-            Download Video
-          </button>
         </>
       )}
     </div>

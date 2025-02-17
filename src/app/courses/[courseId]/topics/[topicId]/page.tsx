@@ -11,6 +11,8 @@ import { Separator } from "@/components/ui/separator";
 import Preview from "@/components/preview";
 import { File } from "lucide-react";
 import { ResourceBar } from "../../_components/resource-bar";
+import { IconBadge } from "@/components/icon-badge";
+import Script from "next/script";
 
 const TopicIdPage = ({
   params,
@@ -97,13 +99,22 @@ const TopicIdPage = ({
           {topic?.chapter?.resources?.length && (
             <>
               <Separator />
+              <div className="flex items-center gap-x-2">
+                <IconBadge icon={File} />
+                <h2 className="text-xl">Resources & Attachments</h2>
+              </div>
+              <Separator />
               <div className="p-4">
-                <ResourceBar resources={topic?.chapter?.resources} isLocked={isLocked} />
+                <ResourceBar
+                  resources={topic?.chapter?.resources}
+                  isLocked={isLocked}
+                />
               </div>
             </>
           )}
         </div>
       </div>
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
     </>
   );
 };

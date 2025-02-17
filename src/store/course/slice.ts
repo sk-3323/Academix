@@ -56,7 +56,7 @@ export const GetSingleCourseApi = createAsyncThunk(
     searchParams = {},
   }: {
     id: string;
-    searchParams: Record<string, any>;
+    searchParams?: Record<string, any>;
   }) => {
     try {
       const response = await api.get(`${URL_COURSE}/${id}`, searchParams);

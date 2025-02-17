@@ -10,11 +10,13 @@ import { cn } from "@/lib/utils";
 import { Enrollment, Topic, UserProgress } from "@prisma/client";
 import { CheckCircle, Lock, PlayCircle } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { useMemo } from "react";
 
 interface CourseSideBarItemProps {
   id: string;
   label: string;
   courseId: string;
+  activeChapter: string;
   progressCount: number;
   enrollment: Enrollment[];
   topics: (Topic & {
@@ -26,6 +28,7 @@ const CourseSideBarItem = ({
   id,
   label,
   courseId,
+  activeChapter,
   progressCount,
   enrollment,
   topics,
@@ -33,59 +36,55 @@ const CourseSideBarItem = ({
   let pathname = usePathname();
   let router = useRouter();
 
-  let isActive = pathname?.includes(id);
-
-  const onClick = () => {
-    router.push(`/courses/${courseId}/chapters/${id}`);
+  const onClick = (id: string) => {
+    router.push(`/courses/${courseId}/topics/${id}`);
   };
 
   return (
     <AccordionItem value={id}>
-      <AccordionTrigger>{label}</AccordionTrigger>
+      <AccordionTrigger
+        className={cn("px-2", activeChapter === id && "font-semibold")}
+      >
+        {label}
+      </AccordionTrigger>
       {topics?.map((topic) => {
+        let isCompleted = !!topic?.userProgress?.[0]?.isCompleted;
         let Icon =
-          !topic?.isFree && !enrollment
+          !topic?.isFree && enrollment?.length === 0
             ? Lock
-            : !!topic?.userProgress?.[0]?.isCompleted
+            : isCompleted
               ? CheckCircle
               : PlayCircle;
+
+        let isActive = pathname?.includes(topic?.id);
+
         return (
           <>
             <AccordionContent className="p-0 pb-1">
               <button
-                onClick={onClick}
+                onClick={() => onClick(topic?.id)}
                 type="button"
                 className={cn(
-                  "flex items-center gap-x-2 text-slate-500 text-sm font-[500] pl-2 transition-all hover:text-slate-600 hover:bg-slate-300/20 w-full",
+                  "flex items-center gap-x-2 text-sm font-[500] pl-2 transition-all hover:bg-slate-600/20 dark:hover:bg-slate-300/20 w-full",
                   isActive &&
-                    "text-slate-700 bg-slate-200/20 hover:bg-slate-200/20 hover:text-slate-700",
-                  !!topic?.userProgress?.[0]?.isCompleted &&
-                    "text-emerald-700 hover:text-emerald-700",
+                    " dark:bg-slate-200/20 border-r-4 bg-slate-600/20 dark:hover:bg-slate-200/20 dark:border-slate-300 border-slate-700",
+                  isCompleted && "text-emerald-700 hover:text-emerald-700",
                   isActive &&
-                    !!topic?.userProgress?.[0]?.isCompleted &&
-                    "bg-emerald-200/20"
+                    isCompleted &&
+                    "bg-emerald-200/20 border-2 border-emerald-700"
                 )}
               >
                 <div className="flex items-center gap-x-2 py-2">
                   <Icon
                     size={22}
                     className={cn(
-                      "text-slate-500",
-                      isActive && "text-slate-700",
+                      "",
                       !!topic?.userProgress?.[0]?.isCompleted &&
                         "text-emerald-700"
                     )}
                   />
                   {topic?.title}
                 </div>
-                <div
-                  className={cn(
-                    "ml-auto opacity-0 border-2 border-slate-700 h-full transition-all",
-                    isActive && "opacity-100",
-                    !!topic?.userProgress?.[0]?.isCompleted &&
-                      "border-emerald-700"
-                  )}
-                ></div>
               </button>
             </AccordionContent>
           </>

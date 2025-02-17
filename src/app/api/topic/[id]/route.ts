@@ -107,12 +107,15 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
         });
 
         if (muxDataFound) {
-          await videoAsset.assets.delete(muxDataFound?.assetId);
           await tx.muxData.delete({
             where: {
               id: muxDataFound?.id,
             },
           });
+          // THIS STEP WILL BE HERE IF MUX DATA API PREMIUM IS PURCHASED BECAUSE
+          // IT AUTOMATICALLY REMOVED VIDEOS IN 24 HOURS
+
+          // await videoAsset.assets.delete(muxDataFound?.assetId);
         }
 
         const asset = await createVideoAsset(updatedTopic?.video);
@@ -178,7 +181,9 @@ export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
     }
 
     if (topicFound?.video && topicFound?.muxData?.assetId) {
-      videoAsset.assets.delete(topicFound?.muxData?.assetId);
+      // THIS STEP WILL BE HERE IF MUX DATA API PREMIUM IS PURCHASED BECAUSE
+      // IT AUTOMATICALLY REMOVED VIDEOS IN 24 HOURS
+      // videoAsset.assets.delete(topicFound?.muxData?.assetId);
       await tx.muxData.delete({
         where: {
           id: topicFound?.muxData?.id,

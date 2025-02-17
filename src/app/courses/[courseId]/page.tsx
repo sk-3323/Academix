@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { GetSingleCourseWithProgressApi } from "@/store/course/slice";
 import { AppDispatch } from "@/store/store";
 import { redirect } from "next/navigation";
@@ -17,9 +17,11 @@ const courseIdPage = ({ params }: { params: { courseId: string } }) => {
     );
   }, [params?.courseId]);
 
-  return redirect(
-    `/courses/${params?.courseId}/topics/${singleData?.chapters?.[0]?.topics?.[0]?.id}`
-  );
+  if (singleData?.chapters?.[0]?.topics?.[0]?.id) {
+    return redirect(
+      `/courses/${params?.courseId}/topics/${singleData?.chapters?.[0]?.topics?.[0]?.id}`
+    );
+  }
 };
 
 export default courseIdPage;

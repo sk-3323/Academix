@@ -2,70 +2,61 @@ import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { decryptToken } from "@/lib/jwtGenerator";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { getProgress } from "../../../../../with-progress/route";
+import { getProgress } from "../../../with-progress/route";
 
-export const POST = apiHandler(async (request: NextRequest, content: any) => {
+export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let course_id = content?.params?.id;
-  let chapter_id = content?.params?.chapterId;
   let topic_id = content?.params?.topicId;
   if (!course_id) {
     throw new ErrorHandler("Not found", 400);
   }
 
   let token: any = request.headers.get("x-user-token");
-  let { id: userId, ...session } = await decryptToken(token);
+  let { id: userId } = await decryptToken(token);
 
   let result = await prisma.$transaction(async (tx) => {
-    let course: any = await tx.course.findFirst({
+    let topic: any = await tx.topic.findFirst({
       where: {
-        id: course_id,
-      },
-      orderBy: {
-        id: "desc",
+        id: topic_id,
       },
       include: {
-        instructor: true,
-        category: true,
-        chapters: {
-          where: {
-            id: chapter_id,
-            status: "PUBLISHED",
-          },
+        chapter: {
           include: {
-            resources: true,
-            topics: {
-              where: {
-                id: topic_id,
-                status: "PUBLISHED",
-              },
+            course: {
               include: {
-                muxData: true,
-                userProgress: {
+                enrollments: {
                   where: {
                     userId: userId,
                   },
                 },
               },
-              orderBy: {
-                order: "asc",
-              },
             },
-          },
-          orderBy: {
-            order: "asc",
+            resources: true,
           },
         },
-        certificates: true,
+        muxData: true,
+        userProgress: {
+          where: {
+            userId: userId,
+          },
+        },
+      },
+      orderBy: {
+        order: "asc",
       },
     });
+
+    if (!topic) {
+      throw new ErrorHandler("Topic not found", 404);
+    }
 
     let nextTopic: any = await tx.topic.findFirst({
       where: {
         status: "PUBLISHED",
         order: {
-          gt: course?.chapters?.[0]?.topics?.[0]?.order,
+          gt: topic?.order,
         },
-        chapterId: chapter_id,
+        chapterId: topic?.chapter?.id,
       },
     });
 
@@ -74,7 +65,7 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
         where: {
           status: "PUBLISHED",
           order: {
-            gt: course?.chapters?.[0]?.order,
+            gt: topic?.chapter?.order,
           },
           courseId: course_id,
         },
@@ -88,13 +79,13 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
         },
       });
 
-      nextTopic = nextChapter?.topics;
+      nextTopic = nextChapter?.topics?.[0];
     }
 
-    let progressCount = await getProgress(userId, course?.id!);
-    course.progressCount = progressCount;
-    course.nextTopic = nextTopic;
-    return course;
+    let progressCount = await getProgress(userId, course_id!);
+    topic.progressCount = progressCount;
+    topic.nextTopic = nextTopic;
+    return topic;
   });
 
   if (!result) {

@@ -21,7 +21,6 @@ interface CourseSidebarProps {
 const CourseNavbar = ({ course, isMobile }: CourseSidebarProps) => {
   const { setTheme, theme } = useTheme();
   const pathname = usePathname();
-  const isSearchPage = pathname === "/search";
 
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {

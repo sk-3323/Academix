@@ -42,12 +42,12 @@ const courseIdLayout = ({
       <div className="flex flex-col flex-1">
         <SidebarInset>
           <HeroHighlight>
-            <div className="flex justify-between items-center p-4 border-b w-full">
+            <header className="flex justify-between items-center p-4 border-b w-full">
               <CourseNavbar course={singleData} isMobile={isMobile} />
-            </div>
-            <div className="flex-1 p-4 overflow-x-hidden w-full">
+            </header>
+            <main className="flex-1 p-4 overflow-x-hidden w-full">
               {children}
-            </div>
+            </main>
           </HeroHighlight>
         </SidebarInset>
       </div>

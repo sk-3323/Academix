@@ -66,7 +66,7 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
   }
 
   let token: any = request.headers.get("x-user-token");
-  let { id: userId, ...session } = await decryptToken(token);
+  let { id: userId } = await decryptToken(token);
 
   let result = await prisma.$transaction(async (tx) => {
     let course: any = await tx.course.findFirst({
@@ -111,8 +111,8 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
     });
 
     let progressCount = await getProgress(userId, course?.id!);
-    course.progressCount = progressCount;
-    return course;
+
+    return { ...course, progressCount };
   });
 
   if (!result) {

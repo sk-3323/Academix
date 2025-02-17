@@ -134,15 +134,15 @@ export const HeroHighlight = ({
         containerClassName
       )}
       onMouseMove={handleMouseMove}
-      style={{
-        height: "auto", // Let the height adapt to the content
-      }}
+      // style={{
+      //   height: "auto", // Let the height adapt to the content
+      // }}
     >
       <div
-        className={`absolute inset-0 ${path.startsWith("/admin") || path.startsWith("/teacher") ? "" : "bg-dot-thick-neutral-300 dark:bg-dot-thick-neutral-800"} pointer-events-none`}
+        className={`absolute inset-0 bg-dot-thick-neutral-300 dark:bg-dot-thick-neutral-800 pointer-events-none`}
       />
       <motion.div
-        className={`pointer-events-none ${path.startsWith("/admin") || path.startsWith("/teacher") ? "" : "bg-dot-thick-indigo-500 dark:bg-dot-thick-indigo-500"} absolute inset-0 opacity-0 transition duration-300 group-hover:opacity-100`}
+        className={`pointer-events-none bg-dot-thick-indigo-500 dark:bg-dot-thick-indigo-500 absolute inset-0 opacity-0 transition duration-300 group-hover:opacity-100`}
         style={{
           WebkitMaskImage: useMotionTemplate`
             radial-gradient(

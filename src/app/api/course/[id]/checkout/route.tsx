@@ -1,37 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import Razorpay from "razorpay";
 import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { prisma } from "@/lib/prisma";
-import { validateData } from "@/lib/fileHandler";
-import createCategorySchema from "@/schema/category/schema";
-import { razorpay } from "@/lib/razorpay";
+import { createRazorpayOrder, razorpay } from "@/lib/razorpay";
 import { decryptToken } from "@/lib/jwtGenerator";
-
-// export const GET = apiHandler(async (request: NextRequest, content: any) => {
-//   let result = await prisma.$transaction(async (tx) => {
-//     return await tx.category.findMany({
-//       orderBy: {
-//         id: "desc",
-//       },
-//       include: {
-//         course: true,
-//       },
-//     });
-//   });
-
-//   if (result?.length === 0) {
-//     throw new ErrorHandler("No data found", 404);
-//   }
-
-//   return NextResponse.json(
-//     {
-//       status: true,
-//       message: "categories fetched successfully",
-//       result,
-//     },
-//     { status: 200 }
-//   );
-// });
 
 export const POST = apiHandler(async (request: NextRequest, content: any) => {
   let course_id = content?.params?.id;
@@ -57,7 +28,7 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
       throw new ErrorHandler("Course Not found", 400);
     }
 
-    let enrollment = await tx.enrollment.findUnique({
+    let enrollmentFound = await tx.enrollment.findUnique({
       where: {
         userId_courseId: {
           courseId: course_id,
@@ -66,10 +37,6 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
       },
     });
 
-    if (enrollment) {
-      throw new ErrorHandler("Course is already purchased", 400);
-    }
-
     let data: any = {
       status: "ACTIVE",
       payment_status: "PAID",
@@ -77,41 +44,76 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
       userId: userId,
     };
 
-    if (!course?.isFree) {
-      course.price = course?.price || 0;
-      let receipt = `receipt_${Math.random().toString(36).substring(7)}_${Date.now()}`;
-      const order = await razorpay.orders.create({
-        amount: course?.price * 100,
-        currency: "INR",
-        customer_id: userId,
-        notes: {
-          course_id: course?.id,
-          course_name: course?.title,
-          course_price: course?.price,
-          instructor_id: course?.instructor?.id,
-          instructor_name: course?.instructor?.username,
+    if (enrollmentFound) {
+      if (
+        ["PENDING", "DROPPED"].includes(enrollmentFound?.status) ||
+        enrollmentFound?.payment_status === "PENDING"
+      ) {
+        if (!course?.isFree) {
+          course.price = course?.price || 0;
+          const { id, receipt } = await createRazorpayOrder(
+            course,
+            userId,
+            session,
+            "course_purchase"
+          );
 
-          customer_id: userId,
-          customer_name: session?.username,
-          customer_email: session?.email,
-          customer_contact: session?.phone,
+          data.orderId = id;
+          data.price = course.price;
+          data.receipt = receipt;
+          data.status = "PENDING";
+          data.payment_status = "PENDING";
+        }
 
-          type: "course_purchase",
-          receipt: receipt,
-        },
-        receipt: receipt,
-      });
+        let enrollment: any = await tx.enrollment.update({
+          data: data,
+          where: {
+            id: enrollmentFound?.id,
+          },
+        });
 
-      data.orderId = order?.id;
-      data.price = course.price;
-      data.receipt = order?.receipt;
-      data.status = "PENDING";
-      data.payment_status = "PENDING";
+        return { ...enrollment, isFree: course?.isFree };
+      } else {
+        throw new ErrorHandler("Course is already purchased", 400);
+      }
     }
 
-    return await tx.enrollment.create({
+    if (!course?.isFree) {
+      course.price = course?.price || 0;
+      try {
+        const { id, receipt } = await createRazorpayOrder(
+          course,
+          userId,
+          session,
+          "course_purchase"
+        );
+
+        data.orderId = id;
+        data.price = course.price;
+        data.receipt = receipt;
+        data.status = "PENDING";
+        data.payment_status = "PENDING";
+      } catch (error: any) {
+        console.error("Razorpay order creation failed:", error);
+        throw new ErrorHandler(
+          error.error?.description || "Payment initialization failed",
+          error.statusCode || 500
+        );
+      }
+    }
+
+    let enrollment: any = await tx.enrollment.create({
       data: data,
+      include: {
+        course: {
+          select: {
+            title: true,
+          },
+        },
+      },
     });
+
+    return { ...enrollment, isFree: course?.isFree };
   });
 
   // let result = await prisma.$transaction(async (tx) => {
@@ -122,7 +124,9 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
   return NextResponse.json(
     {
       status: true,
-      message: "enrollment created successfully",
+      message: result?.isFree
+        ? "Enrollment successful."
+        : "Enrollment in process.",
       result,
     },
     { status: 201 }

@@ -74,12 +74,15 @@ model Category {
 
 // Explicit relation model for User-Course enrollment
 model Enrollment {
-  id             String           @id @default(auto()) @map("_id") @db.ObjectId
-  status         EnrollmentStatus @default(PENDING)
-  orderId        String?
-  price          Float?           @default(0)
-  receipt        String?
-  payment_status PaymentStatus?    @default(PENDING)
+  id                  String           @id @default(auto()) @map("_id") @db.ObjectId
+  status              EnrollmentStatus @default(PENDING)
+  orderId             String?
+  price               Float?           @default(0)
+  receipt             String?
+  razorpay_payment_id String?
+  razorpay_order_id   String?
+  razorpay_signature  String?
+  payment_status      PaymentStatus?   @default(PENDING)
 
   // Relations
   userId   String @db.ObjectId

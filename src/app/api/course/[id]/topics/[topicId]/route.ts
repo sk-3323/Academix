@@ -14,6 +14,8 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let token: any = request.headers.get("x-user-token");
   let { id: userId } = await decryptToken(token);
 
+  console.log("userId", userId);
+
   let result = await prisma.$transaction(async (tx) => {
     let topic: any = await tx.topic.findFirst({
       where: {
@@ -27,6 +29,10 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
                 enrollments: {
                   where: {
                     userId: userId,
+                    status: {
+                      not: "DROPPED",
+                    },
+                    payment_status: "PAID",
                   },
                 },
               },

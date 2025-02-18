@@ -4,18 +4,21 @@ import { Button } from "@/components/ui/button";
 import { useDynamicToast } from "@/hooks/DynamicToastHook";
 import { formatPrice } from "@/lib/format";
 import {
+  ApproveCoursePaymentApi,
   CheckoutCourseApi,
   clearEnrollmentState,
 } from "@/store/enrollment/slice";
 import { AppDispatch } from "@/store/store";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 interface CourseEnrollButtonProps {
   courseId: string;
   price: number;
+  setActions: any;
 }
 
 declare global {
@@ -27,6 +30,7 @@ declare global {
 export const CourseEnrollButton = ({
   courseId,
   price,
+  setActions,
 }: CourseEnrollButtonProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const { singleData: enrollment } = useSelector(
@@ -34,21 +38,46 @@ export const CourseEnrollButton = ({
   );
 
   const { data: session } = useSession();
+  const router = useRouter();
 
   const [isProcessing, setIsProcessing] = useState(false);
+  const [shouldInitiatePayment, setShouldInitiatePayment] = useState(false);
 
-  const handleSucess = async () => {
+  const handlePaymentInitiation = async () => {
     try {
-      setIsProcessing(true);
       let options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: price * 100,
         currency: "INR",
-        name: "Academix-E Learning",
+        name: "Academix E-Learning",
         description: "Test purchase of the course",
         order_id: enrollment?.orderId,
-        handler: function (request: any) {
-          console.log("Payment successfull");
+        notes: {
+          course_name: enrollment?.course?.title,
+          course_id: courseId,
+          description: `Enrolling in ${enrollment?.course?.title}`,
+          user_email: session?.user?.email,
+          user_name: session?.user?.username,
+        },
+        handler: async function (response: any) {
+          setActions((current: any) => {
+            return {
+              ...current,
+              callbackFunction: () => {
+                window.location.reload();
+              },
+            };
+          });
+
+          await dispatch(
+            ApproveCoursePaymentApi({
+              courseId: courseId,
+              enroll_id: enrollment?.id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+            })
+          );
         },
         prefill: {
           name: session?.user?.username,
@@ -62,23 +91,30 @@ export const CourseEnrollButton = ({
 
       const rzp1 = new window.Razorpay(options);
       rzp1.open();
-      console.log("aave");
     } catch (error) {
       console.error(error);
-      throw error;
-    } finally {
       setIsProcessing(false);
+      throw error;
     }
   };
 
-  useDynamicToast("EnrollmentStore", {
-    clearState: clearEnrollmentState,
-    callbackFunction: handleSucess,
-  });
+  // Watch for enrollment data changes and initiate payment when ready
+  useEffect(() => {
+    if (shouldInitiatePayment && enrollment?.orderId) {
+      handlePaymentInitiation();
+      setShouldInitiatePayment(false);
+    }
+  }, [enrollment, shouldInitiatePayment]);
 
   const handleCheckout = async () => {
     try {
       setIsProcessing(true);
+      setShouldInitiatePayment(true);
+
+      setActions((current: any) => {
+        return { ...current, callbackFunction: () => {} };
+      });
+
       await dispatch(
         CheckoutCourseApi({
           id: courseId,
@@ -86,9 +122,9 @@ export const CourseEnrollButton = ({
       );
     } catch (error) {
       console.error(error);
-      throw error;
-    } finally {
       setIsProcessing(false);
+      setShouldInitiatePayment(false);
+      throw error;
     }
   };
 

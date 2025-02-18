@@ -44,6 +44,10 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
         enrollments: {
           where: {
             userId: data?.userId,
+            status: {
+              not: "DROPPED",
+            },
+            payment_status: "PAID",
           },
         },
       },

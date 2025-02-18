@@ -58,7 +58,36 @@ export const CheckoutCourseApi = createAsyncThunk(
   "CheckoutCourseApi",
   async ({ id }: { id: string }) => {
     try {
-      const response = await api.create(`/course/${id}`);
+      const response = await api.create(`/course/${id}/checkout`);
+      return response;
+    } catch (error) {
+      console.error("error", error);
+      return error;
+    }
+  }
+);
+
+// %%%%%%%%%% CHECKOUT COURSE API %%%%%%%%%%%%
+export const ApproveCoursePaymentApi = createAsyncThunk(
+  "ApproveCoursePaymentApi",
+  async ({
+    courseId,
+    enroll_id,
+    razorpay_payment_id,
+    razorpay_order_id,
+    razorpay_signature,
+  }: {
+    courseId: string;
+    enroll_id: string;
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+  }) => {
+    try {
+      const response = await api.update(
+        `/course/${courseId}/approve-payment/${enroll_id}`,
+        { razorpay_payment_id, razorpay_order_id, razorpay_signature }
+      );
       return response;
     } catch (error) {
       console.error("error", error);
@@ -151,6 +180,22 @@ const EnrollmentSlice = createSlice({
         state.singleData = action.payload?.result ? action.payload?.result : {};
       })
       .addCase(CheckoutCourseApi.rejected, (state, action: any) => {
+        state.loading = false;
+        state.status = action.payload.status;
+        state.message = action.payload.message;
+      })
+
+      //%%%%%%%%%% APPROVE COURSE PAYMENT API HANDLE %%%%%%%%%%%%%%%%%%%%
+      .addCase(ApproveCoursePaymentApi.pending, (state, action: any) => {
+        state.loading = true;
+      })
+      .addCase(ApproveCoursePaymentApi.fulfilled, (state, action: any) => {
+        state.loading = false;
+        state.status = action.payload.status;
+        state.message = action.payload.message;
+        state.singleData = action.payload?.result ? action.payload?.result : {};
+      })
+      .addCase(ApproveCoursePaymentApi.rejected, (state, action: any) => {
         state.loading = false;
         state.status = action.payload.status;
         state.message = action.payload.message;

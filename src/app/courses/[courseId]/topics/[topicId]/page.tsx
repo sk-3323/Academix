@@ -13,6 +13,9 @@ import { File } from "lucide-react";
 import { ResourceBar } from "../../_components/resource-bar";
 import { IconBadge } from "@/components/icon-badge";
 import Script from "next/script";
+import { useDynamicToast } from "@/hooks/DynamicToastHook";
+import { clearEnrollmentState } from "@/store/enrollment/slice";
+import { usePathname } from "next/navigation";
 
 const TopicIdPage = ({
   params,
@@ -57,6 +60,14 @@ const TopicIdPage = ({
     setIsCompleteOnEnd(flag);
   }, [topic?.userProgress, topic?.chapter?.course?.enrollments]);
 
+  const [enrollmentActions, setEnrollmentActions] = useState({
+    clearState: clearEnrollmentState,
+    callbackFunction: () => {},
+  });
+  let pathname = usePathname();
+  
+  useDynamicToast("EnrollmentStore", enrollmentActions, pathname);
+
   return (
     <>
       {topic?.userProgress?.[0]?.isCompleted && (
@@ -89,6 +100,7 @@ const TopicIdPage = ({
               <CourseEnrollButton
                 courseId={params?.courseId}
                 price={topic?.chapter?.course?.price}
+                setActions={setEnrollmentActions}
               />
             )}
           </div>

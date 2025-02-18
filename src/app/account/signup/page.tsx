@@ -89,7 +89,7 @@ const page = () => {
               href="/account/login"
               className="tracking-tighter text-[#0085FF] ms-1"
             >
-              SignIn
+              Sign In
             </a>
           </span>
         </CardHeader>

@@ -56,7 +56,7 @@ const page = () => {
     if (result?.error) {
       toast.error(result?.error);
     } else if (result?.ok) {
-      toast.success("Login successfull");
+      toast.success("Login successful");
     }
   }
   return (

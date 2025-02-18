@@ -19,6 +19,7 @@ import {
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { CourseProgress } from "../../../../components/Course/course-progress";
 
 interface CourseSidebarProps {
   course: Course & { progressCount: number } & {
@@ -47,6 +48,8 @@ const CourseSidebar = ({
           searchParams: {
             courseId: course?.id,
             userId: session?.user?.id,
+            payment_status: "PAID",
+            not_status: "DROPPED",
           },
         })
       );
@@ -64,6 +67,15 @@ const CourseSidebar = ({
       >
         <SidebarHeader className="p-5">
           <h1 className="font-semibold">{course?.title}</h1>
+          {data?.length !== 0 && !isNaN(course?.progressCount) && (
+            <div className="mt-1">
+              <CourseProgress
+                size="sm"
+                variant={course?.progressCount === 100 ? "success" : "default"}
+                value={course?.progressCount}
+              />
+            </div>
+          )}
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>

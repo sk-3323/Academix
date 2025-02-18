@@ -77,6 +77,15 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
         id: "desc",
       },
       include: {
+        enrollments: {
+          where: {
+            userId: userId,
+            status: {
+              not: "DROPPED",
+            },
+            payment_status: "PAID",
+          },
+        },
         instructor: true,
         category: true,
         chapters: {

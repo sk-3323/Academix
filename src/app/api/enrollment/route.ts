@@ -13,9 +13,18 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let conditions: any = {};
 
   const courseId = searchParams.get("courseId");
-
   if (courseId && userId) {
     conditions.userId_courseId = { courseId: courseId, userId: userId };
+  }
+
+  const payment_status = searchParams.get("payment_status");
+  if (payment_status) {
+    conditions.payment_status = payment_status;
+  }
+
+  const not_status = searchParams.get("not_status");
+  if (not_status) {
+    conditions.status = { not: not_status };
   }
 
   let result = await prisma.$transaction(async (tx) => {

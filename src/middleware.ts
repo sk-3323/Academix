@@ -7,6 +7,11 @@ export { default } from "next-auth/middleware";
 // This function can be marked `async` if using `await` inside
 export const middleware = apiHandler(async (request: NextRequest) => {
   let path = request.nextUrl.pathname;
+
+  if (path === "/") {
+    return NextResponse.next();
+  }
+
   const isApiRoute = path.startsWith("/api/");
   const isAuthRoute = path.startsWith("/api/auth/");
   const isAccountRoute = path.startsWith("/account/");

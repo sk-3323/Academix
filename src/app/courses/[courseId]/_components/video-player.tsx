@@ -1,8 +1,14 @@
 "use client";
 import { cn } from "@/lib/utils";
+import { GetSingleCourseWithProgressApi } from "@/store/course/slice";
+import { AppDispatch } from "@/store/store";
+import { AddUserProgressApi } from "@/store/user-progress/slice";
 import MuxPlayer from "@mux/mux-player-react";
 import { DownloadIcon, Loader2, Lock } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 
 interface VideoPlayerProps {
   topicId: string;
@@ -12,6 +18,8 @@ interface VideoPlayerProps {
   title: string;
   isLocked: boolean;
   isCompleteOnEnd: boolean;
+  setActions: any;
+  startConfetti: any;
 }
 
 const VideoPlayer = ({
@@ -22,8 +30,57 @@ const VideoPlayer = ({
   title,
   isLocked,
   isCompleteOnEnd,
+  setActions,
+  startConfetti,
 }: VideoPlayerProps) => {
   const [isReady, setIsReady] = useState(false);
+  const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handleSuccess = async () => {
+    try {
+      dispatch(
+        GetSingleCourseWithProgressApi({
+          id: courseId,
+        })
+      );
+
+      if (!nextTopicId) {
+        startConfetti();
+      }
+
+      if (nextTopicId) {
+        router.push(`/courses/${courseId}/topics/${nextTopicId}`);
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.message);
+      throw error;
+    }
+  };
+
+  const onEnd = async () => {
+    try {
+      setActions((current: any) => {
+        return { ...current, callbackFunction: handleSuccess };
+      });
+      if (isCompleteOnEnd) {
+        await dispatch(
+          AddUserProgressApi({
+            values: {
+              isCompleted: true,
+              topicId: topicId,
+            },
+            requiredFields: ["isCompleted", "topicId"],
+          })
+        );
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.message);
+      throw error;
+    }
+  };
 
   return (
     <div className="relative aspect-video">
@@ -44,7 +101,7 @@ const VideoPlayer = ({
             title={title}
             className={cn(!isReady && "hidden")}
             onCanPlay={() => setIsReady(true)}
-            onEnded={() => {}}
+            onEnded={onEnd}
             autoPlay
             playbackId={playbackId}
           />

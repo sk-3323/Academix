@@ -1,7 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { GetSingleCourseWithProgressApi } from "@/store/course/slice";
 import { AppDispatch } from "@/store/store";
+import { GetPublishedTopicWithProgressApi } from "@/store/topic/slice";
 import { AddUserProgressApi } from "@/store/user-progress/slice";
 import { CheckCircle, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -15,6 +17,7 @@ interface CourseProgressButtonProps {
   setActions: any;
   nextTopicId?: string;
   isCompleted?: boolean;
+  startConfetti: any;
 }
 
 const CourseProgressButton = ({
@@ -23,6 +26,7 @@ const CourseProgressButton = ({
   nextTopicId,
   isCompleted,
   setActions,
+  startConfetti,
 }: CourseProgressButtonProps) => {
   const Icon = isCompleted ? XCircle : CheckCircle;
   const router = useRouter();
@@ -30,12 +34,32 @@ const CourseProgressButton = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSuccess = async () => {
-    if (!isCompleted && !nextTopicId) {
-      //confetti
-    }
+    try {
+      dispatch(
+        GetSingleCourseWithProgressApi({
+          id: courseId,
+        })
+      );
 
-    if (!isCompleted && nextTopicId) {
-      router.push(`/courses/${courseId}/topics/${nextTopicId}`);
+      if (!isCompleted && !nextTopicId) {
+        startConfetti();
+      }
+
+      if (!isCompleted && nextTopicId) {
+        router.push(`/courses/${courseId}/topics/${nextTopicId}`);
+      } else {
+        console.log("Aaveaavdas");
+        dispatch(
+          GetPublishedTopicWithProgressApi({
+            courseId: courseId,
+            topicId: topicId,
+          })
+        );
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.message);
+      throw error;
     }
   };
 
@@ -52,16 +76,16 @@ const CourseProgressButton = ({
           values: {
             isCompleted: !isCompleted,
             topicId: topicId,
-            courseId: courseId,
           },
-          requiredFields: ["isCompleted", "courseId", "topicId"],
+          requiredFields: ["isCompleted", "topicId"],
         })
       );
     } catch (error: any) {
       console.error(error);
       toast.error(error?.message);
-      setIsLoading(true);
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 

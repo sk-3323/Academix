@@ -18,12 +18,14 @@ import { clearEnrollmentState } from "@/store/enrollment/slice";
 import { usePathname } from "next/navigation";
 import CourseProgressButton from "../../_components/course-progress-button";
 import { clearUserProgressState } from "@/store/user-progress/slice";
+import { useConfetti } from "@/hooks/user-confetti";
 
 const TopicIdPage = ({
   params,
 }: {
   params: { courseId: string; topicId: string };
 }) => {
+  const { startConfetti, ConfettiComponent } = useConfetti();
   const dispatch = useDispatch<AppDispatch>();
   const { singleData: topic } = useSelector(
     (state: any) => state["TopicStore"]
@@ -57,7 +59,7 @@ const TopicIdPage = ({
   useEffect(() => {
     let flag =
       topic?.chapter?.course?.enrollments?.length !== 0 &&
-      topic?.userProgress?.length === 0;
+      !topic?.userProgress?.[0]?.isCompleted;
 
     setIsCompleteOnEnd(flag);
   }, [topic?.userProgress, topic?.chapter?.course?.enrollments]);
@@ -74,19 +76,19 @@ const TopicIdPage = ({
     clearState: clearUserProgressState,
     callbackFunction: () => {},
   });
-  
 
   useDynamicToast("UserProgressStore", userProgressActions);
 
   return (
     <>
+      <ConfettiComponent />
       {topic?.userProgress?.[0]?.isCompleted && (
-        <Banner variant="success" label="You already completed this chapter" />
+        <Banner variant="success" label="You already completed this topic" />
       )}
       {isLocked && (
         <Banner
           variant="warning"
-          label="You need to purchase this course to watch this chapter"
+          label="You need to purchase this course to watch this topic"
         />
       )}
       <div className="flex flex-col max-w-4xl mx-auto pb-20">
@@ -99,6 +101,8 @@ const TopicIdPage = ({
             isCompleteOnEnd={isCompleteOnEnd}
             courseId={params?.courseId}
             title={topic?.title}
+            setActions={setUserProgressActions}
+            startConfetti={startConfetti}
           />
         </div>
         <div>
@@ -109,8 +113,9 @@ const TopicIdPage = ({
                 topicId={params?.topicId}
                 courseId={params?.courseId}
                 nextTopicId={topic?.nextTopic?.id}
-                isCompleted={!!topic?.userProgress?.isCompleted}
+                isCompleted={!!topic?.userProgress?.[0]?.isCompleted}
                 setActions={setUserProgressActions}
+                startConfetti={startConfetti}
               />
             ) : (
               <CourseEnrollButton

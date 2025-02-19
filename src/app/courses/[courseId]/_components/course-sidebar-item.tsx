@@ -65,13 +65,19 @@ const CourseSideBarItem = ({
                 onClick={() => onClick(topic?.id)}
                 type="button"
                 className={cn(
-                  "flex items-center gap-x-2 text-sm font-[500] pl-2 transition-all hover:bg-slate-600/20 dark:hover:bg-slate-300/20 w-full",
+                  "flex items-center gap-x-2 text-sm font-[500] pl-2 transition-all w-full",
                   isActive &&
+                    !isCompleted &&
                     " dark:bg-slate-200/20 border-r-4 bg-slate-600/20 dark:hover:bg-slate-200/20 dark:border-slate-300 border-slate-700",
-                  isCompleted && "text-emerald-700 hover:text-emerald-700",
+                  isCompleted &&
+                    !isActive &&
+                    "text-emerald-500 bg-emerald-500/20 hover:bg-emerald-500/40",
                   isActive &&
                     isCompleted &&
-                    "bg-emerald-200/20 border-2 border-emerald-700"
+                    "text-emerald-500 bg-emerald-400/10 border-r-4 border-emerald-700",
+                  !isActive &&
+                    !isCompleted &&
+                    "hover:bg-slate-600/20 dark:hover:bg-slate-300/20"
                 )}
               >
                 <div className="flex items-center gap-x-2 py-2">
@@ -80,7 +86,7 @@ const CourseSideBarItem = ({
                     className={cn(
                       "",
                       !!topic?.userProgress?.[0]?.isCompleted &&
-                        "text-emerald-700"
+                        "text-emerald-500"
                     )}
                   />
                   {topic?.title}

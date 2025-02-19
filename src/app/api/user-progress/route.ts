@@ -61,7 +61,9 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
   return NextResponse.json(
     {
       status: true,
-      message: "user-progress created successfully",
+      message: data?.isCompleted
+        ? "Marked as complete"
+        : "Marked as incomplete",
       result,
     },
     { status: 201 }

@@ -11,6 +11,9 @@ export const createCourseSchema = z
         message: "Invalid instructor id provided",
       }),
     title: z.string().min(1, "Title is required"),
+    isFree: z
+      .union([z.string(), z.boolean()])
+      .transform((val) => val == "true"),
     description: z.string().min(1, "Description is required"),
     thumbnail: z.string(),
     categoryId: z

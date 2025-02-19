@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Course } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import {
+  ArrowDown,
+  ArrowUp,
   ArrowUpDown,
   MoreHorizontal,
   MoreVertical,
@@ -24,6 +26,7 @@ export const columns: ColumnDef<Course>[] = [
   {
     accessorKey: "title",
     header: ({ column }) => {
+      const isSorted = column.getIsSorted();
       return (
         <Button
           className="w-full flex items-center text-center"
@@ -31,14 +34,47 @@ export const columns: ColumnDef<Course>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Title
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          {isSorted === "asc" ? (
+            <ArrowUp className="ml-2 h-4 w-4" />
+          ) : isSorted === "desc" ? (
+            <ArrowDown className="ml-2 h-4 w-4" />
+          ) : (
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          )}
         </Button>
       );
     },
   },
   {
+    accessorKey: "category",
+    header: ({ column }) => {
+      const isSorted = column.getIsSorted();
+      return (
+        <Button
+          className="w-full flex items-center text-center"
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Category
+          {isSorted === "asc" ? (
+            <ArrowUp className="ml-2 h-4 w-4" />
+          ) : isSorted === "desc" ? (
+            <ArrowDown className="ml-2 h-4 w-4" />
+          ) : (
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          )}
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      let category = row.getValue("category") as { name: string };
+      return <div>{category?.name}</div>;
+    },
+  },
+  {
     accessorKey: "price",
     header: ({ column }) => {
+      const isSorted = column.getIsSorted();
       return (
         <Button
           className="w-full flex items-center text-center"
@@ -46,7 +82,13 @@ export const columns: ColumnDef<Course>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Price
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          {isSorted === "asc" ? (
+            <ArrowUp className="ml-2 h-4 w-4" />
+          ) : isSorted === "desc" ? (
+            <ArrowDown className="ml-2 h-4 w-4" />
+          ) : (
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          )}
         </Button>
       );
     },
@@ -57,8 +99,45 @@ export const columns: ColumnDef<Course>[] = [
     },
   },
   {
+    accessorKey: "isFree",
+    header: ({ column }) => {
+      const isSorted = column.getIsSorted();
+      return (
+        <Button
+          className="w-full flex items-center text-center"
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Access
+          {isSorted === "asc" ? (
+            <ArrowUp className="ml-2 h-4 w-4" />
+          ) : isSorted === "desc" ? (
+            <ArrowDown className="ml-2 h-4 w-4" />
+          ) : (
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          )}
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      let isFree: any = row.getValue("isFree") as boolean;
+      let txt = isFree ? "Free" : "Paid";
+      return (
+        <Badge
+          className={cn(
+            "bg-slate-500 dark:bg-gray-300",
+            !isFree && "bg-emerald-700 dark:bg-emerald-400"
+          )}
+        >
+          {txt}
+        </Badge>
+      );
+    },
+  },
+  {
     accessorKey: "status",
     header: ({ column }) => {
+      const isSorted = column.getIsSorted();
       return (
         <Button
           className="w-full flex items-center text-center"
@@ -66,7 +145,13 @@ export const columns: ColumnDef<Course>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Published
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          {isSorted === "asc" ? (
+            <ArrowUp className="ml-2 h-4 w-4" />
+          ) : isSorted === "desc" ? (
+            <ArrowDown className="ml-2 h-4 w-4" />
+          ) : (
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          )}
         </Button>
       );
     },
@@ -100,7 +185,7 @@ export const columns: ColumnDef<Course>[] = [
               <MoreVertical />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end"> 
+          <DropdownMenuContent align="end">
             <Link href={`/teacher/courses/${id}`}>
               <DropdownMenuItem>
                 <Pencil className="w-4 h-4 mr-2" />

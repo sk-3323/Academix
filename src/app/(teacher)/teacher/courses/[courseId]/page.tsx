@@ -3,6 +3,7 @@
 import { Banner } from "@/components/banner";
 import CategoryForm from "@/components/Course/category-form";
 import ChaptersForm from "@/components/Course/chapters-form";
+import CourseAccessForm from "@/components/Course/course-access-form";
 import { CourseActions } from "@/components/Course/course-actions";
 import DescriptionForm from "@/components/Course/description-form";
 import PriceForm from "@/components/Course/price-form";
@@ -17,6 +18,7 @@ import { AppDispatch } from "@/store/store";
 import {
   ArrowLeft,
   CircleDollarSign,
+  Eye,
   LayoutDashboard,
   ListChecks,
 } from "lucide-react";
@@ -52,7 +54,6 @@ const CourseIdPage = ({ params }: { params: { courseId: string } }) => {
     singleData?.title,
     singleData?.description,
     singleData?.thumbnail,
-    singleData?.price,
     singleData?.categoryId,
     singleData?.chapters?.some(
       (chapter: any) => chapter?.status === "PUBLISHED"
@@ -136,16 +137,30 @@ const CourseIdPage = ({ params }: { params: { courseId: string } }) => {
               />
             </div>
             <div>
-              <div className="flex items-center gap-x-2">
-                <IconBadge icon={CircleDollarSign} />
-                <h2 className="text-xl">Sell your course</h2>
+              <div className="flex items-center gap-x-2 mt-6 ">
+                <IconBadge icon={Eye} />
+                <h2 className="text-xl">Access Settings</h2>
               </div>
-              <PriceForm
-                initialData={{ price: singleData?.price }}
+
+              <CourseAccessForm
+                initialData={{ isFree: singleData?.isFree }}
                 courseId={params?.courseId}
                 setActions={setCourseActions}
               />
             </div>
+            {!singleData?.isFree && (
+              <div>
+                <div className="flex items-center gap-x-2">
+                  <IconBadge icon={CircleDollarSign} />
+                  <h2 className="text-xl">Sell your course</h2>
+                </div>
+                <PriceForm
+                  initialData={{ price: singleData?.price }}
+                  courseId={params?.courseId}
+                  setActions={setCourseActions}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

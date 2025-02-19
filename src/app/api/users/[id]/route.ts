@@ -27,7 +27,46 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
         id: "desc",
       },
       include: {
-        authoredCourses: true,
+        authoredCourses: {
+          include: {
+            category: true,
+            enrollments: {
+              include: {
+                user: true,
+              },
+            },
+            chapters: {
+              include: {
+                topics: {
+                  include: {
+                    muxData: true,
+                    userProgress: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        enrollments: {
+          include: {
+            user: true,
+          },
+        },
+        subscriptionStatus: {
+          include: {
+            plan: true,
+          },
+        },
+        certificates: {
+          include: {
+            course: true,
+          },
+        },
+        UserProgress: {
+          include: {
+            topic: true,
+          },
+        },
       },
     });
   });

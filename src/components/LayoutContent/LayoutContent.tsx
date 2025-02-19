@@ -51,19 +51,19 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
           <SidebarInset>
             <HeroHighlight>
               {!hideNavFooter && (
-                <header className="flex justify-between items-center p-4 border-b w-full">
+                <header className="flex justify-between items-center p-4 border-b w-screen">
                   <Navbar isMobile={isMobile} />
                   {isMobile && !isSidebar && <MobileMenu />}
                 </header>
               )}
-              <main className="flex-1 p-4 overflow-x-hidden w-full">
+              <main className="flex-1 p-4 overflow-x-hidden w-screen">
                 {children}
               </main>
-              {!hideNavFooter && (
-                <footer className="flex justify-center items-center p-4 w-full">
-                  <Footer />
-                </footer>
-              )}
+              {/* {!hideNavFooter && ( */}
+              <footer className="flex justify-center items-center p-4 w-screen">
+                <Footer />
+              </footer>
+              {/* )} */}
             </HeroHighlight>
           </SidebarInset>
         </div>

@@ -6,12 +6,12 @@ import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { EditCourseApi, GetSingleCourseApi } from "@/store/course/slice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { toast } from "sonner";
@@ -19,29 +19,29 @@ import { Pencil } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
-import { Course } from "@prisma/client";
+import { Topic } from "@prisma/client";
 import Editor from "../editor";
 import Preview from "../preview";
+import { Checkbox } from "../ui/checkbox";
+import { GetSingleCourseApi, EditCourseApi } from "@/store/course/slice";
 
-type CourseFormValues = Pick<Course, "description">;
+type CourseFormValues = Pick<Topic, "isFree">;
 
-interface DescriptionFormProps {
+interface CourseAccessFormProps {
   initialData: CourseFormValues;
   courseId: string;
   setActions: any;
 }
 
 const formSchema = z.object({
-  description: z.string().min(1, {
-    message: "Description is required",
-  }),
+  isFree: z.boolean(),
 });
 
-const DescriptionForm = ({
+const CourseAccessForm = ({
   initialData,
   courseId,
   setActions,
-}: DescriptionFormProps) => {
+}: CourseAccessFormProps) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -49,22 +49,22 @@ const DescriptionForm = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      description: initialData?.description || "",
+      isFree: !!initialData?.isFree,
     },
   });
 
   useEffect(() => {
     if (initialData) {
       form.reset({
-        description: initialData?.description || "",
+        isFree: !!initialData?.isFree,
       });
     }
-  }, [initialData?.description]);
+  }, [initialData?.isFree]);
 
   const { isSubmitting, isValid } = form.formState;
 
   const toggleEdit = () => {
-    form.setValue("description", initialData?.description || "");
+    form.setValue("isFree", !!initialData?.isFree);
     setIsEditing((current) => !current);
   };
 
@@ -75,9 +75,14 @@ const DescriptionForm = ({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const formdata = new FormData();
+      let price = values?.isFree ? 0 : null;
       Object.entries(values).forEach(([key, val]) => {
-        formdata.append(key, val);
+        formdata.append(key, val.toString());
       });
+
+      if (price === 0) {
+        formdata.append("price", price.toString());
+      }
 
       setActions((current: any) => {
         return { ...current, callbackFunction: handleSuccess };
@@ -87,7 +92,7 @@ const DescriptionForm = ({
         EditCourseApi({
           id: courseId,
           formdata: formdata,
-          requiredFields: ["description"],
+          requiredFields: price ? ["price", "isFree"] : ["isFree"],
         })
       );
       setIsEditing(false);
@@ -100,10 +105,10 @@ const DescriptionForm = ({
   return (
     <div className="mt-6 bg-slate-100 dark:bg-gray-800 rounded-lg shadow-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Course Description
+        Course access settings
         <Button
-          onClick={toggleEdit}
           variant={"ghost"}
+          onClick={toggleEdit}
           className="hover:bg-[#a1a1aa]"
         >
           {isEditing ? (
@@ -111,7 +116,7 @@ const DescriptionForm = ({
           ) : (
             <>
               <Pencil className="h-4 w-4 mr-2" />
-              Edit Description
+              Edit access
             </>
           )}
         </Button>
@@ -125,12 +130,21 @@ const DescriptionForm = ({
             <div className="grid grid-cols-1 gap-6 mb-6">
               <FormField
                 control={form.control}
-                name="description"
+                name="isFree"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
                     <FormControl>
-                      <Editor disabled={isSubmitting} {...field} />
+                      <Checkbox
+                        checked={field?.value}
+                        onCheckedChange={field.onChange}
+                      />
                     </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormDescription>
+                        Check this box if you want to make this course free for
+                        access
+                      </FormDescription>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -151,17 +165,15 @@ const DescriptionForm = ({
         <p
           className={cn(
             "text-sm mt-2",
-            !initialData?.description && "text-slate-500 italic"
+            !initialData?.isFree && "text-slate-500 italic"
           )}
         >
-          {!initialData?.description && "No Description"}
-          {initialData?.description && (
-            <Preview value={initialData?.description} />
-          )}
+          {initialData?.isFree ? "This course is free" : "This course is paid"}
+          {/* {initialData?.isFree && <Preview value={initialData?.isFree} />} */}
         </p>
       )}
     </div>
   );
 };
 
-export default memo(DescriptionForm);
+export default memo(CourseAccessForm);

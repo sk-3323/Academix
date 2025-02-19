@@ -20,8 +20,6 @@ model User {
   verifyCodeExpiry   DateTime?
   gamificationPoints Int       @default(0)
   isVerified         Boolean   @default(false)
-  completedCourses   String[]  @db.ObjectId // References to Course
-  earnedCertificates String[]  @db.ObjectId // References to Certificate
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

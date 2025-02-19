@@ -1,7 +1,7 @@
 "use client";
 
 import { CourseCard } from "@/components/Course/course-card";
-import { CourseWithProgressWithCategory } from "../../../../types/Course";
+import { CourseWithProgressWithCategory } from "../../../../../types/Course";
 
 interface CourseListProps {
   items: CourseWithProgressWithCategory[];
@@ -19,6 +19,7 @@ const CourseList = ({ items }: CourseListProps) => {
             thumbnail={item?.thumbnail!}
             chaptersLength={item?.chapters?.length}
             price={item?.price!}
+            isFree={item?.isFree!}
             progress={item?.progress}
             category={item?.category?.name!}
             instructor={item?.instructor}

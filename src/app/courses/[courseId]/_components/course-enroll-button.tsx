@@ -19,6 +19,7 @@ import { toast } from "sonner";
 interface CourseEnrollButtonProps {
   courseId: string;
   price: number;
+  isFree: boolean;
   setActions: any;
 }
 
@@ -31,6 +32,7 @@ declare global {
 export const CourseEnrollButton = ({
   courseId,
   price,
+  isFree,
   setActions,
 }: CourseEnrollButtonProps) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -139,7 +141,7 @@ export const CourseEnrollButton = ({
         disabled={isProcessing}
       >
         {isProcessing && <Loader2 className="h-4 w-4 animate-spin" />}
-        Enroll for {formatPrice(price)}
+        Enroll for {isFree ? "free" : formatPrice(price)}
       </Button>
     </>
   );

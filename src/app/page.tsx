@@ -7,6 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Courses from "@/components/CourseList/Courses";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import { CourseMarquee } from "@/components/Marquee/course-marquee";
 
 export default function Home() {
   const quotes = ["Learn Smarter", " Not Harder"];
@@ -40,6 +41,7 @@ export default function Home() {
           </div>
         </div>
       </div>
+      <CourseMarquee />
       <Courses />
       <div className="flex w-full flex-col justify-center items-center p-5 my-10">
         <h1 className="lg:text-5xl md:text-3xl sm:2xl font-semibold leading-none tracking-tighter my-5">
@@ -69,8 +71,6 @@ export default function Home() {
         {/* <ResizableHandle /> */}
         {/* <ResizablePanel>Two</ResizablePanel> */}
       </ResizablePanelGroup>
-
-    
     </div>
   );
 }

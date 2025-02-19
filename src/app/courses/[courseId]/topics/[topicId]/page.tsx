@@ -108,7 +108,7 @@ const TopicIdPage = ({
         <div>
           <div className="p-4 flex flex-col md:flex-row items-center justify-between">
             <h2 className="text-2xl font-semibold mb-2">{topic?.title}</h2>
-            {topic?.chapter?.course?.enrollments?.length !== 0 ? (
+            {topic?.chapter?.course?.enrollments?.length !== 0 && (
               <CourseProgressButton
                 topicId={params?.topicId}
                 courseId={params?.courseId}
@@ -117,9 +117,11 @@ const TopicIdPage = ({
                 setActions={setUserProgressActions}
                 startConfetti={startConfetti}
               />
-            ) : (
+            )}
+            {topic?.chapter?.course?.enrollments?.length === 0 && (
               <CourseEnrollButton
                 courseId={params?.courseId}
+                isFree={topic?.isFree}
                 price={topic?.chapter?.course?.price}
                 setActions={setEnrollmentActions}
               />

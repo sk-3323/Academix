@@ -13,6 +13,7 @@ interface CourseCardProps {
   thumbnail: string;
   chaptersLength: number;
   price: number;
+  isFree: boolean;
   progress: number | null;
   category: string;
   instructor: any;
@@ -23,13 +24,14 @@ export const CourseCard = ({
   thumbnail,
   chaptersLength,
   price,
+  isFree,
   progress,
   category,
   instructor,
 }: CourseCardProps) => {
   return (
     <Link href={`/courses/${id}`}>
-      <div className="group bg-slate-100 dark:bg-gray-800 hover:shadow-sm transition overflow-hidden border rounded-lg p-3 h-full">
+      <div className="group bg-slate-200 dark:bg-gray-700 hover:shadow-sm transition overflow-hidden border rounded-lg p-3 h-full">
         <div className="relative w-full aspect-video rounded-md overflow-hidden">
           <Image fill className="object-cover" alt={title} src={thumbnail} />
         </div>
@@ -63,7 +65,7 @@ export const CourseCard = ({
             />
           ) : (
             <p className="text-lg md:text-md font-medium">
-              {formatPrice(price)}
+              {isFree ? "Free" : formatPrice(price)}
             </p>
           )}
         </div>

@@ -16,6 +16,7 @@ const createUserProgressSchema = z
       .refine((val) => ObjectId.isValid(val), {
         message: "Invalid user id provided",
       }),
+    isCompleted: z.boolean(),
   })
   .strict()
   .partial();

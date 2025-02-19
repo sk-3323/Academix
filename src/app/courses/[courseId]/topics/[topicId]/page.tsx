@@ -16,6 +16,8 @@ import Script from "next/script";
 import { useDynamicToast } from "@/hooks/DynamicToastHook";
 import { clearEnrollmentState } from "@/store/enrollment/slice";
 import { usePathname } from "next/navigation";
+import CourseProgressButton from "../../_components/course-progress-button";
+import { clearUserProgressState } from "@/store/user-progress/slice";
 
 const TopicIdPage = ({
   params,
@@ -65,8 +67,16 @@ const TopicIdPage = ({
     callbackFunction: () => {},
   });
   let pathname = usePathname();
-  
+
   useDynamicToast("EnrollmentStore", enrollmentActions, pathname);
+
+  const [userProgressActions, setUserProgressActions] = useState({
+    clearState: clearUserProgressState,
+    callbackFunction: () => {},
+  });
+  
+
+  useDynamicToast("UserProgressStore", userProgressActions);
 
   return (
     <>
@@ -95,7 +105,13 @@ const TopicIdPage = ({
           <div className="p-4 flex flex-col md:flex-row items-center justify-between">
             <h2 className="text-2xl font-semibold mb-2">{topic?.title}</h2>
             {topic?.chapter?.course?.enrollments?.length !== 0 ? (
-              <></>
+              <CourseProgressButton
+                topicId={params?.topicId}
+                courseId={params?.courseId}
+                nextTopicId={topic?.nextTopic?.id}
+                isCompleted={!!topic?.userProgress?.isCompleted}
+                setActions={setUserProgressActions}
+              />
             ) : (
               <CourseEnrollButton
                 courseId={params?.courseId}

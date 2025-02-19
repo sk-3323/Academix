@@ -14,6 +14,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
 
 interface CourseEnrollButtonProps {
   courseId: string;
@@ -120,8 +121,9 @@ export const CourseEnrollButton = ({
           id: courseId,
         })
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      toast.error(error?.message);
       setIsProcessing(false);
       setShouldInitiatePayment(false);
       throw error;

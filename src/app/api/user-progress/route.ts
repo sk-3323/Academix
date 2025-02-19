@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { validateData } from "@/lib/fileHandler";
 import createUserProgressSchema from "@/schema/user-progress/schema";
+import { decryptToken } from "@/lib/jwtGenerator";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let result = await prisma.$transaction(async (tx) => {
@@ -33,12 +34,27 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
 
 export const POST = apiHandler(async (request: NextRequest, content: any) => {
   let data = await request.json();
+  let token: any = request.headers.get("x-user-token");
+  let { id: userId } = await decryptToken(token);
 
   let result = await prisma.$transaction(async (tx) => {
     data = await validateData(createUserProgressSchema, data);
 
-    return await tx.userProgress.create({
-      data: data,
+    return await tx.userProgress.upsert({
+      where: {
+        userId_topicId: {
+          userId: userId,
+          topicId: data?.topicId,
+        },
+      },
+      update: {
+        isCompleted: data?.isCompleted,
+      },
+      create: {
+        userId: userId,
+        topicId: data?.topicId,
+        isCompleted: data?.isCompleted,
+      },
     });
   });
 

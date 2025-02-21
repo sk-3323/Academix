@@ -1,0 +1,33 @@
+import {
+  Home,
+  Settings,
+  Users,
+  HelpCircle,
+  Menu,
+  LayoutDashboard,
+  BookOpen,
+  ShieldCheck,
+  CreditCard,
+  LogOut,
+  User,
+  LogIn,
+  Info,
+  Contact,
+  VideoIcon,
+  TvMinimalPlay,
+  MessageCircleQuestion,
+  Play,
+  File,
+  FileQuestion,
+} from "lucide-react";
+
+export const items = [
+  { icon: LayoutDashboard, label: "Dashboard", href: "/admin/dashboard" },
+  { icon: User, label: "Users", href: "/admin/user" },
+  { icon: BookOpen, label: "Courses", href: "/admin/course" },
+  { icon: FileQuestion, label: "Quiz", href: "/admin/quiz" },
+  { icon: Play, label: "Live Classes", href: "/admin/liveclass" },
+  { icon: File, label: "Report", href: "/admin/report" },
+  { icon: ShieldCheck, label: "Certificates", href: "/admin/certificate" },
+  { icon: CreditCard, label: "Payment", href: "/admin/payment" },
+];

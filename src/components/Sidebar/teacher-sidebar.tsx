@@ -52,7 +52,11 @@ const items = [
   { icon: MessageCircleQuestion, label: "Quiz", href: "/teacher/quiz" },
 ];
 
-export function TeacherSidebar() {
+export function TeacherSidebar({
+  collapsible,
+}: {
+  collapsible?: "icon" | "none";
+}) {
   const { setOpen } = useSidebar();
   const [isHovering, setIsHovering] = React.useState(false);
   const hoverTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -88,7 +92,7 @@ export function TeacherSidebar() {
   return (
     <TooltipProvider delayDuration={0}>
       <Sidebar
-        collapsible="icon"
+        collapsible={collapsible}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         className="transition-all duration-300 ease-in"

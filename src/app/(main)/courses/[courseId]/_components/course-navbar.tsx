@@ -20,7 +20,6 @@ interface CourseSidebarProps {
 
 const CourseNavbar = ({ course, isMobile }: CourseSidebarProps) => {
   const { setTheme, theme } = useTheme();
-  const pathname = usePathname();
 
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -34,14 +33,10 @@ const CourseNavbar = ({ course, isMobile }: CourseSidebarProps) => {
   return (
     <>
       <div className="flex justify-start items-center gap-x-4">
-        <CourseMobileSidebar course={course} />
+        <CourseMobileSidebar course={course}/>
         <h1 className="font-extrabold">Acedemix </h1>
       </div>
-      {!isMobile && (
-        <div>
-          <NavigationMenuDemo />
-        </div>
-      )}
+      {!isMobile && <div>Course Detail </div>}
       <div className="flex justify-center">
         {theme === "dark" ? (
           <Button variant={"outline"} onClick={() => setTheme("light")}>

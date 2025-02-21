@@ -40,17 +40,22 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
 
 const items = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/admin/dashboard" },
-  { icon: BookOpen, label: "Payment", href: "/admin/payment" },
-  { icon: ShieldCheck, label: "Certificates", href: "/admin/certificate" },
-  { icon: User, label: "Users", href: "/admin/user" },
-  { icon: CreditCard, label: "Payment", href: "/admin/payment" },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/student/dashboard" },
+  { icon: BookOpen, label: "Courses", href: "/student/course" },
+  { icon: ShieldCheck, label: "Certificates", href: "/student/certificate" },
+  { icon: User, label: "Profile", href: "/student/profile" },
+  { icon: CreditCard, label: "Payment", href: "/student/payment" },
+  { icon: VideoIcon, label: "Video Lectures", href: "/student/video" },
+  { icon: MessageCircleQuestion, label: "Quiz", href: "/student/quiz" },
 ];
 
-export function AdminSidebar() {
+export function StudentSidebar({
+  collapsible,
+}: {
+  collapsible?: "icon" | "none";
+}) {
   const { setOpen } = useSidebar();
   const [isHovering, setIsHovering] = React.useState(false);
   const hoverTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -70,10 +75,6 @@ export function AdminSidebar() {
     }, 300); // Delay closing to prevent accidental closures
   };
 
-  const handleLogout = async () => {
-    await signOut({ callbackUrl: "/account/login" });
-  };
-
   React.useEffect(() => {
     setIsHovering(false);
     setOpen(false);
@@ -87,7 +88,7 @@ export function AdminSidebar() {
   return (
     <TooltipProvider delayDuration={0}>
       <Sidebar
-        collapsible="icon"
+        collapsible={collapsible}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         className="transition-all duration-300 ease-in"
@@ -125,7 +126,7 @@ export function AdminSidebar() {
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter className="p-2">
-          <Button className="bg-red-500 font-semibold" onClick={handleLogout}>
+          <Button className="bg-red-500 font-semibold">
             {!isHovering ? <LogOut /> : "Logout"}
           </Button>
         </SidebarFooter>

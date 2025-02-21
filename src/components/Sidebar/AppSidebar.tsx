@@ -1,10 +1,10 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { AdminSidebar } from "./AdminSidebar";
+import { AdminSidebar } from "./admin-sidebar";
 import { useEffect, useState } from "react";
-import { TeacherSidebar } from "./TeacherSidebar";
-import { StudentSidebar } from "./StudentSidebar";
+import { TeacherSidebar } from "./teacher-sidebar";
+import { StudentSidebar } from "./student-sidebar";
 import { useRouter } from "next/navigation";
 
 export function ResponsiveSidebarWithAutoOpen() {

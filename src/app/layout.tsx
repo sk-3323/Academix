@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { LayoutContent } from "@/components/LayoutContent/LayoutContent";
 import AuthProvider from "@/context/AuthProvider";
 import { Providers } from "@/components/Providers/Providers";
 import StoreProvider from "@/context/StoreProvider";
@@ -35,9 +34,7 @@ export default function RootLayout({
           <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
-            <Providers>
-              <LayoutContent>{children}</LayoutContent>
-            </Providers>
+            <Providers>{children}</Providers>
           </body>
         </AuthProvider>
       </StoreProvider>

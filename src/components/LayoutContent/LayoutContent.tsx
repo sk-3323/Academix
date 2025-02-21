@@ -5,13 +5,24 @@ import { SidebarInset, useSidebar } from "@/components/ui/sidebar";
 import { ResponsiveSidebarWithAutoOpen } from "@/components/Sidebar/AppSidebar";
 import { HeroHighlight } from "@/components/ui/hero-hightlight";
 import MobileMenu from "@/components/MobileMenu/MobileMenu";
-import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer/Footer";
 import { CustomCursor } from "@/components/CustomCursor/CustomCursor";
 import { useSession } from "next-auth/react";
 import React, { useEffect } from "react";
 
-export function LayoutContent({ children }: { children: React.ReactNode }) {
+export function LayoutContent({
+  children,
+  Sidebar,
+  Navbar,
+  MobileSidebar,
+  MobileNavbar,
+}: {
+  children: React.ReactNode;
+  Sidebar?: React.ReactNode;
+  Navbar?: React.ReactNode;
+  MobileSidebar?: React.ReactNode;
+  MobileNavbar?: React.ReactNode;
+}) {
   const pathname = usePathname();
   const { isMobile } = useSidebar();
   const [isSidebar, setIsSidebar] = React.useState(false);
@@ -23,49 +34,56 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
     } else {
       setIsSidebar(true);
     }
-  }, []);
-
-  // Define routes where Navbar and Footer should be hidden
-  const noNavFooterRoutes = [
-    "/account/login",
-    "/account/signup",
-    "/account/verify-otp",
-    "/courses/",
-  ];
-  const isAdminRoute = pathname.startsWith("/admin");
-  const isTeacherRoute = pathname.startsWith("/teacher");
-
-  const hideNavFooter =
-    noNavFooterRoutes.includes(pathname) ||
-    isAdminRoute ||
-    isTeacherRoute ||
-    pathname?.startsWith("/account/") ||
-    pathname?.startsWith("/courses/");
+  }, [data]);
 
   return (
     <>
-      {!hideNavFooter && <CustomCursor />}
-      <div className="flex min-h-screen w-full overflow-x-hidden">
-        {!noNavFooterRoutes && <ResponsiveSidebarWithAutoOpen />}
-        <div className="flex flex-col flex-1">
-          <SidebarInset>
-            <HeroHighlight>
-              {!hideNavFooter && (
-                <header className="flex justify-between items-center p-4 border-b w-screen">
-                  <Navbar isMobile={isMobile} />
-                  {isMobile && !isSidebar && <MobileMenu />}
+      <CustomCursor />
+      <div className="grid min-h-screen w-full">
+        <div
+          className={`grid ${Sidebar ? "grid-cols-[auto_1fr]" : "grid-cols-1"}`}
+        >
+          {/* Sidebar */}
+          {Sidebar && (
+            <aside className="h-screen sticky top-0 overflow-y-auto">
+              {Sidebar}
+            </aside>
+          )}
+
+          {/* Main content area */}
+          <div className="grid grid-rows-[auto_1fr_auto] min-h-screen">
+            <SidebarInset>
+              <HeroHighlight>
+                {/* Header */}
+                <header className="sticky top-0 z-10 border-b">
+                  <div
+                    className={`flex justify-between items-center p-4 ${Sidebar ? "max-w-screen" : "w-screen"}`}
+                  >
+                    {Navbar && <>{Navbar}</>}
+                    {isMobile && !isSidebar && MobileSidebar && (
+                      <>{MobileSidebar}</>
+                    )}
+                  </div>
                 </header>
-              )}
-              <main className="flex-1 p-4 overflow-x-hidden w-screen">
-                {children}
-              </main>
-              {/* {!hideNavFooter && ( */}
-              <footer className="flex justify-center items-center p-4 w-screen">
-                <Footer />
-              </footer>
-              {/* )} */}
-            </HeroHighlight>
-          </SidebarInset>
+
+                {/* Main content */}
+                <main
+                  className={`flex-1 p-4 overflow-x-hidden ${Sidebar ? "max-w-screen" : "w-screen"}`}
+                >
+                  {children}
+                </main>
+
+                {/* Footer */}
+                <footer className="mt-auto border-t">
+                  <div
+                    className={`flex justify-center items-center p-4 ${Sidebar ? "max-w-screen" : "w-screen"}`}
+                  >
+                    <Footer />
+                  </div>
+                </footer>
+              </HeroHighlight>
+            </SidebarInset>
+          </div>
         </div>
       </div>
     </>

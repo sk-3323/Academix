@@ -29,12 +29,6 @@ const courseIdLayout = ({
     );
   }, [params?.courseId]);
 
-  // const [chapterActions, setChapterActions] = useState({
-  //   clearState: clearChapterState,
-  //   callbackFunction: () => {},
-  // });
-
-  // useDynamicToast("ChapterStore", chapterActions);
   const { isMobile } = useSidebar();
   return (
     <div className="flex min-h-screen w-full overflow-x-hidden">

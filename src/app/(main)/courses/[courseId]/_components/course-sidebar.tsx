@@ -19,7 +19,7 @@ import {
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { CourseProgress } from "../../../../components/Course/course-progress";
+import { CourseProgress } from "@/components/Course/course-progress";
 
 interface CourseSidebarProps {
   course: Course & { progressCount: number } & {
@@ -78,6 +78,7 @@ const CourseSidebar = ({
           )}
         </SidebarHeader>
         <SidebarContent>
+          <h1 className="font-semibold">Course content</h1>
           <SidebarMenu>
             {course?.chapters?.map((chapter) => {
               let activeChapter = chapter.topics.some((topic) =>

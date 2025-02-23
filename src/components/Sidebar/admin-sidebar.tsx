@@ -19,6 +19,9 @@ import {
   VideoIcon,
   TvMinimalPlay,
   MessageCircleQuestion,
+  BookAudioIcon,
+  User2,
+  UsersIcon,
 } from "lucide-react";
 
 import {
@@ -44,10 +47,12 @@ import { signOut } from "next-auth/react";
 
 const items = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin/dashboard" },
+  { icon: BookAudioIcon, label: "Courses", href: "/admin/course" },
   { icon: BookOpen, label: "Payment", href: "/admin/payment" },
   { icon: ShieldCheck, label: "Certificates", href: "/admin/certificate" },
-  { icon: User, label: "Users", href: "/admin/user" },
+  { icon: UsersIcon, label: "Users", href: "/admin/user" },
   { icon: CreditCard, label: "Payment", href: "/admin/payment" },
+  { icon: User, label: "Profile", href: "/admin/profile" },
 ];
 
 export function AdminSidebar({

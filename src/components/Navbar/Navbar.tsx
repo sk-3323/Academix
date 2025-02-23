@@ -7,13 +7,13 @@ import { NavigationMenuDemo } from "./NavMenuItems";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { SearchInput } from "./search-input";
+import { useSession } from "next-auth/react";
 
 const Navbar = ({ isMobile }: { isMobile: boolean }) => {
   const { setTheme, theme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const isSearchPage = pathname === "/search";
-
   // Only render theme toggle after component is mounted
   useEffect(() => {
     setMounted(true);

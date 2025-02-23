@@ -34,28 +34,14 @@ const courses = [
     image:
       "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YnVzc2luZXNzfGVufDB8fDB8fHww",
   },
-  // {
-  //   title: "Mechatrnoics",
-  //   image:
-  //     "https://plus.unsplash.com/premium_photo-1663054378169-8ffea2e11c42?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8QUl8ZW58MHx8MHx8fDA%3D",
-  // },
-  // {
-  //   title: "How to use ChatGPT",
-  //   image:
-  //     "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fiphonesoft.fr%2Fimages%2F2023%2F01%2Fchatgpt-logo-header-banner.jpg&f=1&nofb=1&ipt=71b6734ff72bc11d4f4ae6fe7fb7913640038075c6f473cd227cc93f5e425d7d&ipo=images",
-  // },
 ];
+
 const courses2 = [
   {
     title: "Artificial Intelligence",
     image:
       "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OTF8fEFJfGVufDB8fDB8fHww",
   },
-  // {
-  //   title: "IT & Software ",
-  //   image:
-  //     "https://plus.unsplash.com/premium_photo-1663012876180-86a7fc80ca86?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NjF8fElUJTIwJTI2JTIwU29mdHdhcmV8ZW58MHx8MHx8fDA%3D",
-  // },
   {
     title: "Marketing",
     image:
@@ -88,21 +74,22 @@ const courses2 = [
   },
 ];
 
-interface courseProps {
+interface CourseProps {
   image: string;
   title: string;
 }
-const CourseImage = ({ course }: { course: courseProps }) => {
+
+const CourseImage = ({ course }: { course: CourseProps }) => {
   return (
-    <div className="w-full !w-[410px] h-[260px] rounded-xl border-2 !mx-4 group relative overflow-hidden">
-      <span className="opacity-0 duration-300 group-hover:opacity-100 absolute z-50 bottom-0 left-0 text-foreground bg-background px-4 py-2 text-lg rounded-tr-xl">
+    <div className="w-[160px] sm:w-[220px] md:w-[280px] h-[120px] sm:h-[160px] md:h-[200px] rounded-xl border-2 mx-1 sm:mx-2 group relative overflow-hidden shrink-0">
+      <span className="opacity-0 duration-300 group-hover:opacity-100 absolute z-10 bottom-0 left-0 text-foreground bg-background px-2 py-1 text-xs sm:text-sm rounded-tr-xl">
         {course.title}
       </span>
       <Image
-        width={1000}
-        height={500}
+        width={280}
+        height={200}
         src={course.image}
-        alt="image"
+        alt={course.title}
         className="h-full w-full object-cover"
       />
     </div>
@@ -111,23 +98,34 @@ const CourseImage = ({ course }: { course: courseProps }) => {
 
 export const CourseMarquee = () => {
   return (
-    <section className="flex flex-col items-center justify-center h-full gap-6 py-14 w-screen">
-      <Marquee pauseOnClick={true} className="!rotate-[-4deg]" speed={30}>
-        {courses.map((item, index) => (
-          <CourseImage course={item} key={index} />
-        ))}
-      </Marquee>
-      <Marquee
-        pauseOnClick={true}
-        className="!rotate-[-4deg]"
-        gradientWidth={250}
-        speed={30}
-        direction="right"
-      >
-        {courses2.map((item, index) => (
-          <CourseImage course={item} key={index} />
-        ))}
-      </Marquee>
+    <section className="w-full max-w-full flex flex-col items-center justify-center gap-4 py-6 sm:py-8 overflow-x-hidden">
+      <div className="w-full max-w-[100vw] overflow-hidden">
+        <Marquee
+          pauseOnClick={true}
+          className="rotate-[-1deg]"
+          speed={25}
+          gradient={true}
+          gradientWidth={50}
+        >
+          {courses.map((item, index) => (
+            <CourseImage course={item} key={index} />
+          ))}
+        </Marquee>
+      </div>
+      <div className="w-full max-w-[100vw] overflow-hidden">
+        <Marquee
+          pauseOnClick={true}
+          className="rotate-[1deg]"
+          gradient={true}
+          gradientWidth={50}
+          speed={25}
+          direction="right"
+        >
+          {courses2.map((item, index) => (
+            <CourseImage course={item} key={index} />
+          ))}
+        </Marquee>
+      </div>
     </section>
   );
 };

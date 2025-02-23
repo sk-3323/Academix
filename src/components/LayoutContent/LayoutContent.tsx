@@ -41,10 +41,10 @@ export function LayoutContent({
       <CustomCursor />
       <div className="grid min-h-screen w-full">
         <div
-          className={`grid ${Sidebar ? "grid-cols-[auto_1fr]" : "grid-cols-1"}`}
+          className={`grid ${isSidebar ? "grid-cols-[auto_1fr]" : "grid-cols-1"}`}
         >
           {/* Sidebar */}
-          {Sidebar && (
+          {isSidebar && (
             <aside className="h-screen sticky top-0 overflow-y-auto">
               {Sidebar}
             </aside>
@@ -57,7 +57,7 @@ export function LayoutContent({
                 {/* Header */}
                 <header className="sticky top-0 z-10 border-b">
                   <div
-                    className={`flex justify-between items-center p-4 ${Sidebar ? "max-w-screen" : "w-screen"}`}
+                    className={`flex justify-between items-center p-4 ${isSidebar ? "max-w-screen" : "w-screen"}`}
                   >
                     {Navbar && <>{Navbar}</>}
                     {isMobile && !isSidebar && MobileSidebar && (
@@ -68,19 +68,14 @@ export function LayoutContent({
 
                 {/* Main content */}
                 <main
-                  className={`flex-1 p-4 overflow-x-hidden ${Sidebar ? "max-w-screen" : "w-screen"}`}
+                  className={`flex-1 p-4 overflow-x-hidden ${isSidebar ? "max-w-screen" : "w-screen"}`}
                 >
                   {children}
                 </main>
 
                 {/* Footer */}
-                <footer className="mt-auto border-t">
-                  <div
-                    className={`flex justify-center items-center p-4 ${Sidebar ? "max-w-screen" : "w-screen"}`}
-                  >
-                    <Footer />
-                  </div>
-                </footer>
+
+                <Footer Sidebar={Sidebar} />
               </HeroHighlight>
             </SidebarInset>
           </div>

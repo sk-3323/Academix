@@ -7,6 +7,7 @@ import { NavigationMenuDemo } from "./NavMenuItems";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { SearchInput } from "./search-input";
+import ProfileManagement from "../../app/(admin)/admin/profile/page";
 
 const AdminNavbar = ({ isMobile }: { isMobile: boolean }) => {
   const { setTheme, theme } = useTheme();

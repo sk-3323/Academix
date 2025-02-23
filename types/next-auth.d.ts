@@ -9,6 +9,7 @@ declare module "next-auth" {
     phone: string;
     isAdmin: boolean;
     role: string;
+    location: string;
   }
 
   interface Session {

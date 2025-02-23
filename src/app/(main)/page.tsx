@@ -44,7 +44,7 @@ export default function Home() {
       </section>
 
       {/* Course Marquee (Uncommented and Responsive) */}
-      <section className="md:w-[90vw] lg:w-[96vw] w-[85vw] py-6 mx-auto overflow-x-hidden">
+      <section className="md:w-[89vw] lg:w-[95vw] w-[84vw] py-6 mx-auto overflow-x-hidden">
         <CourseMarquee />
       </section>
 

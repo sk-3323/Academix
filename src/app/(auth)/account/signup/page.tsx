@@ -52,7 +52,8 @@ const page = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    reValidateMode: "onBlur",
+    reValidateMode: "onChange",
+    mode: "onChange",
     defaultValues: {
       username: "",
       password: "",

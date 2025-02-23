@@ -110,6 +110,7 @@ model Chapter {
   updatedAt DateTime @updatedAt
 
   topics    Topic[]
+  quiz      Quiz[]
   resources Resource[]
 
   @@index([courseId])
@@ -128,8 +129,6 @@ model Topic {
   // Relations
   chapterId String  @db.ObjectId
   chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-
-  quiz Quiz?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -156,34 +155,58 @@ model Resource {
 }
 
 model Quiz {
-  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
   title        String
-  passingScore Float?
-  timeLimit    Int?
+  passingScore Int?       @default(0)
+  timeLimit    Int?       @default(0)
+  order        Int?
+  status       BlogStatus @default(DRAFT)
 
   // Relations
-  topicId String @unique @db.ObjectId
-  topic   Topic  @relation(fields: [topicId], references: [id])
+  chapterId String  @db.ObjectId
+  chapter   Chapter @relation(fields: [chapterId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   questions Question[]
+
+  @@index([chapterId])
 }
 
 model Question {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  text          String
-  options       String[]
-  correctAnswer Int
-  points        Int?
+  id     String     @id @default(auto()) @map("_id") @db.ObjectId
+  title  String
+  order  Int?
+  points Int?
+  status BlogStatus @default(DRAFT)
 
   // Relations
-  quizId String @db.ObjectId
-  quiz   Quiz   @relation(fields: [quizId], references: [id])
+  answerId String? @db.ObjectId
+  answer   Option? @relation("CorrectAnswer", fields: [answerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  quizId   String  @db.ObjectId
+  quiz     Quiz    @relation(fields: [quizId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  options Option[] @relation("QuestionOptions")
+}
+
+model Option {
+  id     String     @id @default(auto()) @map("_id") @db.ObjectId
+  title  String
+  order  Int?
+  status BlogStatus @default(DRAFT)
+
+  // Relations
+  questionId String   @db.ObjectId
+  question   Question @relation("QuestionOptions", fields: [questionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  correctForQuestions Question[] @relation("CorrectAnswer")
 }
 
 model LiveClass {

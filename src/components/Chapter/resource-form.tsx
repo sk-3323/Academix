@@ -52,6 +52,8 @@ const ResourceForm = ({
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    reValidateMode: "onChange",
+    mode: "onChange",
     defaultValues: {
       url: "",
       title: "",
@@ -169,8 +171,11 @@ const ResourceForm = ({
                     key={res?.id}
                     className="flex item-center p-3 w-full bg-sky-100 border-sky-200 border text-sky-700 rounded-md"
                   >
-                    <File className="h-4 w-4 mr-2" />
-                    <p className="text-xs line-clamp-1">{res?.title}</p>
+                    <a href={res.url!} target="_blank" className="flex item-center w-full">
+                      <File className="h-4 w-4 mr-2" />
+                      <p className="text-xs line-clamp-1">{res?.title}</p>
+                    </a>
+
                     {deletingId === res?.id && (
                       <>
                         <Loader2 className="ml-auto h-4 w-4 animate-spin" />

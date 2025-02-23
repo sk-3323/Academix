@@ -37,6 +37,8 @@ const VideoForm = ({ initialData, topicId, setActions }: VideoFormProps) => {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    reValidateMode: "onChange",
+    mode: "onChange",
     defaultValues: {
       video: initialData?.video || "",
     },

@@ -55,6 +55,8 @@ const ChaptersForm = ({
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    reValidateMode: "onChange",
+    mode: "onChange",
     defaultValues: {
       title: "",
       courseId: courseId || "",

@@ -21,6 +21,11 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
         id: "desc",
       },
       include: {
+        quiz: {
+          orderBy: {
+            order: "asc",
+          },
+        },
         topics: {
           orderBy: {
             order: "asc",

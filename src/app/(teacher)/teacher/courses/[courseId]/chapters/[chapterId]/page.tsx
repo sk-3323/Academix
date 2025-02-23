@@ -3,16 +3,24 @@
 import { Banner } from "@/components/banner";
 import { ChapterActions } from "@/components/Chapter/chapter-actions";
 import DescriptionForm from "@/components/Chapter/description-form";
+import QuizForm from "@/components/Chapter/quiz-form";
 import ResourceForm from "@/components/Chapter/resource-form";
 import TitleForm from "@/components/Chapter/title-form";
 import TopicsForm from "@/components/Chapter/topics-form";
 import { IconBadge } from "@/components/icon-badge";
 import { useDynamicToast } from "@/hooks/DynamicToastHook";
 import { clearChapterState, GetSingleChapterApi } from "@/store/chapter/slice";
+import { clearQuizState } from "@/store/quiz/slice";
 import { clearResourceState } from "@/store/resource/slice";
 import { AppDispatch } from "@/store/store";
 import { clearTopicState } from "@/store/topic/slice";
-import { ArrowLeft, File, LayoutDashboard, ListChecks } from "lucide-react";
+import {
+  ArrowLeft,
+  Brain,
+  File,
+  LayoutDashboard,
+  ListChecks,
+} from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -49,6 +57,13 @@ const page = ({
   });
 
   useDynamicToast("TopicStore", topicActions);
+
+  const [quizActions, setQuizActions] = useState({
+    clearState: clearQuizState,
+    callbackFunction: () => {},
+  });
+
+  useDynamicToast("QuizStore", quizActions);
 
   const requiredFields = [
     singleData?.title,
@@ -94,7 +109,7 @@ const page = ({
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
-          <div>
+          <div className="space-y-6">
             <div className="flex items-center gap-x-2">
               <IconBadge icon={LayoutDashboard} />
               <h2 className="text-xl">Customize your chapter </h2>
@@ -109,6 +124,18 @@ const page = ({
               chapterId={params?.chapterId}
               setActions={setChapterActions}
             />
+            <div>
+              <div className="flex items-center gap-x-2">
+                <IconBadge icon={Brain} />
+                <h2 className="text-xl">Quiz & Brainstorming</h2>
+              </div>
+              <QuizForm
+                initialData={{ quiz: singleData?.quiz }}
+                courseId={params?.courseId}
+                chapterId={params?.chapterId}
+                setActions={setQuizActions}
+              />
+            </div>
           </div>
           <div className="space-y-6">
             <div>

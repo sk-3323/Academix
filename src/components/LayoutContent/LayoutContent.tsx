@@ -55,7 +55,7 @@ export function LayoutContent({
             <SidebarInset>
               <HeroHighlight>
                 {/* Header */}
-                <header className="sticky top-0 z-10 border-b">
+                <header className="sticky top-0 z-10 border-b bg-zinc-900/95">
                   <div
                     className={`flex justify-between items-center p-4 ${Sidebar ? "max-w-screen" : "w-screen"}`}
                   >

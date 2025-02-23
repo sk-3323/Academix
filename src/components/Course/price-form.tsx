@@ -42,6 +42,8 @@ const PriceForm = ({ initialData, courseId, setActions }: PriceFormProps) => {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    reValidateMode: "onChange",
+    mode: "onChange",
     defaultValues: {
       price: initialData?.price || 0,
     },
@@ -128,7 +130,7 @@ const PriceForm = ({ initialData, courseId, setActions }: PriceFormProps) => {
                         step="0.01"
                         className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
                         disabled={isSubmitting}
-                        placeholder="Set a pricce for the course"
+                        placeholder="Set a price for the course"
                         {...field}
                       />
                     </FormControl>

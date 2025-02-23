@@ -10,6 +10,7 @@ import CourseSidebar from "./_components/course-sidebar";
 import { SidebarInset, useSidebar } from "@/components/ui/sidebar";
 import CourseNavbar from "./_components/course-navbar";
 import { HeroHighlight } from "@/components/ui/hero-hightlight";
+import { CustomCursor } from "@/components/CustomCursor/CustomCursor";
 
 const courseIdLayout = ({
   children,
@@ -31,21 +32,28 @@ const courseIdLayout = ({
 
   const { isMobile } = useSidebar();
   return (
-    <div className="flex min-h-screen w-full overflow-x-hidden">
-      {!isMobile && <CourseSidebar course={singleData} />}
-      <div className="flex flex-col flex-1">
-        <SidebarInset>
-          <HeroHighlight>
-            <header className="flex justify-between items-center p-4 border-b w-full">
-              <CourseNavbar course={singleData} isMobile={isMobile} />
-            </header>
-            <main className="flex-1 p-4 overflow-x-hidden w-full">
-              {children}
-            </main>
-          </HeroHighlight>
-        </SidebarInset>
+    <>
+      <CustomCursor />
+      <div className="flex min-h-screen w-full overflow-x-hidden">
+        {!isMobile && (
+          <aside className="h-screen sticky top-0 overflow-y-auto min-w-[20rem]">
+            <CourseSidebar course={singleData} />
+          </aside>
+        )}
+        <div className="flex flex-col flex-1">
+          <SidebarInset>
+            <HeroHighlight>
+              <header className="flex justify-between items-center p-4 border-b w-full">
+                <CourseNavbar course={singleData} isMobile={isMobile} />
+              </header>
+              <main className="flex-1 p-4 overflow-x-hidden w-full">
+                {children}
+              </main>
+            </HeroHighlight>
+          </SidebarInset>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -61,11 +61,11 @@ const CourseSidebar = ({
       <Sidebar
         collapsible={collapsible}
         className={cn(
-          "transition-all duration-300 ease-in",
+          "transition-all duration-300 ease-in w-100 min-w-[20rem]",
           collapsible && "h-100"
         )}
       >
-        <SidebarHeader className="p-5">
+        <SidebarHeader className="p-5 w-full">
           <h1 className="font-semibold">{course?.title}</h1>
           {data?.length !== 0 && !isNaN(course?.progressCount) && (
             <div className="mt-1">
@@ -77,10 +77,10 @@ const CourseSidebar = ({
             </div>
           )}
         </SidebarHeader>
-        <SidebarContent>
+        <SidebarContent className="w-full">
           <h1 className="font-semibold">Course content</h1>
           <SidebarMenu>
-            {course?.chapters?.map((chapter) => {
+            {course?.chapters?.map((chapter, index) => {
               let activeChapter = chapter.topics.some((topic) =>
                 pathname?.includes(topic.id)
               )
@@ -96,6 +96,7 @@ const CourseSidebar = ({
                     className="w-full"
                   >
                     <CourseSideBarItem
+                      index={index + 1}
                       key={chapter?.id}
                       id={chapter?.id}
                       activeChapter={activeChapter}

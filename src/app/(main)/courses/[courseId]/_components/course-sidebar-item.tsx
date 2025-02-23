@@ -14,6 +14,7 @@ import { useMemo } from "react";
 
 interface CourseSideBarItemProps {
   id: string;
+  index: number;
   label: string;
   courseId: string;
   activeChapter: string;
@@ -26,6 +27,7 @@ interface CourseSideBarItemProps {
 
 const CourseSideBarItem = ({
   id,
+  index,
   label,
   courseId,
   activeChapter,
@@ -45,9 +47,9 @@ const CourseSideBarItem = ({
       <AccordionTrigger
         className={cn("px-2", activeChapter === id && "font-semibold")}
       >
-        {label}
+        {`${index}. ${label}`}
       </AccordionTrigger>
-      {topics?.map((topic) => {
+      {topics?.map((topic, i) => {
         let isCompleted = !!topic?.userProgress?.[0]?.isCompleted;
         let Icon =
           !topic?.isFree && enrollment?.length === 0
@@ -80,11 +82,12 @@ const CourseSideBarItem = ({
                     "hover:bg-slate-600/20 dark:hover:bg-slate-300/20"
                 )}
               >
-                <div className="flex items-center gap-x-2 py-2">
+                <div className="flex items-center gap-x-2 py-2 pl-4">
+                  {`${index}.${i}`}
                   <Icon
                     size={22}
                     className={cn(
-                      "",
+                      "ml-2",
                       !!topic?.userProgress?.[0]?.isCompleted &&
                         "text-emerald-500"
                     )}

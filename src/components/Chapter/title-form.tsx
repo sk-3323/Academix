@@ -42,6 +42,8 @@ const TitleForm = ({ initialData, chapterId, setActions }: TitleFormProps) => {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    reValidateMode: "onChange",
+    mode: "onChange",
     defaultValues: {
       title: initialData?.title || "",
     },

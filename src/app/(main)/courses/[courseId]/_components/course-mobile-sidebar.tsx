@@ -26,7 +26,7 @@ const CourseMobileSidebar = ({ course }: CourseSidebarProps) => {
       <SheetTrigger className="md:hidden pr-4 hover:opacity-75 transition">
         <Menu />
       </SheetTrigger>
-      <SheetContent side="left" className="p-0 w-72">
+      <SheetContent side="left" className="p-0 w-full">
         <SheetTitle className="sr-only">Course Sidebar </SheetTitle>
         <div className="mt-10">
           <CourseSidebar course={course} collapsible="none" />

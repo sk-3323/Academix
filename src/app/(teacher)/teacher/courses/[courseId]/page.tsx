@@ -17,6 +17,7 @@ import { clearCourseState, GetSingleCourseApi } from "@/store/course/slice";
 import { AppDispatch } from "@/store/store";
 import {
   ArrowLeft,
+  ChartBarStacked,
   CircleDollarSign,
   Eye,
   LayoutDashboard,
@@ -117,12 +118,6 @@ const CourseIdPage = ({ params }: { params: { courseId: string } }) => {
               courseId={params?.courseId}
               setActions={setCourseActions}
             />
-            <CategoryForm
-              initialData={{ categoryId: singleData?.categoryId }}
-              courseId={params?.courseId}
-              setActions={setCourseActions}
-              options={data}
-            />
           </div>
           <div className="space-y-6">
             <div>
@@ -134,6 +129,18 @@ const CourseIdPage = ({ params }: { params: { courseId: string } }) => {
                 initialData={{ chapters: singleData?.chapters }}
                 courseId={params?.courseId}
                 setActions={setChapterActions}
+              />
+            </div>
+            <div>
+              <div className="flex items-center gap-x-2">
+                <IconBadge icon={ChartBarStacked} />
+                <h2 className="text-xl">Category</h2>
+              </div>
+              <CategoryForm
+                initialData={{ categoryId: singleData?.categoryId }}
+                courseId={params?.courseId}
+                setActions={setCourseActions}
+                options={data}
               />
             </div>
             <div>

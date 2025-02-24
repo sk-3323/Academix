@@ -1,6 +1,8 @@
 "use client";
 
+import { useTheme } from "next-themes";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
 
 const courses = [
@@ -97,6 +99,31 @@ const CourseImage = ({ course }: { course: CourseProps }) => {
 };
 
 export const CourseMarquee = () => {
+  const { theme, resolvedTheme } = useTheme();
+  const [gradientColor, setGradientColor] = useState("#f5f5f5");
+  const [mounted, setMounted] = useState(false);
+
+  // After mounting, we can safely access the theme
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    // Set gradient color based on theme
+    if (theme === "dark" || resolvedTheme === "dark") {
+      setGradientColor("#1a1a1a"); // Dark mode gradient
+    } else {
+      setGradientColor("#f5f5f5"); // Light mode gradient
+    }
+  }, [theme, resolvedTheme, mounted]);
+
+  if (!mounted) {
+    // Return a placeholder during SSR
+    return <div className="py-6 sm:py-8"></div>;
+  }
+
   return (
     <section className="w-full max-w-full flex flex-col items-center justify-center gap-4 py-6 sm:py-8 overflow-x-hidden">
       <div className="w-full max-w-[100vw] overflow-hidden">
@@ -105,6 +132,7 @@ export const CourseMarquee = () => {
           className="rotate-[-1deg]"
           speed={25}
           gradient={true}
+          gradientColor={gradientColor}
           gradientWidth={50}
         >
           {courses.map((item, index) => (
@@ -120,6 +148,7 @@ export const CourseMarquee = () => {
           gradientWidth={50}
           speed={25}
           direction="right"
+          gradientColor={gradientColor}
         >
           {courses2.map((item, index) => (
             <CourseImage course={item} key={index} />

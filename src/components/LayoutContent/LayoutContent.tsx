@@ -55,16 +55,18 @@ export function LayoutContent({
             <SidebarInset>
               <HeroHighlight>
                 {/* Header */}
-                <header className="sticky top-0 z-10 border-b bg-zinc-900/95">
-                  <div
-                    className={`flex justify-between items-center p-4 ${isSidebar ? "max-w-screen" : "w-screen"}`}
-                  >
-                    {Navbar && <>{Navbar}</>}
-                    {isMobile && !isSidebar && MobileSidebar && (
-                      <>{MobileSidebar}</>
-                    )}
-                  </div>
-                </header>
+                {Navbar && (
+                  <header className="sticky top-0 z-10 border-b bg-zinc-100/95 dark:bg-zinc-900/95">
+                    <div
+                      className={`flex justify-between items-center p-4 ${isSidebar ? "max-w-screen" : "w-screen"}`}
+                    >
+                      {Navbar}
+                      {isMobile && !isSidebar && MobileSidebar && (
+                        <>{MobileSidebar}</>
+                      )}
+                    </div>
+                  </header>
+                )}
 
                 {/* Main content */}
                 <main

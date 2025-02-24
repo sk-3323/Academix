@@ -71,7 +71,7 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
       throw new ErrorHandler("Quiz not found", 404);
     }
 
-    let lastOption = await prisma.option.findFirst({
+    let lastOption: any = await prisma.option.findFirst({
       where: {
         questionId: questionFound?.id,
       },
@@ -81,6 +81,10 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
     });
 
     data.order = lastOption?.order ? lastOption?.order + 1 : 1;
+
+    if (data?.order < 6) {
+      throw new ErrorHandler("You can add upto 5 options", 400);
+    }
 
     return await prisma.option.create({
       data: data,

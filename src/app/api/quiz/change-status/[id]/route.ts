@@ -35,8 +35,8 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
     if (
       !quizFound?.title ||
       !quizFound?.passingScore ||
-      quizFound?.questions?.some(
-        (question: any) => question?.status !== "PUBLISHED"
+      !quizFound?.questions?.some(
+        (question: any) => question?.status === "PUBLISHED"
       )
     ) {
       throw new ErrorHandler("Missing fields are required!", 400);

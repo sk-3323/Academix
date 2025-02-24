@@ -54,7 +54,7 @@ export default function Home() {
       </section>
 
       {/* Mission Statement */}
-      <section className="w-full flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 py-10 bg-gray-100">
+      <section className="w-full flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 py-10 bg-gray-100 dark:bg-black/80">
         <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tighter text-center max-w-2xl">
           We do whatever it takes to help you
         </h1>

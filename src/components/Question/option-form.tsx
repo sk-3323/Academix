@@ -104,8 +104,11 @@ const OptionForm = ({
     setIsCreating((current) => !current);
   };
 
+  let [open, setOpen] = useState<boolean>(false);
+
   const handleSuccess = () => {
     dispatch(GetSingleQuestionApi({ id: questionId }));
+    setOpen(false);
     form.reset({
       title: "",
       questionId: questionId || "",
@@ -293,6 +296,8 @@ const OptionForm = ({
             onDelete={onDelete}
             onStatusChange={onStatusChange}
             onReorder={onReorder}
+            open={open}
+            setOpen={setOpen}
           />
         </div>
       )}

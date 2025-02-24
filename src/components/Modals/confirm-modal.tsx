@@ -20,7 +20,8 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import { useEffect } from "react";
+import { SetStateAction, useEffect, useState } from "react";
+import { Dispatch } from "@reduxjs/toolkit";
 
 interface ConfirmModalProps {
   children: React.ReactNode;
@@ -59,6 +60,8 @@ interface FormDialogProps {
   onSubmit: (id: string, values: FormDialogSchema) => void;
   initialData?: FormDialogSchema;
   optionId: string;
+  open: boolean;
+  setOpen: any;
 }
 
 export const FormDialog = ({
@@ -66,6 +69,8 @@ export const FormDialog = ({
   onSubmit,
   initialData,
   optionId,
+  open,
+  setOpen,
 }: FormDialogProps) => {
   const form = useForm<FormDialogSchema>({
     resolver: zodResolver(formSchema),
@@ -78,11 +83,11 @@ export const FormDialog = ({
 
   const handleSubmit = (values: FormDialogSchema) => {
     onSubmit(optionId, values);
-    form.reset();
+    form.reset({ title: "" });
   };
 
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={() => setOpen(!open)}>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

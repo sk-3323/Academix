@@ -30,7 +30,7 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
     });
 
     if (!questionFound) {
-      throw new ErrorHandler("Chapter not found", 404);
+      throw new ErrorHandler("Question not found", 404);
     }
 
     if (
@@ -38,7 +38,7 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
       !questionFound?.points ||
       !questionFound?.answerId ||
       !questionFound?.options?.some(
-        (option: any) => option?.status !== "PUBLISHED"
+        (option: any) => option?.status === "PUBLISHED"
       )
     ) {
       throw new ErrorHandler("Missing fields are required!", 400);

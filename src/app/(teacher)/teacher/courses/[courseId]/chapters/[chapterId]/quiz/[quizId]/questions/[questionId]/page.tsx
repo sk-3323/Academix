@@ -66,7 +66,7 @@ const page = ({
 
   const requiredFields = [
     singleData?.title,
-    singleData?.point,
+    singleData?.points,
     singleData?.answerId,
     singleData?.options?.some((option: any) => option?.status === "PUBLISHED"),
   ];

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { Option } from "@prisma/client";
 import {
   DragDropContext,
@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { FormDialog, FormDialogSchema } from "../Modals/confirm-modal";
+import { Dispatch } from "@reduxjs/toolkit";
 
 interface OptionListProps {
   items: Option[];
@@ -33,6 +34,8 @@ interface OptionListProps {
   onEdit: (id: string, values: FormDialogSchema) => void;
   onDelete: (id: string) => void;
   onStatusChange: (id: string, status: string) => void;
+  open: boolean;
+  setOpen: any;
 }
 
 const OptionList = ({
@@ -41,6 +44,8 @@ const OptionList = ({
   onEdit,
   onDelete,
   onStatusChange,
+  open,
+  setOpen,
 }: OptionListProps) => {
   const [isMounted, setIsMounted] = useState(false);
   const [options, setOptions] = useState(items);
@@ -132,6 +137,8 @@ const OptionList = ({
                         onSubmit={onEdit}
                         optionId={options?.id}
                         initialData={options}
+                        open={open}
+                        setOpen={setOpen}
                       >
                         <Pencil className="w-4 h-4 mx-1 cursor-pointer hover:opacity-75 transition" />
                       </FormDialog>

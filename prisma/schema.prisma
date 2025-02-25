@@ -16,6 +16,7 @@ model User {
   role               Role      @default(STUDENT)
   phone              String?   @unique
   avatar             String?
+  avatarKey          String?
   verifyCode         String?
   verifyCodeExpiry   DateTime?
   gamificationPoints Int       @default(0)
@@ -35,13 +36,14 @@ model User {
 }
 
 model Course {
-  id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  description String?
-  thumbnail   String?
-  price       Float?
-  isFree      Boolean    @default(false)
-  status      BlogStatus @default(DRAFT)
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  description  String?
+  thumbnail    String?
+  thumbnailKey String?
+  price        Float?
+  isFree       Boolean    @default(false)
+  status       BlogStatus @default(DRAFT)
 
   // Relations
   instructorId String    @db.ObjectId

@@ -10,6 +10,7 @@ import {
 import createUserSchema from "@/schema/user/schema";
 import path from "path";
 import { USER_UPLOAD_PATH } from "@/constants/config";
+import { utapi } from "@/lib/utAPI";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let user_id = content?.params?.id;
@@ -93,34 +94,32 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
   }
 
   let formdata = await request.formData();
-  let uploadedFilePath: string | null = null;
+  let uploadedFileKey: string | null = null;
 
   try {
+    const userFound = await prisma.user.findUnique({
+      where: {
+        id: user_id,
+      },
+    });
+
+    if (!userFound) {
+      throw new ErrorHandler("User not found", 404);
+    }
+
+    let data = formDataToJsonWithoutFiles(formdata);
+    let avatar = formdata?.get("avatar") as File;
+
+    data = await validateData(createUserSchema, data);
+
+    if (avatar) {
+      const uploadedFile = await utapi.uploadFiles(avatar);
+      data.avatar = uploadedFile?.data?.url;
+      data.avatarKey = uploadedFile?.data?.key;
+      uploadedFileKey = uploadedFile?.data?.key || null;
+    }
+
     let result = await prisma.$transaction(async (tx) => {
-      const userFound = await tx.user.findUnique({
-        where: {
-          id: user_id,
-        },
-      });
-
-      if (!userFound) {
-        throw new ErrorHandler("User not found", 404);
-      }
-
-      let data = formDataToJsonWithoutFiles(formdata);
-      let avatar = formdata?.get("avatar") as File;
-
-      data = await validateData(createUserSchema, data);
-
-      if (avatar) {
-        const { filePath, fileName } = await handleFileUpload(
-          avatar,
-          USER_UPLOAD_PATH
-        );
-        data.avatar = fileName;
-        uploadedFilePath = filePath;
-      }
-
       let updatedUser = await tx.user.update({
         data: data,
         where: {
@@ -128,14 +127,11 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
         },
       });
 
-      if (updatedUser && userFound?.avatar) {
-        let oldFilePath = path.join(
-          path.resolve(process.cwd(), USER_UPLOAD_PATH),
-          userFound?.avatar
-        );
-
-        cleanupUploadedFile(oldFilePath);
+      if (updatedUser && userFound?.avatarKey) {
+        await utapi.deleteFiles(userFound?.avatarKey); // Cleanup if an error
       }
+
+      return updatedUser;
     });
 
     return NextResponse.json(
@@ -147,8 +143,8 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
       { status: 200 }
     );
   } catch (error) {
-    if (uploadedFilePath) {
-      cleanupUploadedFile(uploadedFilePath);
+    if (uploadedFileKey) {
+      await utapi.deleteFiles(uploadedFileKey); // Cleanup if an error
     }
     throw error;
   }
@@ -172,14 +168,21 @@ export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
       throw new ErrorHandler("User not found", 404);
     }
 
-    return await tx.user.delete({
+    let deletedUser = await tx.user.delete({
       where: {
         id: user_id,
       },
       select: {
         id: true,
+        avatarKey: true,
       },
     });
+
+    if (deletedUser?.avatarKey) {
+      await utapi.deleteFiles(deletedUser?.avatarKey); // Cleanup if an error
+    }
+
+    return deletedUser;
   });
 
   return NextResponse.json(

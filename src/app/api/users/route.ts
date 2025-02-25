@@ -10,6 +10,7 @@ import {
 } from "../../../lib/fileHandler";
 import createUserSchema from "@/schema/user/schema";
 import { USER_UPLOAD_PATH } from "@/constants/config";
+import { utapi } from "@/lib/utAPI";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let result = await prisma.$transaction(async (tx) => {
@@ -104,25 +105,26 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
 
 export const POST = apiHandler(async (request: NextRequest, content: any) => {
   let formdata = await request.formData();
-  let uploadedFilePath: string | null = null;
+  let uploadedFileKey: string | null = null;
 
   try {
+    let data = formDataToJsonWithoutFiles(formdata);
+    let avatar = formdata?.get("avatar") as File;
+    data.password = await hashPassword(data?.password);
+
+    // Validate data BEFORE transaction
+    data = await validateData(createUserSchema, data);
+
+    // Upload the avatar BEFORE transaction
+    if (avatar) {
+      const uploadedFile = await utapi.uploadFiles(avatar);
+      data.avatar = uploadedFile?.data?.url;
+      data.avatarKey = uploadedFile?.data?.key;
+      uploadedFileKey = uploadedFile?.data?.key || null;
+    }
+
+    // Now run the transaction with ONLY database operations
     let result = await prisma.$transaction(async (tx) => {
-      let data = formDataToJsonWithoutFiles(formdata);
-      let avatar = formdata?.get("avatar") as File;
-      data.password = await hashPassword(data?.password);
-
-      data = await validateData(createUserSchema, data);
-
-      if (avatar) {
-        const { filePath, fileName } = await handleFileUpload(
-          avatar,
-          USER_UPLOAD_PATH
-        );
-        data.avatar = fileName;
-        uploadedFilePath = filePath;
-      }
-
       return await tx.user.create({
         data: data,
       });
@@ -131,14 +133,14 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
     return NextResponse.json(
       {
         status: true,
-        message: "user created successfully",
+        message: "User created successfully",
         result,
       },
       { status: 201 }
     );
   } catch (error) {
-    if (uploadedFilePath) {
-      cleanupUploadedFile(uploadedFilePath);
+    if (uploadedFileKey) {
+      await utapi.deleteFiles(uploadedFileKey); // Cleanup if an error occurs
     }
     throw error;
   }

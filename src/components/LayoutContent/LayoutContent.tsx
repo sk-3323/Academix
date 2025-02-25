@@ -56,7 +56,7 @@ export function LayoutContent({
               <HeroHighlight>
                 {/* Header */}
                 {Navbar && (
-                  <header className="sticky top-0 z-10 border-b bg-zinc-100/95 dark:bg-zinc-900/95">
+                  <header className="sticky top-0 border-b bg-zinc-100/95 dark:bg-zinc-900/95 z-30">
                     <div
                       className={`flex justify-between items-center p-4 ${isSidebar ? "max-w-screen" : "w-screen"}`}
                     >

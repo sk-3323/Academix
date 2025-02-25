@@ -13,6 +13,7 @@ import {
 } from "@/lib/fileHandler";
 import { decryptToken } from "@/lib/jwtGenerator";
 import { getProgress } from "../with-progress/route";
+import { utapi } from "@/lib/utAPI";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let course_id = content?.params?.id;
@@ -146,34 +147,31 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
   }
 
   let formdata = await request.formData();
-  // let uploadedFilePath: string | null = null;
+  let uploadedFileKey: string | null = null;
 
   try {
+    const courseFound = await prisma.course.findUnique({
+      where: {
+        id: course_id,
+      },
+    });
+
+    if (!courseFound) {
+      throw new ErrorHandler("Course not found", 404);
+    }
+
+    let data = formDataToJsonWithoutFiles(formdata);
+    let thumbnail = formdata?.get("thumbnail") as File;
+
+    data = await validateData(createCourseSchema, data);
+
+    if (thumbnail) {
+      const uploadedFile = await utapi.uploadFiles(thumbnail);
+      data.thumbnail = uploadedFile?.data?.url;
+      data.thumbnailKey = uploadedFile?.data?.key;
+      uploadedFileKey = uploadedFile?.data?.key || null;
+    }
     let result = await prisma.$transaction(async (tx) => {
-      const courseFound = await tx.course.findUnique({
-        where: {
-          id: course_id,
-        },
-      });
-
-      if (!courseFound) {
-        throw new ErrorHandler("Course not found", 404);
-      }
-
-      let data = formDataToJsonWithoutFiles(formdata);
-      // let thumbnail = formdata?.get("thumbnail") as File;
-
-      data = await validateData(createCourseSchema, data);
-
-      // if (thumbnail) {
-      //   const { filePath, fileName } = await handleFileUpload(
-      //     thumbnail,
-      //     COURSE_UPLOAD_PATH
-      //   );
-      //   data.thumbnail = fileName;
-      //   uploadedFilePath = filePath;
-      // }
-
       let updatedCourse = await tx.course.update({
         data: data,
         where: {
@@ -189,14 +187,9 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
         },
       });
 
-      // if (updatedCourse && courseFound?.thumbnail) {
-      //   let oldFilePath = path.join(
-      //     path.resolve(process.cwd(), COURSE_UPLOAD_PATH),
-      //     courseFound?.thumbnail
-      //   );
-
-      //   cleanupUploadedFile(oldFilePath);
-      // }
+      if (updatedCourse && courseFound?.thumbnailKey) {
+        await utapi.deleteFiles(courseFound?.thumbnailKey); // Cleanup if an error
+      }
 
       return updatedCourse;
     });
@@ -210,9 +203,9 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
       { status: 200 }
     );
   } catch (error) {
-    // if (uploadedFilePath) {
-    //   cleanupUploadedFile(uploadedFilePath);
-    // }
+    if (uploadedFileKey) {
+      await utapi.deleteFiles(uploadedFileKey); // Cleanup if an error
+    }
     throw error;
   }
 });
@@ -254,14 +247,21 @@ export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
       }
     }
 
-    return await tx.course.delete({
+    let deletedCourse = await tx.course.delete({
       where: {
         id: course_id,
       },
       select: {
         id: true,
+        thumbnailKey: true,
       },
     });
+
+    if (deletedCourse?.thumbnailKey) {
+      await utapi.deleteFiles(deletedCourse?.thumbnailKey); // Cleanup if an error
+    }
+
+    return deletedCourse;
   });
 
   return NextResponse.json(

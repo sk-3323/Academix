@@ -11,6 +11,7 @@ import { COURSE_UPLOAD_PATH } from "@/constants/config";
 import { decryptToken } from "@/lib/jwtGenerator";
 import { createCourseSchema } from "@/schema/course/schema";
 import { isAuthorized } from "@/lib/roleChecker";
+import { utapi } from "@/lib/utAPI";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let token: any = request.headers.get("x-user-token");
@@ -97,27 +98,25 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
   isAuthorized(session, "TEACHER");
 
   let formdata = await request.formData();
-  let uploadedFilePath: string | null = null;
+  let uploadedFileKey: string | null = null;
 
   try {
+    let data = formDataToJsonWithoutFiles(formdata);
+    data.instructorId = instructorId;
+    let thumbnail = formdata?.get("thumbnail") as File;
+
+    if (thumbnail) {
+      const uploadedFile = await utapi.uploadFiles(thumbnail);
+      data.thumbnail = uploadedFile?.data?.url;
+      data.thumbnailKey = uploadedFile?.data?.key;
+      uploadedFileKey = uploadedFile?.data?.key || null;
+    }
+
+    let requiredFields = request?.nextUrl?.searchParams;
+
+    data = await validateData(createCourseSchema, data, requiredFields);
+
     let result = await prisma.$transaction(async (tx) => {
-      let data = formDataToJsonWithoutFiles(formdata);
-      data.instructorId = instructorId;
-      let thumbnail = formdata?.get("thumbnail") as File;
-
-      if (thumbnail) {
-        const { filePath, fileName } = await handleFileUpload(
-          thumbnail,
-          COURSE_UPLOAD_PATH
-        );
-        data.thumbnail = fileName;
-        uploadedFilePath = filePath;
-      }
-
-      let requiredFields = request?.nextUrl?.searchParams;
-
-      data = await validateData(createCourseSchema, data, requiredFields);
-
       return await tx.course.create({
         data: data,
       });
@@ -132,8 +131,8 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
       { status: 201 }
     );
   } catch (error) {
-    if (uploadedFilePath) {
-      cleanupUploadedFile(uploadedFilePath);
+    if (uploadedFileKey) {
+      await utapi.deleteFiles(uploadedFileKey); // Cleanup if an error occurs
     }
     throw error;
   }

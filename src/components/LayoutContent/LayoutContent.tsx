@@ -60,10 +60,8 @@ export function LayoutContent({
                     <div
                       className={`flex justify-between items-center p-4 ${isSidebar ? "max-w-screen" : "w-screen"}`}
                     >
+                      {isMobile && MobileSidebar && <>{MobileSidebar}</>}
                       {Navbar}
-                      {isMobile && !isSidebar && MobileSidebar && (
-                        <>{MobileSidebar}</>
-                      )}
                     </div>
                   </header>
                 )}

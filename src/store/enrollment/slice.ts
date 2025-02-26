@@ -155,7 +155,7 @@ const EnrollmentSlice = createSlice({
   extraReducers: (builder) => {
     builder
       //%%%%%%%%%% CREATE ENROLLMENT API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(AddEnrollmentApi.pending, (state, action: any) => {
+      .addCase(AddEnrollmentApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(AddEnrollmentApi.fulfilled, (state, action: any) => {
@@ -170,7 +170,7 @@ const EnrollmentSlice = createSlice({
       })
 
       //%%%%%%%%%% CHECKOUT COURSE API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(CheckoutCourseApi.pending, (state, action: any) => {
+      .addCase(CheckoutCourseApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(CheckoutCourseApi.fulfilled, (state, action: any) => {
@@ -186,7 +186,7 @@ const EnrollmentSlice = createSlice({
       })
 
       //%%%%%%%%%% APPROVE COURSE PAYMENT API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(ApproveCoursePaymentApi.pending, (state, action: any) => {
+      .addCase(ApproveCoursePaymentApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(ApproveCoursePaymentApi.fulfilled, (state, action: any) => {
@@ -202,7 +202,7 @@ const EnrollmentSlice = createSlice({
       })
 
       //%%%%%%%%%% GET ENROLLMENT API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetEnrollmentApi.pending, (state, action: any) => {
+      .addCase(GetEnrollmentApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetEnrollmentApi.fulfilled, (state, action: any) => {
@@ -216,7 +216,7 @@ const EnrollmentSlice = createSlice({
       })
 
       //%%%%%%%%%% GET SINGLE ENROLLMENT API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetSingleEnrollmentApi.pending, (state, action: any) => {
+      .addCase(GetSingleEnrollmentApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetSingleEnrollmentApi.fulfilled, (state, action: any) => {
@@ -230,7 +230,7 @@ const EnrollmentSlice = createSlice({
       })
 
       //%%%%%%%%%% EDIT ENROLLMENT API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(EditEnrollmentApi.pending, (state, action: any) => {
+      .addCase(EditEnrollmentApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(EditEnrollmentApi.fulfilled, (state, action: any) => {
@@ -245,7 +245,7 @@ const EnrollmentSlice = createSlice({
       })
 
       //%%%%%%%%%% DELETE ENROLLMENT API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(DeleteEnrollmentApi.pending, (state, action: any) => {
+      .addCase(DeleteEnrollmentApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(DeleteEnrollmentApi.fulfilled, (state, action: any) => {

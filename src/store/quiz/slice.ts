@@ -164,7 +164,7 @@ const QuizSlice = createSlice({
   extraReducers: (builder) => {
     builder
       //%%%%%%%%%% CREATE QUIZ API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(AddQuizApi.pending, (state, action: any) => {
+      .addCase(AddQuizApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(AddQuizApi.fulfilled, (state, action: any) => {
@@ -179,7 +179,7 @@ const QuizSlice = createSlice({
       })
 
       //%%%%%%%%%% GET QUIZ API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetQuizApi.pending, (state, action: any) => {
+      .addCase(GetQuizApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetQuizApi.fulfilled, (state, action: any) => {
@@ -193,7 +193,7 @@ const QuizSlice = createSlice({
       })
 
       //%%%%%%%%%% GET SINGLE QUIZ API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetSingleQuizApi.pending, (state, action: any) => {
+      .addCase(GetSingleQuizApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetSingleQuizApi.fulfilled, (state, action: any) => {
@@ -207,7 +207,7 @@ const QuizSlice = createSlice({
       })
 
       //%%%%%%%%%% EDIT QUIZ API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(EditQuizApi.pending, (state, action: any) => {
+      .addCase(EditQuizApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(EditQuizApi.fulfilled, (state, action: any) => {
@@ -222,7 +222,7 @@ const QuizSlice = createSlice({
       })
 
       //%%%%%%%%%% CHANGE QUIZ ORDER API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(ChangeQuizOrderApi.pending, (state, action: any) => {
+      .addCase(ChangeQuizOrderApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(ChangeQuizOrderApi.fulfilled, (state, action: any) => {
@@ -237,7 +237,7 @@ const QuizSlice = createSlice({
       })
 
       //%%%%%%%%%% CHANGE QUIZ STATUS API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(ChangeQuizStatusApi.pending, (state, action: any) => {
+      .addCase(ChangeQuizStatusApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(ChangeQuizStatusApi.fulfilled, (state, action: any) => {
@@ -252,7 +252,7 @@ const QuizSlice = createSlice({
       })
 
       //%%%%%%%%%% DELETE QUIZ API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(DeleteQuizApi.pending, (state, action: any) => {
+      .addCase(DeleteQuizApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(DeleteQuizApi.fulfilled, (state, action: any) => {

@@ -164,7 +164,7 @@ const OptionSlice = createSlice({
   extraReducers: (builder) => {
     builder
       //%%%%%%%%%% CREATE OPTION API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(AddOptionApi.pending, (state, action: any) => {
+      .addCase(AddOptionApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(AddOptionApi.fulfilled, (state, action: any) => {
@@ -179,7 +179,7 @@ const OptionSlice = createSlice({
       })
 
       //%%%%%%%%%% GET OPTION API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetOptionApi.pending, (state, action: any) => {
+      .addCase(GetOptionApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetOptionApi.fulfilled, (state, action: any) => {
@@ -193,7 +193,7 @@ const OptionSlice = createSlice({
       })
 
       //%%%%%%%%%% GET SINGLE OPTION API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetSingleOptionApi.pending, (state, action: any) => {
+      .addCase(GetSingleOptionApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetSingleOptionApi.fulfilled, (state, action: any) => {
@@ -207,7 +207,7 @@ const OptionSlice = createSlice({
       })
 
       //%%%%%%%%%% EDIT OPTION API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(EditOptionApi.pending, (state, action: any) => {
+      .addCase(EditOptionApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(EditOptionApi.fulfilled, (state, action: any) => {
@@ -222,7 +222,7 @@ const OptionSlice = createSlice({
       })
 
       //%%%%%%%%%% CHANGE OPTION ORDER API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(ChangeOptionOrderApi.pending, (state, action: any) => {
+      .addCase(ChangeOptionOrderApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(ChangeOptionOrderApi.fulfilled, (state, action: any) => {
@@ -237,7 +237,7 @@ const OptionSlice = createSlice({
       })
 
       //%%%%%%%%%% CHANGE OPTION STATUS API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(ChangeOptionStatusApi.pending, (state, action: any) => {
+      .addCase(ChangeOptionStatusApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(ChangeOptionStatusApi.fulfilled, (state, action: any) => {
@@ -252,7 +252,7 @@ const OptionSlice = createSlice({
       })
 
       //%%%%%%%%%% DELETE OPTION API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(DeleteOptionApi.pending, (state, action: any) => {
+      .addCase(DeleteOptionApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(DeleteOptionApi.fulfilled, (state, action: any) => {

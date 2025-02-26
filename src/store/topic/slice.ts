@@ -185,7 +185,7 @@ const TopicSlice = createSlice({
   extraReducers: (builder) => {
     builder
       //%%%%%%%%%% CREATE TOPIC API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(AddTopicApi.pending, (state, action: any) => {
+      .addCase(AddTopicApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(AddTopicApi.fulfilled, (state, action: any) => {
@@ -200,7 +200,7 @@ const TopicSlice = createSlice({
       })
 
       //%%%%%%%%%% GET TOPIC API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetTopicApi.pending, (state, action: any) => {
+      .addCase(GetTopicApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetTopicApi.fulfilled, (state, action: any) => {
@@ -214,7 +214,7 @@ const TopicSlice = createSlice({
       })
 
       //%%%%%%%%%% GET SINGLE TOPIC API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetSingleTopicApi.pending, (state, action: any) => {
+      .addCase(GetSingleTopicApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetSingleTopicApi.fulfilled, (state, action: any) => {
@@ -230,7 +230,7 @@ const TopicSlice = createSlice({
       //%%%%%%%%%% GET SINGLE COURSE WITH PROGRESS BY TOPIC API HANDLE %%%%%%%%%%%%%%%%%%%
       .addCase(
         GetPublishedTopicWithProgressApi.pending,
-        (state, action: any) => {
+        (state) => {
           state.loading = true;
         }
       )
@@ -253,7 +253,7 @@ const TopicSlice = createSlice({
       )
 
       //%%%%%%%%%% EDIT TOPIC API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(EditTopicApi.pending, (state, action: any) => {
+      .addCase(EditTopicApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(EditTopicApi.fulfilled, (state, action: any) => {
@@ -268,7 +268,7 @@ const TopicSlice = createSlice({
       })
 
       //%%%%%%%%%% CHANGE TOPIC ORDER API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(ChangeTopicOrderApi.pending, (state, action: any) => {
+      .addCase(ChangeTopicOrderApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(ChangeTopicOrderApi.fulfilled, (state, action: any) => {
@@ -283,7 +283,7 @@ const TopicSlice = createSlice({
       })
 
       //%%%%%%%%%% CHANGE TOPIC STATUS API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(ChangeTopicStatusApi.pending, (state, action: any) => {
+      .addCase(ChangeTopicStatusApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(ChangeTopicStatusApi.fulfilled, (state, action: any) => {
@@ -298,7 +298,7 @@ const TopicSlice = createSlice({
       })
 
       //%%%%%%%%%% DELETE TOPIC API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(DeleteTopicApi.pending, (state, action: any) => {
+      .addCase(DeleteTopicApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(DeleteTopicApi.fulfilled, (state, action: any) => {

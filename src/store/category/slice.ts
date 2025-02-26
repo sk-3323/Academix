@@ -109,7 +109,7 @@ const CategorySlice = createSlice({
   extraReducers: (builder) => {
     builder
       //%%%%%%%%%% CREATE CATEGORY API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(AddCategoryApi.pending, (state, action: any) => {
+      .addCase(AddCategoryApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(AddCategoryApi.fulfilled, (state, action: any) => {
@@ -124,7 +124,7 @@ const CategorySlice = createSlice({
       })
 
       //%%%%%%%%%% GET CATEGORY API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetCategoryApi.pending, (state, action: any) => {
+      .addCase(GetCategoryApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetCategoryApi.fulfilled, (state, action: any) => {
@@ -138,7 +138,7 @@ const CategorySlice = createSlice({
       })
 
       //%%%%%%%%%% GET SINGLE CATEGORY API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetSingleCategoryApi.pending, (state, action: any) => {
+      .addCase(GetSingleCategoryApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetSingleCategoryApi.fulfilled, (state, action: any) => {
@@ -152,7 +152,7 @@ const CategorySlice = createSlice({
       })
 
       //%%%%%%%%%% EDIT CATEGORY API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(EditCategoryApi.pending, (state, action: any) => {
+      .addCase(EditCategoryApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(EditCategoryApi.fulfilled, (state, action: any) => {
@@ -167,7 +167,7 @@ const CategorySlice = createSlice({
       })
 
       //%%%%%%%%%% DELETE CATEGORY API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(DeleteCategoryApi.pending, (state, action: any) => {
+      .addCase(DeleteCategoryApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(DeleteCategoryApi.fulfilled, (state, action: any) => {

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="85 55 300 80">
+  <g transform="matrix(.5 0 0 .5 50 50)">
+    <path fill="none" stroke="#70EBCC" stroke-linecap="round" stroke-width="8" d="M150 70c30 0 50-30 80-30s50 30 50 50-20 40-50 40-50-30-80-30-50 20-50 40"/>
+    <circle cx="150" cy="70" r="8" fill="#70EBCC"/>
+    <circle cx="230" cy="40" r="8" fill="#70EBCC"/>
+    <circle cx="280" cy="90" r="8" fill="#70EBCC"/>
+    <circle cx="230" cy="130" r="8" fill="#70EBCC"/>
+    <circle cx="150" cy="100" r="8" fill="#70EBCC"/>
+    <circle cx="100" cy="140" r="8" fill="#70EBCC"/>
+    <circle cx="190" cy="60" r="4" fill="#20C9A0"/>
+    <circle cx="210" cy="110" r="4" fill="#20C9A0"/>
+    <circle cx="260" cy="70" r="4" fill="#20C9A0"/>
+    <circle cx="170" cy="90" r="4" fill="#20C9A0"/>
+  </g>
+  <text x="290" y="97" font-family="Helvetica, sans-serif" font-size="38" font-weight="bold" text-anchor="middle">
+      <tspan fill="#20C9A0">Acade</tspan><tspan fill="#151515">mix</tspan>
+    </text>
+  <text x="265" y="112" fill="#98C3B7" font-family="Helvetica, sans-serif" font-size="12" text-anchor="middle">
+      smart learning solutions
+    </text>
+</svg>

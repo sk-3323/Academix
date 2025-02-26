@@ -119,7 +119,7 @@ const ResourceSlice = createSlice({
   extraReducers: (builder) => {
     builder
       //%%%%%%%%%% CREATE RESOURCE API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(AddResourceApi.pending, (state, action: any) => {
+      .addCase(AddResourceApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(AddResourceApi.fulfilled, (state, action: any) => {
@@ -134,7 +134,7 @@ const ResourceSlice = createSlice({
       })
 
       //%%%%%%%%%% GET RESOURCE API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetResourceApi.pending, (state, action: any) => {
+      .addCase(GetResourceApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetResourceApi.fulfilled, (state, action: any) => {
@@ -148,7 +148,7 @@ const ResourceSlice = createSlice({
       })
 
       //%%%%%%%%%% GET SINGLE RESOURCE API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetSingleResourceApi.pending, (state, action: any) => {
+      .addCase(GetSingleResourceApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetSingleResourceApi.fulfilled, (state, action: any) => {
@@ -162,7 +162,7 @@ const ResourceSlice = createSlice({
       })
 
       //%%%%%%%%%% EDIT RESOURCE API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(EditResourceApi.pending, (state, action: any) => {
+      .addCase(EditResourceApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(EditResourceApi.fulfilled, (state, action: any) => {
@@ -177,7 +177,7 @@ const ResourceSlice = createSlice({
       })
 
       //%%%%%%%%%% DELETE RESOURCE API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(DeleteResourceApi.pending, (state, action: any) => {
+      .addCase(DeleteResourceApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(DeleteResourceApi.fulfilled, (state, action: any) => {

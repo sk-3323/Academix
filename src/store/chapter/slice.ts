@@ -164,7 +164,7 @@ const ChapterSlice = createSlice({
   extraReducers: (builder) => {
     builder
       //%%%%%%%%%% CREATE CHAPTER API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(AddChapterApi.pending, (state, action: any) => {
+      .addCase(AddChapterApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(AddChapterApi.fulfilled, (state, action: any) => {
@@ -179,7 +179,7 @@ const ChapterSlice = createSlice({
       })
 
       //%%%%%%%%%% GET CHAPTER API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetChapterApi.pending, (state, action: any) => {
+      .addCase(GetChapterApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetChapterApi.fulfilled, (state, action: any) => {
@@ -193,7 +193,7 @@ const ChapterSlice = createSlice({
       })
 
       //%%%%%%%%%% GET SINGLE CHAPTER API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetSingleChapterApi.pending, (state, action: any) => {
+      .addCase(GetSingleChapterApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetSingleChapterApi.fulfilled, (state, action: any) => {
@@ -207,7 +207,7 @@ const ChapterSlice = createSlice({
       })
 
       //%%%%%%%%%% EDIT CHAPTER API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(EditChapterApi.pending, (state, action: any) => {
+      .addCase(EditChapterApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(EditChapterApi.fulfilled, (state, action: any) => {
@@ -222,7 +222,7 @@ const ChapterSlice = createSlice({
       })
 
       //%%%%%%%%%% CHANGE CHAPTER ORDER API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(ChangeChapterOrderApi.pending, (state, action: any) => {
+      .addCase(ChangeChapterOrderApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(ChangeChapterOrderApi.fulfilled, (state, action: any) => {
@@ -237,7 +237,7 @@ const ChapterSlice = createSlice({
       })
 
       //%%%%%%%%%% CHANGE CHAPTER STATUS API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(ChangeChapterStatusApi.pending, (state, action: any) => {
+      .addCase(ChangeChapterStatusApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(ChangeChapterStatusApi.fulfilled, (state, action: any) => {
@@ -252,7 +252,7 @@ const ChapterSlice = createSlice({
       })
 
       //%%%%%%%%%% DELETE CHAPTER API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(DeleteChapterApi.pending, (state, action: any) => {
+      .addCase(DeleteChapterApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(DeleteChapterApi.fulfilled, (state, action: any) => {

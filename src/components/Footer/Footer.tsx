@@ -1,6 +1,13 @@
 import { useRole } from "@/hooks/useRole";
 import { endOfYear } from "date-fns";
+import Link from "next/link";
+import Image from "next/image";
+import DarkVLogoName from "../../../public/assets/logos/dark-v-logo-with-name.svg";
+import LightVLogoName from "../../../public/assets/logos/light-v-logo-with-name.svg";
+import { useTheme } from "next-themes";
+
 const Footer = ({ Sidebar }: { Sidebar?: React.ReactNode }) => {
+  const { theme } = useTheme();
   const { role, status } = useRole();
   return (
     <>
@@ -26,12 +33,19 @@ const Footer = ({ Sidebar }: { Sidebar?: React.ReactNode }) => {
                   </p>
                   <ul className="transition-colors hover:text-text-neutral-800 text-neutral-600 dark:text-neutral-300 list-none space-y-4">
                     <li className="list-none">
-                      <a
-                        className="transition-colors hover:text-text-neutral-800 "
-                        href="https://courses.chaicode.com/learn/view-all?show=mock-tests&amp;type=2"
-                      >
-                        Daily Quiz
-                      </a>
+                      <Link href="/home" legacyBehavior passHref>
+                        Home
+                      </Link>
+                    </li>
+                    <li className="list-none">
+                      <Link href="/about" legacyBehavior passHref>
+                        About
+                      </Link>
+                    </li>
+                    <li className="list-none">
+                      <Link href="/contact" legacyBehavior passHref>
+                        Contact
+                      </Link>
                     </li>
                   </ul>
                 </div>
@@ -43,7 +57,7 @@ const Footer = ({ Sidebar }: { Sidebar?: React.ReactNode }) => {
                     <li className="list-none">
                       <a
                         className="transition-colors hover:text-text-neutral-800 "
-                        href="https://hitesh.ai/discord"
+                        href="#"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -53,7 +67,7 @@ const Footer = ({ Sidebar }: { Sidebar?: React.ReactNode }) => {
                     <li className="list-none">
                       <a
                         className="transition-colors hover:text-text-neutral-800 "
-                        href="https://x.com/hiteshdotcom"
+                        href="#"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -63,7 +77,7 @@ const Footer = ({ Sidebar }: { Sidebar?: React.ReactNode }) => {
                     <li className="list-none">
                       <a
                         className="transition-colors hover:text-text-neutral-800 "
-                        href="https://hitesh.ai/whatsapp"
+                        href="#"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -73,7 +87,7 @@ const Footer = ({ Sidebar }: { Sidebar?: React.ReactNode }) => {
                     <li className="list-none">
                       <a
                         className="transition-colors hover:text-text-neutral-800 "
-                        href="https://www.linkedin.com/in/hiteshchoudhary/"
+                        href="#"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -83,7 +97,7 @@ const Footer = ({ Sidebar }: { Sidebar?: React.ReactNode }) => {
                     <li className="list-none">
                       <a
                         className="transition-colors hover:text-text-neutral-800 "
-                        href="https://www.instagram.com/hiteshchoudharyofficial"
+                        href="#"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -137,39 +151,35 @@ const Footer = ({ Sidebar }: { Sidebar?: React.ReactNode }) => {
                   </p>
                   <ul className="transition-colors hover:text-text-neutral-800 text-neutral-600 dark:text-neutral-300 list-none space-y-4">
                     <li className="list-none">
-                      <a
-                        className="transition-colors hover:text-text-neutral-800 "
-                        href="https://courses.chaicode.com/learn/account/signup"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
+                      <Link href="/account/signup" legacyBehavior passHref>
                         Sign Up
-                      </a>
+                      </Link>
                     </li>
                     <li className="list-none">
-                      <a
-                        className="transition-colors hover:text-text-neutral-800 "
-                        href="https://courses.chaicode.com/learn/account/signin"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
+                      <Link href="/account/login" legacyBehavior passHref>
                         Login
-                      </a>
+                      </Link>
                     </li>
                     <li className="list-none">
-                      <a
-                        className="transition-colors hover:text-text-neutral-800 "
-                        href="https://courses.chaicode.com/learn/account/forgot-password"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <Link
+                        href="/account/forgot-password"
+                        legacyBehavior
+                        passHref
                       >
                         Forgot Password
-                      </a>
+                      </Link>
                     </li>
                   </ul>
                 </div>
               </div>
               <div className="w-full flex justify-center items-center flex-col">
+                <Link href="/" legacyBehavior passHref>
+                  {theme === "dark" ? (
+                    <Image alt="logo" src={DarkVLogoName} width={150} />
+                  ) : (
+                    <Image alt="logo" src={LightVLogoName} width={150} />
+                  )}
+                </Link>
                 <div className="mt-2 ml-2 pt-5 w-full flex justify-start h-full items-center flex-col">
                   © copyright {endOfYear(new Date()).getFullYear() - 1} -{" "}
                   {endOfYear(new Date()).getFullYear()}. All rights reserved.

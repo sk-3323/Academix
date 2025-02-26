@@ -4,11 +4,13 @@ import { apiHandler, ErrorHandler } from "./lib/errorHandler";
 
 export { default } from "next-auth/middleware";
 
+const publicRoutesRegex = /^\/(|about|contact|courses(?:\/.*)?)$/;
+
 // This function can be marked `async` if using `await` inside
 export const middleware = apiHandler(async (request: NextRequest) => {
-  let path = request.nextUrl.pathname;
+  const path = request.nextUrl.pathname;
 
-  if (path === "/") {
+  if (publicRoutesRegex.test(path)) {
     return NextResponse.next();
   }
 

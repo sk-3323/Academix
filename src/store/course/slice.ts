@@ -195,7 +195,7 @@ const CourseSlice = createSlice({
   extraReducers: (builder) => {
     builder
       //%%%%%%%%%% CREATE COURSE API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(AddCourseApi.pending, (state, action: any) => {
+      .addCase(AddCourseApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(AddCourseApi.fulfilled, (state, action: any) => {
@@ -211,7 +211,7 @@ const CourseSlice = createSlice({
       })
 
       //%%%%%%%%%% GET COURSE API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetCourseApi.pending, (state, action: any) => {
+      .addCase(GetCourseApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetCourseApi.fulfilled, (state, action: any) => {
@@ -225,7 +225,7 @@ const CourseSlice = createSlice({
       })
 
       //%%%%%%%%%% GET COURSE WITH PROGRESS API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetCourseWithProgressApi.pending, (state, action: any) => {
+      .addCase(GetCourseWithProgressApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetCourseWithProgressApi.fulfilled, (state, action: any) => {
@@ -239,7 +239,7 @@ const CourseSlice = createSlice({
       })
 
       //%%%%%%%%%% GET SINGLE COURSE API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetSingleCourseApi.pending, (state, action: any) => {
+      .addCase(GetSingleCourseApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetSingleCourseApi.fulfilled, (state, action: any) => {
@@ -253,7 +253,7 @@ const CourseSlice = createSlice({
       })
 
       //%%%%%%%%%% GET SINGLE COURSE WITH PROGRESS API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetSingleCourseWithProgressApi.pending, (state, action: any) => {
+      .addCase(GetSingleCourseWithProgressApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(
@@ -275,7 +275,7 @@ const CourseSlice = createSlice({
       )
 
       //%%%%%%%%%% EDIT COURSE API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(EditCourseApi.pending, (state, action: any) => {
+      .addCase(EditCourseApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(EditCourseApi.fulfilled, (state, action: any) => {
@@ -290,7 +290,7 @@ const CourseSlice = createSlice({
       })
 
       //%%%%%%%%%% CHANGE COURSE STATUS API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(ChangeCourseStatusApi.pending, (state, action: any) => {
+      .addCase(ChangeCourseStatusApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(ChangeCourseStatusApi.fulfilled, (state, action: any) => {
@@ -305,7 +305,7 @@ const CourseSlice = createSlice({
       })
 
       //%%%%%%%%%% DELETE COURSE API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(DeleteCourseApi.pending, (state, action: any) => {
+      .addCase(DeleteCourseApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(DeleteCourseApi.fulfilled, (state, action: any) => {

@@ -8,6 +8,14 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { SearchInput } from "./search-input";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+import DarkLogo from "../../../public/assets/logos/dark-logo.svg";
+import LightLogo from "../../../public/assets/logos/light-logo.svg";
+import DarkName from "../../../public/assets/logos/dark-name.svg";
+import LightName from "../../../public/assets/logos/light-name.svg";
+import DarkHLogoName from "../../../public/assets/logos/dark-h-logo-with-name.svg";
+import LightHLogoName from "../../../public/assets/logos/light-h-logo-with-name.svg";
 
 const Navbar = ({ isMobile }: { isMobile: boolean }) => {
   const { setTheme, theme } = useTheme();
@@ -24,7 +32,13 @@ const Navbar = ({ isMobile }: { isMobile: boolean }) => {
     return (
       <>
         <div>
-          <h1 className="font-extrabold">Acedemix</h1>
+          <Link href="/" legacyBehavior passHref>
+            {theme === "dark" ? (
+              <Image alt="logo" src={DarkHLogoName} />
+            ) : (
+              <Image alt="logo" src={LightHLogoName} />
+            )}
+          </Link>
         </div>
         {!isMobile && (
           <div>
@@ -38,7 +52,23 @@ const Navbar = ({ isMobile }: { isMobile: boolean }) => {
   return (
     <>
       <div className="flex justify-start items-center gap-x-4">
-        <h1 className="font-extrabold">Acedemix</h1>
+        {!isMobile ? (
+          <Link href="/" legacyBehavior passHref>
+            {theme === "dark" ? (
+              <Image alt="logo" src={DarkHLogoName} />
+            ) : (
+              <Image alt="logo" src={LightHLogoName} />
+            )}
+          </Link>
+        ) : (
+          <Link href="/" legacyBehavior passHref>
+            {theme === "dark" ? (
+              <Image alt="logo" src={DarkLogo} />
+            ) : (
+              <Image alt="logo" src={LightLogo} />
+            )}
+          </Link>
+        )}
         {isSearchPage && (
           <>
             <div className="hidden md:block">
@@ -47,10 +77,18 @@ const Navbar = ({ isMobile }: { isMobile: boolean }) => {
           </>
         )}
       </div>
-      {!isMobile && (
+      {!isMobile ? (
         <div>
           <NavigationMenuDemo />
         </div>
+      ) : (
+        <Link href="/" legacyBehavior passHref>
+          {theme === "dark" ? (
+            <Image alt="name" src={DarkName} />
+          ) : (
+            <Image alt="name" src={LightName} />
+          )}
+        </Link>
       )}
       <div className="flex justify-center">
         {theme === "dark" ? (

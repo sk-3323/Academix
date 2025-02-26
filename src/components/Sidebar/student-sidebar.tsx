@@ -2,22 +2,13 @@
 
 import * as React from "react";
 import {
-  Home,
-  Settings,
-  Users,
-  HelpCircle,
-  Menu,
   LayoutDashboard,
   BookOpen,
   ShieldCheck,
   CreditCard,
   LogOut,
   User,
-  LogIn,
-  Info,
-  Contact,
   VideoIcon,
-  TvMinimalPlay,
   MessageCircleQuestion,
 } from "lucide-react";
 
@@ -29,7 +20,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
@@ -40,6 +30,12 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import Image from "next/image";
+import DarkLogo from "../../../public/assets/logos/dark-logo.svg";
+import LightLogo from "../../../public/assets/logos/light-logo.svg";
+import DarkName from "../../../public/assets/logos/dark-name.svg";
+import LightName from "../../../public/assets/logos/light-name.svg";
+import { useTheme } from "next-themes";
 
 const items = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/student/dashboard" },
@@ -56,7 +52,8 @@ export function StudentSidebar({
 }: {
   collapsible?: "icon" | "none";
 }) {
-  const { setOpen } = useSidebar();
+  const { setOpen, isMobile } = useSidebar();
+  const { theme } = useTheme();
   const [isHovering, setIsHovering] = React.useState(false);
   const hoverTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -93,7 +90,30 @@ export function StudentSidebar({
         onMouseLeave={handleMouseLeave}
         className="transition-all duration-300 ease-in"
       >
-        <SidebarHeader className="p-2">{isHovering && "Sidebar"}</SidebarHeader>
+        <SidebarHeader className="p-2">
+          {" "}
+          <Link href="/" legacyBehavior passHref>
+            <>
+              {!isHovering && !isMobile ? (
+                <>
+                  {theme === "dark" ? (
+                    <Image alt="logo" src={DarkLogo} width={50} />
+                  ) : (
+                    <Image alt="logo" src={LightLogo} width={50} />
+                  )}
+                </>
+              ) : (
+                <>
+                  {theme === "dark" ? (
+                    <Image alt="logo" src={DarkName} width={150} />
+                  ) : (
+                    <Image alt="logo" src={LightName} width={150} />
+                  )}
+                </>
+              )}
+            </>
+          </Link>
+        </SidebarHeader>
         <SidebarContent className="p-2">
           <SidebarMenu>
             {items.map((item) => (
@@ -127,7 +147,7 @@ export function StudentSidebar({
         </SidebarContent>
         <SidebarFooter className="p-2">
           <Button className="bg-red-500 font-semibold">
-            {!isHovering ? <LogOut /> : "Logout"}
+            {!isHovering && !isMobile ? <LogOut /> : "Logout"}
           </Button>
         </SidebarFooter>
       </Sidebar>

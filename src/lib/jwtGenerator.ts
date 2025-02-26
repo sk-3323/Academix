@@ -1,4 +1,4 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 
 export const encryptToken = async (user: any) => {
   const payload = {
@@ -8,7 +8,7 @@ export const encryptToken = async (user: any) => {
     role: user?.rolemaster?.role,
   };
 
-  let token = await jwt.sign(payload, process.env.NEXTAUTH_SECRET, {
+  const token = await jwt.sign(payload, process.env.NEXTAUTH_SECRET as string, {
     expiresIn: "2d",
     algorithm: "HS256",
   });
@@ -16,6 +16,6 @@ export const encryptToken = async (user: any) => {
 };
 
 export const decryptToken = async (token: any) => {
-  let payload = await jwt.verify(token, process.env.NEXTAUTH_SECRET);
+  const payload = await jwt.verify(token, process.env.NEXTAUTH_SECRET as string);
   return payload;
 };

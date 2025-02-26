@@ -12,7 +12,7 @@ export const createRazorpayOrder = async (
   user: any,
   type: any = "course_purchase"
 ) => {
-  let receipt = `receipt_${Math.random().toString(36).substring(7)}_${Date.now()}`;
+  const receipt = `receipt_${Math.random().toString(36).substring(7)}_${Date.now()}`;
   try {
     const order = await razorpay.orders.create({
       amount: Math.round(course?.price * 100),

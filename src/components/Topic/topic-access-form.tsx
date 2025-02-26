@@ -18,11 +18,8 @@ import { toast } from "sonner";
 import { Pencil } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { Textarea } from "../ui/textarea";
 import { Topic } from "@prisma/client";
 import { EditTopicApi, GetSingleTopicApi } from "@/store/topic/slice";
-import Editor from "../editor";
-import Preview from "../preview";
 import { Checkbox } from "../ui/checkbox";
 
 type TopicFormValues = Pick<Topic, "isFree">;
@@ -30,7 +27,6 @@ type TopicFormValues = Pick<Topic, "isFree">;
 interface TopicAccessFormProps {
   initialData: TopicFormValues;
   topicId: string;
-  chapterId: string;
   setActions: any;
 }
 
@@ -41,7 +37,6 @@ const formSchema = z.object({
 const TopicAccessForm = ({
   initialData,
   topicId,
-  chapterId,
   setActions,
 }: TopicAccessFormProps) => {
   const dispatch = useDispatch<AppDispatch>();

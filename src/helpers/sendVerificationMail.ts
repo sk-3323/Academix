@@ -1,5 +1,3 @@
-import { resend } from "@/lib/resend";
-import OTPEmailTemplate from "../../email/OTPEmailTemplate";
 import { ApiResponse } from "../../types/ApiResponse";
 import nodemailer from "nodemailer";
 

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 70">
+  <g font-family="Helvetica, sans-serif" text-anchor="middle">
+    <text x="100" y="40" font-size="38" font-weight="bold">
+      <tspan fill="#20C9A0">Acade</tspan><tspan fill="#FDF7FA">mix</tspan>
+    </text>
+    <text x="100" y="55" fill="#98C3B7" font-size="12">
+      smart learning solutions
+    </text>
+  </g>
+</svg>

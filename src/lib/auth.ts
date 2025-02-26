@@ -1,6 +1,5 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import { EmailProvider } from "next-auth/providers/email";
 import GithubProvider from "next-auth/providers/github";
 import { NextAuthOptions } from "next-auth";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
@@ -54,7 +53,7 @@ export const authOption: NextAuthOptions = {
       },
       authorize: async (credentials: any): Promise<any> => {
         try {
-          let data = await validateData(loginSchema, {
+          const data = await validateData(loginSchema, {
             username: credentials?.username,
             password: credentials?.password,
           });
@@ -85,7 +84,7 @@ export const authOption: NextAuthOptions = {
             throw new ErrorHandler("User does not exist. Please sign up.", 401);
           }
 
-          let isVerified = verifyPassword(data?.password, user?.password);
+          const isVerified = verifyPassword(data?.password, user?.password);
 
           if (isVerified) {
             let payload: any = { ...user };

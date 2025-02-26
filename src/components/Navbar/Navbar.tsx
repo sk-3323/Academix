@@ -5,15 +5,17 @@ import { Button } from "../ui/button";
 import { useTheme } from "next-themes";
 import { NavigationMenuDemo } from "./NavMenuItems";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { SearchInput } from "./search-input";
-import { useSession } from "next-auth/react";
+import { useRole } from "@/hooks/useRole";
 
 const Navbar = ({ isMobile }: { isMobile: boolean }) => {
   const { setTheme, theme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const isSearchPage = pathname === "/search";
+  const router = useRouter();
+  const { status } = useRole();
   // Only render theme toggle after component is mounted
   useEffect(() => {
     setMounted(true);
@@ -60,6 +62,14 @@ const Navbar = ({ isMobile }: { isMobile: boolean }) => {
         ) : (
           <Button variant={"outline"} onClick={() => setTheme("dark")}>
             <Moon />
+          </Button>
+        )}
+        {status === "unauthenticated" && (
+          <Button
+            onClick={() => router.push("/account/login")}
+            className="ms-2"
+          >
+            Login
           </Button>
         )}
       </div>

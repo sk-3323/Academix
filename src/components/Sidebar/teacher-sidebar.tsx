@@ -44,7 +44,7 @@ import { signOut } from "next-auth/react";
 
 const items = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/teacher/dashboard" },
-  { icon: BookOpen, label: "Courses", href: "/teacher/course" },
+  { icon: BookOpen, label: "Courses", href: "/teacher/courses" },
   { icon: ShieldCheck, label: "Certificates", href: "/teacher/certificate" },
   { icon: User, label: "Students", href: "/teacher/student" },
   { icon: CreditCard, label: "Wallet", href: "/teacher/wallet" },

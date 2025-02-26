@@ -78,11 +78,17 @@ export const authOption: NextAuthOptions = {
               phone: true,
               password: true,
               role: true,
+              isBlocked: true,
             },
           });
 
           if (!user) {
             throw new ErrorHandler("User does not exist. Please sign up.", 401);
+          }
+          console.log(user?.isBlocked, "blocled");
+
+          if (user?.isBlocked) {
+            throw new ErrorHandler("You are not allowed to access this", 401);
           }
 
           let isVerified = verifyPassword(data?.password, user?.password);
@@ -130,6 +136,7 @@ export const authOption: NextAuthOptions = {
         token.phone = user.phone;
         token.isAdmin = user.isAdmin;
         token.role = user.role;
+        token.isBlocked = user.isBlocked;
       }
       return token;
     },
@@ -142,6 +149,7 @@ export const authOption: NextAuthOptions = {
         session.user.phone = token.phone;
         session.user.isAdmin = token.isAdmin;
         session.user.role = token.role;
+        session.user.isBlocked = token.isBlocked;
       }
       return session;
     },

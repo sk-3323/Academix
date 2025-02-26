@@ -22,7 +22,6 @@ export const formDataToJsonWithoutFiles = (formData: FormData): any => {
     if (value instanceof File) {
       return;
     }
-
     obj[key] = value;
   });
 

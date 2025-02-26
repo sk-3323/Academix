@@ -14,7 +14,7 @@ const Footer = ({ Sidebar }: { Sidebar?: React.ReactNode }) => {
       {/* {role === "STUDENT" && ( */}
       <footer className="mt-auto border-t">
         <div
-          className={`flex justify-center items-center p-4 ${Sidebar ? "max-w-screen" : "w-screen"}`}
+          className={`flex justify-center items-center p-4 ${Sidebar ? "max-w-full" : "w-full"}`}
         >
           <div className="border-t border-neutral-100 dark:border-white/[0.1] px-8 py-20 w-full relative overflow-hidden">
             <p

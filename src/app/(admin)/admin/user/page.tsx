@@ -55,9 +55,28 @@ import { Ban, UserCheck, History, Shield, Mail } from "lucide-react";
 import { ApiResponse } from "../../../../../types/ApiResponse";
 import PageHeader from "@/components/LayoutContent/PageHeader";
 import { User } from "../../../../../types/User";
+import Loading from "@/components/Sidebar/Loading";
+import { Skeleton } from "@/components/ui/skeleton";
+import { APIClient } from "@/helpers/apiHelper";
 
+const formSchema = z.object({
+  username: z.string().min(2, {
+    message: "Name is required and must be at least 2 characters long",
+  }),
+  email: z.string().email({
+    message: "Invalid email address",
+  }),
+  phone: z.string().min(10, {
+    message: "Phone number must be at least 10 digits long",
+  }),
+  role: z.string().min(1, {
+    message: "Role is required",
+  }),
+  password: z.string().min(8, {
+    message: "Password must be at least 8 characters long",
+  }),
+});
 export default function UserManagement() {
-  const formSchema = createUserSchema;
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -96,7 +115,7 @@ export default function UserManagement() {
     defaultValues: {
       email: "",
       username: "",
-      role: "STUDENT",
+      role: "",
       password: "",
       phone: "",
     },
@@ -104,16 +123,34 @@ export default function UserManagement() {
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await fetch(`/api/users`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
+      const api = new APIClient();
+      const formData = new FormData();
+
+      // Populate formData with values, ensuring strings
+      Object.entries(values).forEach(([key, val]) => {
+        if (val !== undefined && val !== null) {
+          formData.set(key, String(val));
+        }
       });
-      if (!response.ok) {
+      console.log(formData.get("username"));
+
+      // // Log formData contents for debugging
+      // for (let [key, val] of formData.entries()) {
+      //   console.log(`FormData: ${key} = ${val}`);
+      // }
+      console.log("Values:", formData, values);
+
+      // Send to API
+      const response = await api.create("/users", formData, {
+        "Content-Type": "multipart/form-data",
+      });
+      console.log(response, "response");
+
+      if (!response.status) {
+        // Adjust based on your API response
         throw new Error("Failed to create user");
       }
+
       await getUsers();
       form.reset();
     } catch (error) {
@@ -140,18 +177,29 @@ export default function UserManagement() {
   };
 
   const handleBlockUser = async (userId: string) => {
-    // try {
-    //   const response = await fetch(`/api/users/${userId}/block`, {
-    //     method: "PATCH",
-    //   });
-    //   if (!response.ok) {
-    //     throw new Error("Failed to block user");
-    //   }
-    //   await getUsers();
-    //   setShowBlockDialog(false);
-    // } catch (error) {
-    //   console.error(error);
-    // }
+    try {
+      const formData = new FormData();
+      const value = !selectedUser?.isBlocked;
+      formData.append("isBlocked", String(value));
+      const api = new APIClient();
+      const response = await api.update(`/users/${userId}`, formData, {
+        "Content-Type": "multipart/form-data",
+      });
+      if (!response) {
+        throw new Error("Failed to block user");
+      }
+      await getUsers();
+      // const response = await fetch(`/api/users/${userId}/block`, {
+      //   method: "PATCH",
+      // });
+      // if (!response.ok) {
+      //   throw new Error("Failed to block user");
+      // }
+      // await getUsers();
+      // setShowBlockDialog(false);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleDeleteUser = async (userId: string) => {
@@ -192,6 +240,9 @@ export default function UserManagement() {
   useEffect(() => {
     getUsers();
   }, []);
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className="space-y-6">
@@ -210,6 +261,7 @@ export default function UserManagement() {
                 <form
                   onSubmit={form.handleSubmit(handleSubmit)}
                   className="space-y-4"
+                  encType="multipart/form-data"
                 >
                   <FormField
                     control={form.control}
@@ -256,8 +308,11 @@ export default function UserManagement() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Role</FormLabel>
-                        <Select {...field}>
-                          <SelectTrigger className="w-[180px]">
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger>
                             <SelectValue placeholder="Select role" />
                           </SelectTrigger>
                           <SelectContent>
@@ -304,6 +359,7 @@ export default function UserManagement() {
         />
       </div>
 
+      {filteredUsers.length === 0 && <div>No Data Found</div>}
       <Table>
         <TableHeader>
           <TableRow>
@@ -316,13 +372,13 @@ export default function UserManagement() {
         </TableHeader>
         <TableBody>
           {filteredUsers.map((user: User) => (
-            <TableRow key={user._id}>
+            <TableRow key={user.id}>
               <TableCell>{user.username}</TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>
                 <Select
                   defaultValue={user.role}
-                  onValueChange={(value) => handleUpdateRole(user._id, value)}
+                  onValueChange={(value) => handleUpdateRole(user.id, value)}
                 >
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Select role" />
@@ -357,7 +413,7 @@ export default function UserManagement() {
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => handleSendPasswordReset(user._id)}
+                  onClick={() => handleSendPasswordReset(user.id)}
                 >
                   <Mail className="h-4 w-4" />
                 </Button>
@@ -393,7 +449,7 @@ export default function UserManagement() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => selectedUser && handleBlockUser(selectedUser._id)}
+              onClick={() => selectedUser && handleBlockUser(selectedUser.id)}
             >
               {selectedUser?.isBlocked ? "Unblock" : "Block"}
             </AlertDialogAction>
@@ -414,7 +470,7 @@ export default function UserManagement() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => selectedUser && handleDeleteUser(selectedUser._id)}
+              onClick={() => selectedUser && handleDeleteUser(selectedUser.id)}
             >
               Delete
             </AlertDialogAction>

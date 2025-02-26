@@ -92,7 +92,6 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
   if (!user_id) {
     throw new ErrorHandler("Not found", 400);
   }
-
   let formdata = await request.formData();
   let uploadedFileKey: string | null = null;
 
@@ -120,6 +119,33 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
     }
 
     let result = await prisma.$transaction(async (tx) => {
+      const userFound = await tx.user.findUnique({
+        where: {
+          id: user_id,
+        },
+      });
+
+      if (!userFound) {
+        throw new ErrorHandler("User not found", 404);
+      }
+      console.log(userFound);
+      let data = formDataToJsonWithoutFiles(formdata);
+      let avatar = formdata?.get("avatar") as File;
+
+      if (data.isBlocked !== undefined) {
+        data.isBlocked = data.isBlocked === "true";
+      }
+      // data = await validateData(createUserSchema, data);
+
+      if (avatar) {
+        const { filePath, fileName } = await handleFileUpload(
+          avatar,
+          USER_UPLOAD_PATH
+        );
+        data.avatar = fileName;
+        uploadedFilePath = filePath;
+      }
+
       let updatedUser = await tx.user.update({
         data: data,
         where: {

@@ -18,7 +18,6 @@ import { toast } from "sonner";
 import { Pencil } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { Textarea } from "../ui/textarea";
 import { Course } from "@prisma/client";
 import Editor from "../editor";
 import Preview from "../preview";

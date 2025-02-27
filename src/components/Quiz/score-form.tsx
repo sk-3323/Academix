@@ -11,17 +11,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { EditCourseApi, GetSingleCourseApi } from "@/store/course/slice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { toast } from "sonner";
 import { Pencil } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { Textarea } from "../ui/textarea";
-import { Course, Quiz } from "@prisma/client";
+import { Quiz } from "@prisma/client";
 import { Input } from "../ui/input";
-import { formatPrice } from "@/lib/format";
 import { EditQuizApi, GetSingleQuizApi } from "@/store/quiz/slice";
 
 type QuizFormValues = Pick<Quiz, "passingScore">;

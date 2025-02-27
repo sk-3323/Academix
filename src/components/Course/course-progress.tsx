@@ -4,7 +4,6 @@ import React from "react";
 
 interface CourseProgressProps {
   value: number;
-  size: "default" | "sm";
   variant: "default" | "success";
 }
 
@@ -20,7 +19,6 @@ const sizeByVariant = {
 
 export const CourseProgress = ({
   value,
-  size,
   variant,
 }: CourseProgressProps) => {
   return (

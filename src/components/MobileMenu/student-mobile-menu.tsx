@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { Menu, MenuIcon, X } from "lucide-react";
+import { Menu, MenuIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -15,13 +14,6 @@ import { StudentSidebar } from "../Sidebar/student-sidebar";
 
 const StudentMobileMenu = () => {
   const [open, setOpen] = React.useState(false);
-
-  const menuItems = [
-    { href: "/", label: "Home" },
-    { href: "/about", label: "About" },
-    { href: "/contact", label: "Contact" },
-    { href: "/account/login", label: "SignIn" },
-  ];
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>

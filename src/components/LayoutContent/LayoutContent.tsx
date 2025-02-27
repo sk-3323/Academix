@@ -1,10 +1,7 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
 import { SidebarInset, useSidebar } from "@/components/ui/sidebar";
-import { ResponsiveSidebarWithAutoOpen } from "@/components/Sidebar/AppSidebar";
 import { HeroHighlight } from "@/components/ui/hero-hightlight";
-import MobileMenu from "@/components/MobileMenu/MobileMenu";
 import Footer from "@/components/Footer/Footer";
 import { CustomCursor } from "@/components/CustomCursor/CustomCursor";
 import { signOut, useSession } from "next-auth/react";
@@ -17,13 +14,11 @@ export function LayoutContent({
   Sidebar,
   Navbar,
   MobileSidebar,
-  MobileNavbar,
 }: {
   children: React.ReactNode;
   Sidebar?: React.ReactNode;
   Navbar?: React.ReactNode;
   MobileSidebar?: React.ReactNode;
-  MobileNavbar?: React.ReactNode;
 }) {
   const { isMobile } = useSidebar();
   const [isSidebar, setIsSidebar] = React.useState(false);
@@ -34,8 +29,8 @@ export function LayoutContent({
     const id = data.data?.user.id;
     try {
       const api = new APIClient();
-      const res = await api.get(`/users/${id}`);
-      const data = res.result;
+      const res: any = await api.get(`/users/${id}`);
+      const data = res?.result;
       if (data.isBlocked) {
         await signOut({ callbackUrl: "/" });
       }

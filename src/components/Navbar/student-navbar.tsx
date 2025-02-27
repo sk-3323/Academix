@@ -3,7 +3,6 @@
 import { Moon, Sun } from "lucide-react";
 import { Button } from "../ui/button";
 import { useTheme } from "next-themes";
-import { NavigationMenuDemo } from "./NavMenuItems";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { SearchInput } from "./search-input";

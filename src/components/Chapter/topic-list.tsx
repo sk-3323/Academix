@@ -49,11 +49,11 @@ const TopicList = ({ items, onReorder, onEdit }: TopicListProps) => {
       result?.source?.index,
       result?.destination?.index
     );
-    let updatedTopics = items.slice(startIndex, endIndex + 1);
+    const updatedTopics = items.slice(startIndex, endIndex + 1);
 
     setTopics(items);
 
-    let bulkUpdateData: any = updatedTopics.map((topic) => ({
+    const bulkUpdateData: any = updatedTopics.map((topic) => ({
       id: topic?.id,
       order: items.findIndex((item) => item?.id === topic?.id) + 1,
     }));

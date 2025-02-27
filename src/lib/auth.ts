@@ -93,7 +93,7 @@ export const authOption: NextAuthOptions = {
           const isVerified = verifyPassword(data?.password, user?.password);
 
           if (isVerified) {
-            let payload: any = { ...user };
+            const payload: any = { ...user };
             if (payload?.role === "ADMIN") {
               payload.isAdmin = true;
             }

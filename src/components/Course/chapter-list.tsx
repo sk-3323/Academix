@@ -49,11 +49,11 @@ const ChapterList = ({ items, onReorder, onEdit }: ChapterListProps) => {
       result?.source?.index,
       result?.destination?.index
     );
-    let updatedChapters = items.slice(startIndex, endIndex + 1);
+    const updatedChapters = items.slice(startIndex, endIndex + 1);
 
     setChapters(items);
 
-    let bulkUpdateData: any = updatedChapters.map((chapter) => ({
+    const bulkUpdateData: any = updatedChapters.map((chapter) => ({
       id: chapter?.id,
       order: items.findIndex((item) => item?.id === chapter?.id) + 1,
     }));

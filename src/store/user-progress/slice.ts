@@ -116,7 +116,7 @@ const UserProgressSlice = createSlice({
   extraReducers: (builder) => {
     builder
       //%%%%%%%%%% CREATE USER-PROGRESS API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(AddUserProgressApi.pending, (state, action: any) => {
+      .addCase(AddUserProgressApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(AddUserProgressApi.fulfilled, (state, action: any) => {
@@ -131,7 +131,7 @@ const UserProgressSlice = createSlice({
       })
 
       //%%%%%%%%%% GET USER-PROGRESS API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetUserProgressApi.pending, (state, action: any) => {
+      .addCase(GetUserProgressApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetUserProgressApi.fulfilled, (state, action: any) => {
@@ -145,7 +145,7 @@ const UserProgressSlice = createSlice({
       })
 
       //%%%%%%%%%% GET SINGLE USER-PROGRESS API HANDLE %%%%%%%%%%%%%%%%%%%
-      .addCase(GetSingleUserProgressApi.pending, (state, action: any) => {
+      .addCase(GetSingleUserProgressApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(GetSingleUserProgressApi.fulfilled, (state, action: any) => {
@@ -159,7 +159,7 @@ const UserProgressSlice = createSlice({
       })
 
       //%%%%%%%%%% EDIT USER-PROGRESS API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(EditUserProgressApi.pending, (state, action: any) => {
+      .addCase(EditUserProgressApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(EditUserProgressApi.fulfilled, (state, action: any) => {
@@ -174,7 +174,7 @@ const UserProgressSlice = createSlice({
       })
 
       //%%%%%%%%%% DELETE USER-PROGRESS API HANDLE %%%%%%%%%%%%%%%%%%%%
-      .addCase(DeleteUserProgressApi.pending, (state, action: any) => {
+      .addCase(DeleteUserProgressApi.pending, (state) => {
         state.loading = true;
       })
       .addCase(DeleteUserProgressApi.fulfilled, (state, action: any) => {

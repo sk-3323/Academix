@@ -49,11 +49,11 @@ const QuestionList = ({ items, onReorder, onEdit }: QuestionListProps) => {
       result?.source?.index,
       result?.destination?.index
     );
-    let updatedQuestion = items.slice(startIndex, endIndex + 1);
+    const updatedQuestion = items.slice(startIndex, endIndex + 1);
 
     setQuestions(items);
 
-    let bulkUpdateData: any = updatedQuestion.map((questions) => ({
+    const bulkUpdateData: any = updatedQuestion.map((questions) => ({
       id: questions?.id,
       order: items.findIndex((item) => item?.id === questions?.id) + 1,
     }));
@@ -67,7 +67,11 @@ const QuestionList = ({ items, onReorder, onEdit }: QuestionListProps) => {
         {(provided) => (
           <div {...provided.droppableProps} ref={provided.innerRef}>
             {questions.map((questions: any, index: number) => (
-              <Draggable key={questions?.id} draggableId={questions?.id} index={index}>
+              <Draggable
+                key={questions?.id}
+                draggableId={questions?.id}
+                index={index}
+              >
                 {(provided) => (
                   <div
                     className={cn(

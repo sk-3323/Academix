@@ -98,7 +98,6 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { useMotionValue, motion, useMotionTemplate } from "framer-motion";
-import { usePathname } from "next/navigation";
 import React from "react";
 
 export const HeroHighlight = ({

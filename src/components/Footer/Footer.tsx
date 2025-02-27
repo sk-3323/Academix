@@ -1,4 +1,3 @@
-import { useRole } from "@/hooks/useRole";
 import { endOfYear } from "date-fns";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,10 +7,8 @@ import { useTheme } from "next-themes";
 
 const Footer = ({ Sidebar }: { Sidebar?: React.ReactNode }) => {
   const { theme } = useTheme();
-  const { role, status } = useRole();
   return (
     <>
-      {/* {role === "STUDENT" && ( */}
       <footer className="mt-auto border-t">
         <div
           className={`flex justify-center items-center p-4 ${Sidebar ? "max-w-full" : "w-full"}`}
@@ -190,7 +187,6 @@ const Footer = ({ Sidebar }: { Sidebar?: React.ReactNode }) => {
           </div>
         </div>
       </footer>
-      {/* )} */}
     </>
   );
 };

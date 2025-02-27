@@ -49,11 +49,11 @@ const QuizList = ({ items, onReorder, onEdit }: QuizListProps) => {
       result?.source?.index,
       result?.destination?.index
     );
-    let updatedQuiz = items.slice(startIndex, endIndex + 1);
+    const updatedQuiz = items.slice(startIndex, endIndex + 1);
 
     setQuiz(items);
 
-    let bulkUpdateData: any = updatedQuiz.map((quiz) => ({
+    const bulkUpdateData: any = updatedQuiz.map((quiz) => ({
       id: quiz?.id,
       order: items.findIndex((item) => item?.id === quiz?.id) + 1,
     }));

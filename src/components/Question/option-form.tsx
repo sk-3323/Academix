@@ -11,26 +11,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { EditCourseApi, GetSingleCourseApi } from "@/store/course/slice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { toast } from "sonner";
-import { Loader2, Pencil, PlusCircle } from "lucide-react";
+import { Loader2, PlusCircle } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { Textarea } from "../ui/textarea";
-import { Option, Question, Topic } from "@prisma/client";
-import { AddTopicApi, ChangeTopicOrderApi } from "@/store/topic/slice";
+import { Option } from "@prisma/client";
 import { Input } from "../ui/input";
 import { useRouter } from "next/navigation";
-import { GetSingleChapterApi } from "@/store/chapter/slice";
-import {
-  AddQuestionApi,
-  ChangeQuestionOrderApi,
-  GetSingleQuestionApi,
-} from "@/store/question/slice";
-import QuestionList from "./option-list";
-import { GetSingleQuizApi } from "@/store/quiz/slice";
+import { GetSingleQuestionApi } from "@/store/question/slice";
 import OptionList from "./option-list";
 import {
   AddOptionApi,
@@ -39,16 +29,12 @@ import {
   DeleteOptionApi,
   EditOptionApi,
 } from "@/store/options/slice";
-import { changeOptionStatusSchema } from "@/schema/options/schema";
 import { FormDialogSchema } from "../Modals/confirm-modal";
 
 type OptionFormValues = { options: Option[] };
 
 interface OptionFormProps {
   initialData: OptionFormValues;
-  courseId: string;
-  chapterId: string;
-  quizId: string;
   questionId: string;
   setActions: any;
 }
@@ -64,14 +50,10 @@ const formSchema = z.object({
 
 const OptionForm = ({
   initialData,
-  courseId,
-  chapterId,
-  quizId,
   questionId,
   setActions,
 }: OptionFormProps) => {
   const dispatch = useDispatch<AppDispatch>();
-  const router = useRouter();
 
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -104,7 +86,7 @@ const OptionForm = ({
     setIsCreating((current) => !current);
   };
 
-  let [open, setOpen] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
 
   const handleSuccess = () => {
     dispatch(GetSingleQuestionApi({ id: questionId }));

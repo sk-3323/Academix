@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { EditCourseApi, GetSingleCourseApi } from "@/store/course/slice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { toast } from "sonner";
 import { Pencil } from "lucide-react";
@@ -39,7 +39,7 @@ const CategoryForm = ({
 
   useEffect(() => {
     if (options && options?.length !== 0) {
-      let _data = options.map((val: any) => {
+      const _data = options.map((val: any) => {
         return {
           label: val?.name,
           value: val?.id,

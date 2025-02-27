@@ -2,14 +2,12 @@ import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import {
-  cleanupUploadedFile,
+  
   formDataToJsonWithoutFiles,
-  handleFileUpload,
   hashPassword,
   validateData,
 } from "../../../lib/fileHandler";
 import createUserSchema from "@/schema/user/schema";
-import { USER_UPLOAD_PATH } from "@/constants/config";
 import { utapi } from "@/lib/utAPI";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {

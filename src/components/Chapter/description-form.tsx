@@ -17,7 +17,6 @@ import { toast } from "sonner";
 import { Pencil } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { Textarea } from "../ui/textarea";
 import { Chapter } from "@prisma/client";
 import { EditChapterApi, GetSingleChapterApi } from "@/store/chapter/slice";
 import Editor from "../editor";

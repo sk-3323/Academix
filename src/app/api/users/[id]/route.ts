@@ -2,24 +2,22 @@ import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import {
-  cleanupUploadedFile,
   formDataToJsonWithoutFiles,
   handleFileUpload,
   validateData,
 } from "../../../../lib/fileHandler";
 import createUserSchema from "@/schema/user/schema";
-import path from "path";
 import { USER_UPLOAD_PATH } from "@/constants/config";
 import { utapi } from "@/lib/utAPI";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
-  let user_id = content?.params?.id;
+  const user_id = content?.params?.id;
 
   if (!user_id) {
     throw new ErrorHandler("Not found", 400);
   }
 
-  let result = await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     return await tx.user.findFirst({
       where: {
         id: user_id,
@@ -87,12 +85,12 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
 });
 
 export const PUT = apiHandler(async (request: NextRequest, content: any) => {
-  let user_id = content?.params.id;
+  const user_id = content?.params.id;
 
   if (!user_id) {
     throw new ErrorHandler("Not found", 400);
   }
-  let formdata = await request.formData();
+  const formdata = await request.formData();
   let uploadedFileKey: string | null = null;
 
   try {
@@ -107,7 +105,7 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
     }
 
     let data = formDataToJsonWithoutFiles(formdata);
-    let avatar = formdata?.get("avatar") as File;
+    const avatar = formdata?.get("avatar") as File;
 
     data = await validateData(createUserSchema, data);
 
@@ -118,7 +116,7 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
       uploadedFileKey = uploadedFile?.data?.key || null;
     }
 
-    let result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       const userFound = await tx.user.findUnique({
         where: {
           id: user_id,
@@ -129,8 +127,8 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
         throw new ErrorHandler("User not found", 404);
       }
       console.log(userFound);
-      let data = formDataToJsonWithoutFiles(formdata);
-      let avatar = formdata?.get("avatar") as File;
+      const data = formDataToJsonWithoutFiles(formdata);
+      const avatar = formdata?.get("avatar") as File;
 
       if (data.isBlocked !== undefined) {
         data.isBlocked = data.isBlocked === "true";
@@ -138,15 +136,13 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
       // data = await validateData(createUserSchema, data);
 
       if (avatar) {
-        const { filePath, fileName } = await handleFileUpload(
-          avatar,
-          USER_UPLOAD_PATH
-        );
-        data.avatar = fileName;
-        uploadedFilePath = filePath;
+        const uploadedFile = await utapi.uploadFiles(avatar);
+        data.avatar = uploadedFile?.data?.url;
+        data.avatarKey = uploadedFile?.data?.key;
+        uploadedFileKey = uploadedFile?.data?.key || null;
       }
 
-      let updatedUser = await tx.user.update({
+      const updatedUser = await tx.user.update({
         data: data,
         where: {
           id: user_id,
@@ -177,13 +173,13 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
 });
 
 export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
-  let user_id = content?.params?.id;
+  const user_id = content?.params?.id;
 
   if (!user_id) {
     throw new ErrorHandler("Not found", 400);
   }
 
-  let result = await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const userFound = await tx.user.count({
       where: {
         id: user_id,
@@ -194,7 +190,7 @@ export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
       throw new ErrorHandler("User not found", 404);
     }
 
-    let deletedUser = await tx.user.delete({
+    const deletedUser = await tx.user.delete({
       where: {
         id: user_id,
       },

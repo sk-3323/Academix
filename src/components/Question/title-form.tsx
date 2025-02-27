@@ -18,8 +18,7 @@ import { toast } from "sonner";
 import { Pencil } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { Question, Quiz } from "@prisma/client";
-import { EditQuizApi, GetSingleQuizApi } from "@/store/quiz/slice";
+import { Question} from "@prisma/client";
 import { EditQuestionApi, GetSingleQuestionApi } from "@/store/question/slice";
 
 type QuestionFormValues = Pick<Question, "title">;

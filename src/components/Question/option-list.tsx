@@ -1,6 +1,6 @@
 "use client";
 
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Option } from "@prisma/client";
 import {
   DragDropContext,
@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { FormDialog, FormDialogSchema } from "../Modals/confirm-modal";
-import { Dispatch } from "@reduxjs/toolkit";
 
 interface OptionListProps {
   items: Option[];
@@ -77,11 +76,11 @@ const OptionList = ({
       result?.source?.index,
       result?.destination?.index
     );
-    let updatedOption = items.slice(startIndex, endIndex + 1);
+    const updatedOption = items.slice(startIndex, endIndex + 1);
 
     setOptions(items);
 
-    let bulkUpdateData: any = updatedOption.map((options) => ({
+    const bulkUpdateData: any = updatedOption.map((options) => ({
       id: options?.id,
       order: items.findIndex((item) => item?.id === options?.id) + 1,
     }));

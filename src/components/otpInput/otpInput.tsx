@@ -40,7 +40,7 @@ const OtpInput: React.FC<OtpInputProps> = ({ length, onComplete }) => {
       {otp.map((digit, index) => (
         <Input
           key={index}
-          //@ts-ignore
+          //@ts-expect-error
           ref={(el) => (inputRefs.current[index] = el)}
           type="text"
           inputMode="numeric"

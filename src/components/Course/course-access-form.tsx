@@ -18,10 +18,7 @@ import { toast } from "sonner";
 import { Pencil } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { Textarea } from "../ui/textarea";
 import { Topic } from "@prisma/client";
-import Editor from "../editor";
-import Preview from "../preview";
 import { Checkbox } from "../ui/checkbox";
 import { GetSingleCourseApi, EditCourseApi } from "@/store/course/slice";
 
@@ -77,7 +74,7 @@ const CourseAccessForm = ({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const formdata = new FormData();
-      let price = values?.isFree ? 0 : null;
+      const price = values?.isFree ? 0 : null;
       Object.entries(values).forEach(([key, val]) => {
         formdata.append(key, val.toString());
       });

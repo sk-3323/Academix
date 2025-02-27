@@ -53,7 +53,7 @@ const AnswerForm = ({
 
   useEffect(() => {
     if (options && options?.length !== 0) {
-      let _data = options.map((val: any) => {
+      const _data = options.map((val: any) => {
         // if (val?.status === "PUBLISHED") {
         return {
           label: val?.title,

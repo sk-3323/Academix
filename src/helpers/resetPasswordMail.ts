@@ -1,19 +1,11 @@
 import { ApiResponse } from "../../types/ApiResponse";
 import nodemailer from "nodemailer";
+import { transporter } from "./sendVerificationMail";
 
-export const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  secure: true, // true for 465, false for other ports
-  auth: {
-    user: "shubham.v.kaniya30@gmail.com",
-    pass: "mzox kivc nmhn bomp",
-  },
-});
-
-export async function sendEmailVerification(
+export async function sendResetPasswordLink(
   email: string,
   username: string,
-  verifyCode: string
+  link: string
 ): Promise<ApiResponse> {
   try {
     const content = `<!DOCTYPE html>
@@ -71,14 +63,7 @@ export async function sendEmailVerification(
             margin: 16px 0;
         }
 
-        .otp-container {
-            background: #f0f7ff;
-            border: 1px solid #cce5ff;
-            border-radius: 4px;
-            margin: 24px 0;
-            padding: 16px;
-            text-align: center;
-        }
+     
 
         .otp-text {
             color: #0066cc;
@@ -102,20 +87,18 @@ export async function sendEmailVerification(
         <h1 class="header">Acedemix</h1>
         
         <div class="content-section">
-            <h2 class="subheader">One-Time Password (OTP)</h2>
+            <h2 class="subheader">Reset Password Link</h2>
             
             <p class="text">Hello ${username}</p>
             
-            <p class="text">Your One-Time Password (OTP) for authentication is:</p>
+            <p class="text">Your Password Reset Link:</p>
             
-            <div class="otp-container">
-                <p class="otp-text">${verifyCode}</p>
-            </div>
+            <a href="${link}">Click for Password Reset</a>
             
-            <p class="text">This OTP is valid for 2 minutes.</p>
+            <p class="text">This LINK is valid for 2 minutes.</p>
             
             <p class="text">
-                If you didn't request this OTP, please ignore this email.
+                If you didn't request this LINK, please ignore this email.
             </p>
         </div>
         
@@ -127,7 +110,7 @@ export async function sendEmailVerification(
     const emailResponse = await transporter.sendMail({
       from: `"Acedemix" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: "OTP Verification | Acedemix",
+      subject: "Password Reset Link | Acedemix",
       html: content,
     });
 
@@ -135,10 +118,10 @@ export async function sendEmailVerification(
 
     return {
       status: true,
-      message: "Email Verification Sent Successfully",
+      message: "Password reset link sent successfully",
     };
   } catch (emailError) {
-    console.error("Error sending email verification", emailError);
+    console.error("Error sending link", emailError);
     throw emailError;
   }
 }

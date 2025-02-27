@@ -53,23 +53,17 @@ const Navbar = ({ isMobile }: { isMobile: boolean }) => {
 
   return (
     <>
-      <div className="flex justify-start items-center gap-x-4">
-        {!isMobile ? (
-          <Link href="/" legacyBehavior passHref>
-            {theme === "dark" ? (
-              <Image alt="logo" src={DarkHLogoName} />
-            ) : (
-              <Image alt="logo" src={LightHLogoName} />
-            )}
-          </Link>
-        ) : (
-          <Link href="/" legacyBehavior passHref>
-            {theme === "dark" ? (
-              <Image alt="logo" src={DarkLogo} />
-            ) : (
-              <Image alt="logo" src={LightLogo} />
-            )}
-          </Link>
+      <div className={`w-full flex justify-between items-center`}>
+        {!isMobile && (
+          <div className="flex justify-start items-center gap-x-4">
+            <Link href="/" legacyBehavior passHref>
+              {theme === "dark" ? (
+                <Image alt="logo" src={DarkHLogoName} height={50} />
+              ) : (
+                <Image alt="logo" src={LightHLogoName} height={50} />
+              )}
+            </Link>
+          </div>
         )}
         {isSearchPage && (
           <>
@@ -78,38 +72,40 @@ const Navbar = ({ isMobile }: { isMobile: boolean }) => {
             </div>
           </>
         )}
-      </div>
-      {!isMobile ? (
         <div>
-          <NavigationMenuDemo />
-        </div>
-      ) : (
-        <Link href="/" legacyBehavior passHref>
-          {theme === "dark" ? (
-            <Image alt="name" src={DarkName} />
+          {!isMobile ? (
+            <div>
+              <NavigationMenuDemo />
+            </div>
           ) : (
-            <Image alt="name" src={LightName} />
+            <Link href="/" legacyBehavior passHref>
+              {theme === "dark" ? (
+                <Image alt="name" src={DarkName} height={40} />
+              ) : (
+                <Image alt="name" src={LightName} height={40} />
+              )}
+            </Link>
           )}
-        </Link>
-      )}
-      <div className="flex justify-center">
-        {theme === "dark" ? (
-          <Button variant={"outline"} onClick={() => setTheme("light")}>
-            <Sun />
-          </Button>
-        ) : (
-          <Button variant={"outline"} onClick={() => setTheme("dark")}>
-            <Moon />
-          </Button>
-        )}
-        {status === "unauthenticated" && (
-          <Button
-            onClick={() => router.push("/account/login")}
-            className="ms-2"
-          >
-            Login
-          </Button>
-        )}
+        </div>
+        <div className="flex justify-center items-center">
+          {theme === "dark" ? (
+            <Button variant={"outline"} onClick={() => setTheme("light")}>
+              <Sun />
+            </Button>
+          ) : (
+            <Button variant={"outline"} onClick={() => setTheme("dark")}>
+              <Moon />
+            </Button>
+          )}
+          {status === "unauthenticated" && (
+            <Button
+              onClick={() => router.push("/account/login")}
+              className="ms-2"
+            >
+              Login
+            </Button>
+          )}
+        </div>
       </div>
     </>
   );

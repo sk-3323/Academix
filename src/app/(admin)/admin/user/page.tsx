@@ -153,6 +153,7 @@ export default function UserManagement() {
 
       await getUsers();
       form.reset();
+      setshow;
     } catch (error) {
       console.error(error);
     }
@@ -189,14 +190,6 @@ export default function UserManagement() {
         throw new Error("Failed to block user");
       }
       await getUsers();
-      // const response = await fetch(`/api/users/${userId}/block`, {
-      //   method: "PATCH",
-      // });
-      // if (!response.ok) {
-      //   throw new Error("Failed to block user");
-      // }
-      // await getUsers();
-      // setShowBlockDialog(false);
     } catch (error) {
       console.error(error);
     }
@@ -240,9 +233,6 @@ export default function UserManagement() {
   useEffect(() => {
     getUsers();
   }, []);
-  if (isLoading) {
-    return <Loading />;
-  }
 
   return (
     <div className="space-y-6">

@@ -109,7 +109,7 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
     let data = formDataToJsonWithoutFiles(formdata);
     let avatar = formdata?.get("avatar") as File;
 
-    data = await validateData(createUserSchema, data);
+    // data = await validateData(createUserSchema, data);
 
     if (avatar) {
       const uploadedFile = await utapi.uploadFiles(avatar);
@@ -143,7 +143,7 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
           USER_UPLOAD_PATH
         );
         data.avatar = fileName;
-        uploadedFilePath = filePath;
+        // uploadedFilePath = filePath;
       }
 
       let updatedUser = await tx.user.update({

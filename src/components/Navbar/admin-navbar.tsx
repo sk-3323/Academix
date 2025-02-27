@@ -47,20 +47,12 @@ const AdminNavbar = ({ isMobile }: { isMobile: boolean }) => {
   return (
     <>
       <div className="flex justify-start items-center gap-x-4">
-        {!isMobile ? (
+        {!isMobile && (
           <Link href="/" legacyBehavior passHref>
             {theme === "dark" ? (
-              <Image alt="logo" src={DarkHLogoName} />
+              <Image alt="logo" src={DarkHLogoName} height={50} />
             ) : (
-              <Image alt="logo" src={LightHLogoName} />
-            )}
-          </Link>
-        ) : (
-          <Link href="/" legacyBehavior passHref>
-            {theme === "dark" ? (
-              <Image alt="logo" src={DarkLogo} />
-            ) : (
-              <Image alt="logo" src={LightLogo} />
+              <Image alt="logo" src={LightHLogoName} height={50} />
             )}
           </Link>
         )}

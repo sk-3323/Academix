@@ -112,7 +112,9 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
 
     // Validate data BEFORE transaction
     data = await validateData(createUserSchema, data);
+    data.isVerified = true;
 
+    console.log("result", data);
     // Upload the avatar BEFORE transaction
     if (avatar) {
       const uploadedFile = await utapi.uploadFiles(avatar);

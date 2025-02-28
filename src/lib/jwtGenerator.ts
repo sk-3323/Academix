@@ -15,7 +15,10 @@ export const encryptToken = async (user: any) => {
   return token;
 };
 
-export const decryptToken = async (token: any) => {
-  const payload = await jwt.verify(token, process.env.NEXTAUTH_SECRET as string);
+export const decryptToken = async (token: any): Promise<any> => {
+  const payload = await jwt.verify(
+    token,
+    process.env.NEXTAUTH_SECRET as string
+  );
   return payload;
 };

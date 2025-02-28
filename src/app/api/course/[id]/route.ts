@@ -111,6 +111,35 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
                 order: "asc",
               },
             },
+            quiz: {
+              include: {
+                questions: {
+                  include: {
+                    answer: true,
+                    options: {
+                      where: {
+                        status: "PUBLISHED",
+                      },
+                      orderBy: {
+                        order: "asc",
+                      },
+                    },
+                  },
+                  where: {
+                    status: "PUBLISHED",
+                  },
+                  orderBy: {
+                    order: "asc",
+                  },
+                },
+              },
+              where: {
+                status: "PUBLISHED",
+              },
+              orderBy: {
+                order: "asc",
+              },
+            },
           },
           orderBy: {
             order: "asc",

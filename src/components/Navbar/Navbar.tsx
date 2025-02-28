@@ -10,8 +10,6 @@ import { SearchInput } from "./search-input";
 import { useRole } from "@/hooks/useRole";
 import Image from "next/image";
 import Link from "next/link";
-import DarkLogo from "../../../public/assets/logos/dark-logo.svg";
-import LightLogo from "../../../public/assets/logos/light-logo.svg";
 import DarkName from "../../../public/assets/logos/dark-name.svg";
 import LightName from "../../../public/assets/logos/light-name.svg";
 import DarkHLogoName from "../../../public/assets/logos/dark-h-logo-with-name.svg";
@@ -36,9 +34,9 @@ const Navbar = ({ isMobile }: { isMobile: boolean }) => {
         <div>
           <Link href="/" legacyBehavior passHref>
             {theme === "dark" ? (
-              <Image alt="logo" src={DarkHLogoName} />
+              <Image alt="logo" src={DarkHLogoName} height={50} />
             ) : (
-              <Image alt="logo" src={LightHLogoName} />
+              <Image alt="logo" src={LightHLogoName} height={50} />
             )}
           </Link>
         </div>

@@ -8,6 +8,9 @@ import { signOut, useSession } from "next-auth/react";
 import React, { useCallback, useEffect } from "react";
 import Loading from "../Sidebar/Loading";
 import { APIClient } from "@/helpers/apiHelper";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { GetSingleUserApi } from "@/store/user/slice";
 
 export function LayoutContent({
   children,
@@ -22,34 +25,33 @@ export function LayoutContent({
 }) {
   const { isMobile } = useSidebar();
   const [isSidebar, setIsSidebar] = React.useState(false);
-  const data = useSession();
-  // const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+  const { data, loading } = useSelector((state: any) => state["UserStore"]);
 
-  const getUser = useCallback(async () => {
-    const id = data.data?.user.id;
-    try {
-      const api = new APIClient();
-      const res: any = await api.get(`/users/${id}`);
-      const data = res?.result;
-      if (data.isBlocked) {
-        await signOut({ callbackUrl: "/" });
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
+  const { data: session } = useSession();
 
   useEffect(() => {
-    if (data.data?.user == null || data.status == "unauthenticated") {
+    if (session?.user?.id) {
+      dispatch(
+        GetSingleUserApi({
+          id: session?.user?.id,
+        })
+      );
+    }
+  }, [session?.user?.id]);
+
+  useEffect(() => {
+    if (session?.user == null || data?.status === false) {
       setIsSidebar(false);
+      if (data?.isBlocked) {
+        signOut({ callbackUrl: "/" });
+      }
     } else {
       setIsSidebar(true);
     }
-    getUser();
-  }, [data]);
-  console.log(data);
+  }, [session?.user, data?.status, data?.isBlocked]);
 
-  if (data.status === "loading") {
+  if (loading) {
     return <Loading />;
   }
 

@@ -60,7 +60,6 @@ export const CourseCard = ({
           {progress !== null ? (
             <CourseProgress
               variant={progress === 100 ? "success" : "default"}
-              size="sm"
               value={progress}
             />
           ) : (

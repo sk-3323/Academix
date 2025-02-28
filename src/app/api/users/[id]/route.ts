@@ -126,21 +126,10 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
       if (!userFound) {
         throw new ErrorHandler("User not found", 404);
       }
-      console.log(userFound);
-      const data = formDataToJsonWithoutFiles(formdata);
-      const avatar = formdata?.get("avatar") as File;
 
-      if (data.isBlocked !== undefined) {
-        data.isBlocked = data.isBlocked === "true";
-      }
-      // data = await validateData(createUserSchema, data);
+      console.log("userFound ::>", userFound);
 
-      if (avatar) {
-        const uploadedFile = await utapi.uploadFiles(avatar);
-        data.avatar = uploadedFile?.data?.url;
-        data.avatarKey = uploadedFile?.data?.key;
-        uploadedFileKey = uploadedFile?.data?.key || null;
-      }
+      data = await validateData(createUserSchema, data);
 
       const updatedUser = await tx.user.update({
         data: data,

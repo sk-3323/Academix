@@ -2,7 +2,15 @@
 
 import { GetEnrollmentApi } from "@/store/enrollment/slice";
 import { AppDispatch } from "@/store/store";
-import { Chapter, Course, Topic, UserProgress } from "@prisma/client";
+import {
+  Chapter,
+  Course,
+  Option,
+  Question,
+  Quiz,
+  Topic,
+  UserProgress,
+} from "@prisma/client";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,6 +34,13 @@ interface CourseSidebarProps {
     chapters: (Chapter & {
       topics: (Topic & {
         userProgress: UserProgress[] | null;
+      })[];
+      quiz: (Quiz & {
+        quizProgress: UserProgress[] | null;
+        questions: (Question & {
+          answer: Option;
+          options: Option[];
+        })[];
       })[];
     })[];
   };
@@ -70,7 +85,6 @@ const CourseSidebar = ({
           {data?.length !== 0 && !isNaN(course?.progressCount) && (
             <div className="mt-1">
               <CourseProgress
-                size="sm"
                 variant={course?.progressCount === 100 ? "success" : "default"}
                 value={course?.progressCount}
               />
@@ -102,8 +116,8 @@ const CourseSidebar = ({
                       activeChapter={activeChapter}
                       label={chapter?.title}
                       topics={chapter?.topics}
+                      quiz={chapter?.quiz}
                       courseId={course?.id}
-                      progressCount={course?.progressCount}
                       enrollment={data}
                     />
                   </Accordion>

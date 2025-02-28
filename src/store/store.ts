@@ -9,9 +9,11 @@ import EnrollmentSlice from "@/store/enrollment/slice";
 import QuizSlice from "@/store/quiz/slice";
 import QuestionSlice from "@/store/question/slice";
 import OptionSlice from "@/store/options/slice";
+import UserSlice from "@/store/user/slice";
 
 const store = configureStore({
   reducer: {
+    UserStore: UserSlice,
     CourseStore: CourseSlice,
     CategoryStore: CategorySlice,
     ChapterStore: ChapterSlice,

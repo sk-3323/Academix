@@ -168,7 +168,7 @@ const CategoryForm = ({
             </div>
             <div className="flex items-center gap-x-2">
               <Button
-                className="py-2 px-4 bg-[#27E0B3] text-white rounded-lg hover:bg-[#27e0b2ac] transition"
+                className="py-2 px-4 text-white rounded-lg bg-[#27E0B3] hover:bg-[#27e0b2ac] transition"
                 type="submit"
                 disabled={!isValid || isSubmitting}
               >

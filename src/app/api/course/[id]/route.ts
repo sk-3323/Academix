@@ -190,11 +190,11 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
     }
 
     let data = formDataToJsonWithoutFiles(formdata);
-    let thumbnail = formdata?.get("thumbnail") as File;
 
+    let thumbnail = formdata?.get("thumbnail") as File;
     data = await validateData(createCourseSchema, data);
 
-    if (thumbnail) {
+    if (!data?.thumbnail && thumbnail) {
       const uploadedFile = await utapi.uploadFiles(thumbnail);
       data.thumbnail = uploadedFile?.data?.url;
       data.thumbnailKey = uploadedFile?.data?.key;

@@ -33,9 +33,9 @@ const AdminNavbar = ({ isMobile }: { isMobile: boolean }) => {
         <div>
           <Link href="/" legacyBehavior passHref>
             {theme === "dark" ? (
-              <Image alt="logo" src={DarkHLogoName} />
+              <Image alt="logo" src={DarkHLogoName} height={50}/>
             ) : (
-              <Image alt="logo" src={LightHLogoName} />
+              <Image alt="logo" src={LightHLogoName} height={50}/>
             )}
           </Link>
         </div>
@@ -69,9 +69,9 @@ const AdminNavbar = ({ isMobile }: { isMobile: boolean }) => {
       ) : (
         <Link href="/" legacyBehavior passHref>
           {theme === "dark" ? (
-            <Image alt="name" src={DarkName} />
+            <Image alt="name" src={DarkName} height={50}/>
           ) : (
-            <Image alt="name" src={LightName} />
+            <Image alt="name" src={LightName} height={50}/>
           )}
         </Link>
       )}

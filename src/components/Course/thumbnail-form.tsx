@@ -14,7 +14,7 @@ import { Course } from "@prisma/client";
 import Image from "next/image";
 import { FileUpload } from "../file-upload";
 
-type CourseFormValues = Pick<Course, "thumbnail">;
+type CourseFormValues = Pick<Course, "thumbnail" | "thumbnailKey">;
 
 interface ThumbnailFormProps {
   initialData: CourseFormValues;
@@ -25,6 +25,9 @@ interface ThumbnailFormProps {
 const formSchema = z.object({
   thumbnail: z.string().min(1, {
     message: "Thumbnail is required",
+  }),
+  thumbnailKey: z.string().min(1, {
+    message: "Thumbnail key is required",
   }),
 });
 
@@ -43,6 +46,7 @@ const ThumbnailForm = ({
     mode: "onChange",
     defaultValues: {
       thumbnail: initialData?.thumbnail || "",
+      thumbnailKey: initialData?.thumbnailKey || "",
     },
   });
 
@@ -50,6 +54,7 @@ const ThumbnailForm = ({
     if (initialData) {
       form.reset({
         thumbnail: initialData?.thumbnail || "",
+        thumbnailKey: initialData?.thumbnailKey || "",
       });
     }
   }, [initialData?.thumbnail]);
@@ -78,7 +83,7 @@ const ThumbnailForm = ({
         EditCourseApi({
           id: courseId,
           formdata: formdata,
-          requiredFields: ["thumbnail"],
+          requiredFields: ["thumbnail", "thumbnailKey"],
         })
       );
 
@@ -136,9 +141,9 @@ const ThumbnailForm = ({
           <FileUpload
             disabled={false}
             endpoint="courseThumbnail"
-            onChange={(url) => {
+            onChange={(url: string, key: string) => {
               if (url) {
-                onSubmit({ thumbnail: url });
+                onSubmit({ thumbnail: url, thumbnailKey: key });
               }
             }}
           />

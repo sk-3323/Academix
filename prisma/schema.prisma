@@ -45,7 +45,7 @@ model Course {
   price        Float?
   isFree       Boolean    @default(false)
   status       BlogStatus @default(DRAFT)
-
+level CourseLevel @default(BEGINNER)
   // Relations
   instructorId String    @db.ObjectId
   instructor   User      @relation("CourseInstructor", fields: [instructorId], references: [id])
@@ -363,4 +363,10 @@ enum EnrollmentStatus {
 enum PaymentStatus {
   PENDING
   PAID
+}
+
+enum CourseLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
 }

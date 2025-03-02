@@ -43,6 +43,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.4",
     "date-fns": "^4.1.0",
+    "date-format": "^4.0.14",
     "formidable": "^3.5.2",
     "framer-motion": "^11.15.0",
     "js-cookie": "^3.0.5",

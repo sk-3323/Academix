@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PageHeader from "@/components/LayoutContent/PageHeader";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,7 +40,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Book,
@@ -54,13 +54,16 @@ import {
 } from "lucide-react";
 import { createCourseSchema } from "@/schema/course/schema";
 import { z } from "zod";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { GetCategoryApi } from "@/store/category/slice";
 
 const courseFormSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  instructor: z.string().min(1, "Instructor is required"),
-  duration: z.string().min(1, "Duration is required"),
-  level: z.string().min(1, "Level is required"),
+  title: z.string().min(3, "Title is required"),
+  description: z.string().optional(),
+  category: z.string().optional(),
+  isFree: z.boolean().optional(),
+  level: z.string().optional(),
 });
 
 interface courseType {
@@ -72,6 +75,12 @@ interface courseType {
 }
 export default function CourseManagement() {
   const [activeTab, setActiveTab] = useState("courses");
+  const { data: categoryData } = useSelector(
+    (state: any) => state["CategoryStore"]
+  );
+
+  console.log(categoryData);
+  const dispatch = useDispatch<AppDispatch>();
   const [courses, setCourses] = useState([
     {
       id: 1,
@@ -90,13 +99,17 @@ export default function CourseManagement() {
   ]);
   const [searchTerm, setSearchTerm] = useState("");
 
+  useEffect(() => {
+    dispatch(GetCategoryApi());
+  }, []);
+
   const form = useForm({
     resolver: zodResolver(courseFormSchema),
     defaultValues: {
       title: "",
       description: "",
-      instructor: "",
-      duration: "",
+      category: "",
+      isFree: false,
       level: "",
     },
   });
@@ -213,6 +226,7 @@ export default function CourseManagement() {
       </CardContent>
     </Card>
   );
+  const handleSubmit = async (values: z.infer<typeof courseFormSchema>) => {};
 
   return (
     <div className="space-y-6">
@@ -229,8 +243,11 @@ export default function CourseManagement() {
               <DialogHeader>
                 <DialogTitle>Create New Course</DialogTitle>
               </DialogHeader>
-              <Form {...form}>
-                <form className="space-y-4">
+              <FormProvider {...form}>
+                <form
+                  onSubmit={form.handleSubmit(handleSubmit)}
+                  className="space-y-4"
+                >
                   <FormField
                     control={form.control}
                     name="title"
@@ -263,17 +280,32 @@ export default function CourseManagement() {
                   <div className="flex gap-4">
                     <FormField
                       control={form.control}
-                      name="duration"
+                      name="category"
                       render={({ field }) => (
                         <FormItem className="flex-1">
-                          <FormLabel>Duration</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g., 8 weeks" {...field} />
-                          </FormControl>
+                          <FormLabel>Category</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Category" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {categoryData.map((category: any) => (
+                                <SelectItem value={category.id}>
+                                  {category.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
+
                     <FormField
                       control={form.control}
                       name="level"
@@ -290,11 +322,11 @@ export default function CourseManagement() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="beginner">Beginner</SelectItem>
-                              <SelectItem value="intermediate">
+                              <SelectItem value="BEGINNER">Beginner</SelectItem>
+                              <SelectItem value="INTERMEDIATE">
                                 Intermediate
                               </SelectItem>
-                              <SelectItem value="advanced">Advanced</SelectItem>
+                              <SelectItem value="ADVANCED">Advanced</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -302,11 +334,30 @@ export default function CourseManagement() {
                       )}
                     />
                   </div>
+                  <FormField
+                    control={form.control}
+                    name="isFree"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center space-x-2">
+                        <FormLabel className="text-sm font-medium">
+                          Is Free
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="checkbox"
+                            {...field}
+                            className="h-4 w-4"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <Button type="submit" className="w-full">
                     Create Course
                   </Button>
                 </form>
-              </Form>
+              </FormProvider>
             </DialogContent>
           </Dialog>
         )}

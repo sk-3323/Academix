@@ -41,10 +41,10 @@ const items = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/student/dashboard" },
   { icon: BookOpen, label: "Courses", href: "/student/course" },
   { icon: ShieldCheck, label: "Certificates", href: "/student/certificate" },
-  { icon: User, label: "Profile", href: "/student/profile" },
   { icon: CreditCard, label: "Payment", href: "/student/payment" },
   { icon: VideoIcon, label: "Video Lectures", href: "/student/video" },
   { icon: MessageCircleQuestion, label: "Quiz", href: "/student/quiz" },
+  { icon: User, label: "Profile", href: "/admin/profile" },
 ];
 
 export function StudentSidebar({

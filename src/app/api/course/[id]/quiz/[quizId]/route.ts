@@ -2,11 +2,10 @@ import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { decryptToken } from "@/lib/jwtGenerator";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { getProgress } from "../../../with-progress/route";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let course_id = content?.params?.id;
-  let topic_id = content?.params?.topicId;
+  let quiz_id = content?.params?.quizId;
   if (!course_id) {
     throw new ErrorHandler("Not found", 400);
   }
@@ -15,9 +14,10 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let { id: userId } = await decryptToken(token);
 
   let result = await prisma.$transaction(async (tx) => {
-    let topic: any = await tx.topic.findFirst({
+    let quiz: any = await tx.quiz.findFirst({
       where: {
-        id: topic_id,
+        id: quiz_id,
+        status: "PUBLISHED",
       },
       include: {
         chapter: {
@@ -38,10 +38,30 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
             resources: true,
           },
         },
-        muxData: true,
-        userProgress: {
+        completedBy: {
           where: {
             userId: userId,
+          },
+          include: {
+            answer: true,
+          },
+        },
+        questions: {
+          include: {
+            options: {
+              orderBy: {
+                order: "asc",
+              },
+              where: {
+                status: "PUBLISHED",
+              },
+            },
+          },
+          orderBy: {
+            order: "asc",
+          },
+          where: {
+            status: "PUBLISHED",
           },
         },
       },
@@ -50,31 +70,31 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
       },
     });
 
-    if (!topic) {
-      throw new ErrorHandler("Topic not found", 404);
+    if (!quiz) {
+      throw new ErrorHandler("quiz not found", 404);
     }
 
-    let nextTopic: any = await tx.topic.findFirst({
+    let nextquiz: any = await tx.quiz.findFirst({
       where: {
         status: "PUBLISHED",
         order: {
-          gt: topic?.order,
+          gt: quiz?.order,
         },
-        chapterId: topic?.chapter?.id,
+        chapterId: quiz?.chapter?.id,
       },
     });
 
-    if (!nextTopic) {
+    if (!nextquiz) {
       let nextChapter = await tx.chapter.findFirst({
         where: {
           status: "PUBLISHED",
           order: {
-            gt: topic?.chapter?.order,
+            gt: quiz?.chapter?.order,
           },
           courseId: course_id,
         },
         include: {
-          topics: {
+          quiz: {
             orderBy: {
               order: "asc",
             },
@@ -83,13 +103,11 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
         },
       });
 
-      nextTopic = nextChapter?.topics?.[0];
+      nextquiz = nextChapter?.quiz?.[0];
     }
+    quiz.nextquiz = nextquiz;
 
-    let progressCount = await getProgress(userId, course_id!);
-    topic.progressCount = progressCount;
-    topic.nextTopic = nextTopic;
-    return topic;
+    return quiz;
   });
 
   if (!result) {
@@ -99,7 +117,7 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
   return NextResponse.json(
     {
       status: true,
-      message: "topic fetched successfully",
+      message: "quiz fetched successfully",
       result,
     },
     { status: 200 }

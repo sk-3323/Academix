@@ -48,52 +48,61 @@ export const CourseEnrollButton = ({
 
   const handlePaymentInitiation = async () => {
     try {
-      let options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: price * 100,
-        currency: "INR",
-        name: "Academix E-Learning",
-        description: "Test purchase of the course",
-        order_id: enrollment?.orderId,
-        notes: {
-          course_name: enrollment?.course?.title,
-          course_id: courseId,
-          description: `Enrolling in ${enrollment?.course?.title}`,
-          user_email: session?.user?.email,
-          user_name: session?.user?.username,
-        },
-        handler: async function (response: any) {
-          setActions((current: any) => {
-            return {
-              ...current,
-              callbackFunction: () => {
-                window.location.reload();
-              },
-            };
-          });
+      setActions((current: any) => {
+        return {
+          ...current,
+          callbackFunction: () => {
+            window.location.reload();
+          },
+        };
+      });
 
-          await dispatch(
-            ApproveCoursePaymentApi({
-              courseId: courseId,
-              enroll_id: enrollment?.id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature,
-            })
-          );
-        },
-        prefill: {
-          name: session?.user?.username,
-          email: session?.user?.email,
-          contact: session?.user?.phone,
-        },
-        theme: {
-          color: "#27E0B3",
-        },
-      };
+      if (enrollment?.isFree) {
+        await dispatch(
+          ApproveCoursePaymentApi({
+            courseId: courseId,
+            enroll_id: enrollment?.id,
+          })
+        );
+      } else {
+        let options = {
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+          amount: price * 100,
+          currency: "INR",
+          name: "Academix E-Learning",
+          description: "Test purchase of the course",
+          order_id: enrollment?.orderId,
+          notes: {
+            course_name: enrollment?.course?.title,
+            course_id: courseId,
+            description: `Enrolling in ${enrollment?.course?.title}`,
+            user_email: session?.user?.email,
+            user_name: session?.user?.username,
+          },
+          handler: async function (response: any) {
+            await dispatch(
+              ApproveCoursePaymentApi({
+                courseId: courseId,
+                enroll_id: enrollment?.id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+              })
+            );
+          },
+          prefill: {
+            name: session?.user?.username,
+            email: session?.user?.email,
+            contact: session?.user?.phone,
+          },
+          theme: {
+            color: "#27E0B3",
+          },
+        };
 
-      const rzp1 = new window.Razorpay(options);
-      rzp1.open();
+        const rzp1 = new window.Razorpay(options);
+        rzp1.open();
+      }
     } catch (error) {
       console.error(error);
       setIsProcessing(false);

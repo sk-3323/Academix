@@ -34,7 +34,7 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
     if (
       !courseFound?.title ||
       !courseFound?.description ||
-      !courseFound?.price ||
+      !courseFound?.categoryId ||
       !courseFound?.thumbnail ||
       !courseFound?.chapters?.length
     ) {

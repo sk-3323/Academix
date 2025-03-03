@@ -3,8 +3,12 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { validateData } from "@/lib/fileHandler";
 import { createQuizSchema } from "@/schema/quiz/schema";
+import { decryptToken } from "@/lib/jwtGenerator";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
+  let token: any = request.headers.get("x-user-token");
+  let session = await decryptToken(token);
+  let { id: userId } = session;
   let quiz_id = content?.params?.id;
 
   if (!quiz_id) {
@@ -33,6 +37,11 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
           },
         },
         chapter: true,
+        completedBy: {
+          where: {
+            userId: userId,
+          },
+        },
       },
     });
   });

@@ -95,7 +95,7 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
     throw new ErrorHandler("Unauthorized : invalid or empty token", 401);
   }
 
-  isAuthorized(session, "TEACHER");
+  // isAuthorized(session, "TEACHER");
 
   let formdata = await request.formData();
   let uploadedFileKey: string | null = null;

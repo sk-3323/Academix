@@ -36,6 +36,7 @@ export const createRazorpayOrder = async (
     });
     return order;
   } catch (error: any) {
+    console.error("Razorpay error:", error);
     throw new ErrorHandler(
       error.error?.description || "Payment initialization failed",
       error.statusCode || 500

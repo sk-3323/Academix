@@ -2,13 +2,11 @@ import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import {
-  cleanupUploadedFile,
   formDataToJsonWithoutFiles,
-  handleFileUpload,
   validateData,
 } from "../../../lib/fileHandler";
 import { createTopicSchema } from "@/schema/topic/schema";
-import { COURSE_UPLOAD_PATH } from "@/constants/config";
+import { utapi } from "@/lib/utAPI";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let result = await prisma.$transaction(async (tx) => {
@@ -18,7 +16,6 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
       },
       include: {
         chapter: true,
-        quiz: true,
         muxData: true,
         userProgress: true,
       },
@@ -41,52 +38,49 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
 
 export const POST = apiHandler(async (request: NextRequest, content: any) => {
   let formdata = await request.formData();
-  let uploadedFilePath: string | null = null;
+  let uploadedFileKey: string | null = null;
   try {
+    let data = formDataToJsonWithoutFiles(formdata);
+    let video = formdata?.get("video") as File;
+    if (video) {
+      const uploadedFile = await utapi.uploadFiles(video);
+      data.video = uploadedFile?.data?.url;
+      data.videoKey = uploadedFile?.data?.key;
+      uploadedFileKey = uploadedFile?.data?.key || null;
+    }
+
+    const chapterFound = await prisma.chapter.findFirst({
+      where: {
+        id: data?.chapterId,
+      },
+      include: {
+        topics: true,
+        course: true,
+      },
+    });
+
+    if (!chapterFound) {
+      throw new ErrorHandler("Chapter not found", 404);
+    }
+
+    let lastTopic = await prisma.topic.findFirst({
+      where: {
+        chapterId: chapterFound?.id,
+      },
+      orderBy: {
+        order: "desc",
+      },
+    });
+
+    data.order = lastTopic?.order ? lastTopic?.order + 1 : 1;
+
+    data = await validateData(createTopicSchema, data);
+
     let result = await prisma.$transaction(async (tx) => {
-      let data = formDataToJsonWithoutFiles(formdata);
-      let video = formdata?.get("video") as File;
-      if (video) {
-        const { filePath, fileName } = await handleFileUpload(
-          video,
-          COURSE_UPLOAD_PATH
-        );
-        data.video = fileName;
-        uploadedFilePath = filePath;
-      }
-
-      const chapterFound = await tx.chapter.findFirst({
-        where: {
-          id: data?.chapterId,
-        },
-        include: {
-          topics: true,
-          course: true,
-        },
-      });
-
-      if (!chapterFound) {
-        throw new ErrorHandler("Chapter not found", 404);
-      }
-
-      let lastTopic = await prisma.topic.findFirst({
-        where: {
-          chapterId: chapterFound?.id,
-        },
-        orderBy: {
-          order: "desc",
-        },
-      });
-
-      data.order = lastTopic?.order ? lastTopic?.order + 1 : 1;
-
-      data = await validateData(createTopicSchema, data);
-
-      return await prisma.topic.create({
+      return await tx.topic.create({
         data: data,
         include: {
           chapter: true,
-          quiz: true,
         },
       });
     });
@@ -100,8 +94,8 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
       { status: 201 }
     );
   } catch (error) {
-    if (uploadedFilePath) {
-      cleanupUploadedFile(uploadedFilePath);
+    if (uploadedFileKey) {
+      await utapi.deleteFiles(uploadedFileKey); // Cleanup if an error occurs
     }
     throw error;
   }

@@ -150,9 +150,6 @@ const page = ({
               </div>
               <OptionForm
                 initialData={{ options: singleData?.options }}
-                courseId={params?.courseId}
-                chapterId={params?.chapterId}
-                quizId={params?.quizId}
                 questionId={params?.questionId}
                 setActions={setOptionActions}
               />

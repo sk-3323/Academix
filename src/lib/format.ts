@@ -15,3 +15,12 @@ export const formatSeconds = (seconds: number) => {
 
   return `${minutes} minutes ${secs} seconds`;
 };
+
+export const formatSecondsToMinutes = (seconds: number) => {
+  if (seconds < 60) {
+    return `${seconds} seconds`;
+  } else {
+    const minutes = seconds / 60;
+    return `${minutes} minutes`;
+  }
+};

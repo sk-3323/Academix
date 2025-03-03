@@ -12,6 +12,7 @@ import {
   Option,
   Question,
   Quiz,
+  QuizProgress,
   Topic,
   UserProgress,
 } from "@prisma/client";
@@ -30,7 +31,7 @@ interface CourseSideBarItemProps {
     userProgress: UserProgress[] | null;
   })[];
   quiz: (Quiz & {
-    quizProgress: UserProgress[] | null;
+    completedBy: QuizProgress[] | null;
     questions: (Question & {
       answer: Option;
       options: Option[];
@@ -117,7 +118,7 @@ const CourseSideBarItem = ({
         );
       })}
       {quiz?.map((qz, i) => {
-        let isCompleted = !!qz?.quizProgress?.[0]?.isCompleted;
+        let isCompleted = !!qz?.completedBy?.[0]?.isCompleted;
         let Icon =
           enrollment?.length === 0
             ? Lock
@@ -155,7 +156,7 @@ const CourseSideBarItem = ({
                     size={22}
                     className={cn(
                       "ml-2",
-                      !!qz?.quizProgress?.[0]?.isCompleted && "text-emerald-500"
+                      !!qz?.completedBy?.[0]?.isCompleted && "text-emerald-500"
                     )}
                   />
                   {qz?.title}

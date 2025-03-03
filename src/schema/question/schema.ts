@@ -56,3 +56,20 @@ export const changeQuestionOrderSchema = z
       .min(2, "at least two questions is required"),
   })
   .strict();
+
+export const checkAnswerSchema = z
+  .object({
+    questionId: z
+      .string()
+      .min(1, "question is required")
+      .refine((val) => ObjectId.isValid(val), {
+        message: "Invalid question id provided",
+      }),
+    answerId: z
+      .string()
+      .min(1, "answer is required")
+      .refine((val) => ObjectId.isValid(val), {
+        message: "Invalid answer id provided",
+      }),
+  })
+  .strict();

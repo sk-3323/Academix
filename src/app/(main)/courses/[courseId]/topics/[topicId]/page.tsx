@@ -121,7 +121,7 @@ const TopicIdPage = ({
             {topic?.chapter?.course?.enrollments?.length === 0 && (
               <CourseEnrollButton
                 courseId={params?.courseId}
-                isFree={topic?.isFree}
+                isFree={topic?.chapter?.course?.isFree}
                 price={topic?.chapter?.course?.price}
                 setActions={setEnrollmentActions}
               />
@@ -131,7 +131,7 @@ const TopicIdPage = ({
           <div>
             <Preview value={topic?.description!} />
           </div>
-          {topic?.chapter?.resources?.length && (
+          {!!topic?.chapter?.resources?.length && (
             <>
               <Separator />
               <div className="flex items-center gap-x-2">

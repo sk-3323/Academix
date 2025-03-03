@@ -8,6 +8,7 @@ import {
   Option,
   Question,
   Quiz,
+  QuizProgress,
   Topic,
   UserProgress,
 } from "@prisma/client";
@@ -36,7 +37,7 @@ interface CourseSidebarProps {
         userProgress: UserProgress[] | null;
       })[];
       quiz: (Quiz & {
-        quizProgress: UserProgress[] | null;
+        completedBy: QuizProgress[] | null;
         questions: (Question & {
           answer: Option;
           options: Option[];
@@ -95,11 +96,14 @@ const CourseSidebar = ({
           <h1 className="font-semibold">Course content</h1>
           <SidebarMenu>
             {course?.chapters?.map((chapter, index) => {
-              let activeChapter = chapter.topics.some((topic) =>
+              let activeTopic = chapter.topics.some((topic) =>
                 pathname?.includes(topic.id)
-              )
-                ? chapter?.id
-                : "";
+              );
+              let activeQuiz = chapter.quiz.some((qz) =>
+                pathname?.includes(qz.id)
+              );
+
+              let activeChapter = activeTopic || activeQuiz ? chapter?.id : "";
 
               return (
                 <SidebarMenuItem key={chapter?.id}>

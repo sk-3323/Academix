@@ -33,6 +33,20 @@ export const GetSingleQuizApi = createAsyncThunk(
   }
 );
 
+// %%%%%%%%%% GET SINGLE COURSE WITH PROGRESS BY TOPIC API %%%%%%%%%%%%
+export const GetPublishedQuizWithProgressApi = createAsyncThunk(
+  "GetPublishedQuizWithProgressApi",
+  async ({ courseId, quizId }: { courseId: string; quizId: string }) => {
+    try {
+      const response = await api.get(`/course/${courseId}/quiz/${quizId}`);
+      return response;
+    } catch (error) {
+      console.error("error", error);
+      return error;
+    }
+  }
+);
+
 // %%%%%%%%%% CREATE QUIZ API %%%%%%%%%%%%
 export const AddQuizApi = createAsyncThunk(
   "AddQuizApi",
@@ -205,6 +219,28 @@ const QuizSlice = createSlice({
         state.status = action.payload.status;
         state.message = action.payload.message;
       })
+
+      //%%%%%%%%%% GET SINGLE COURSE WITH PROGRESS BY TOPIC API HANDLE %%%%%%%%%%%%%%%%%%%
+      .addCase(GetPublishedQuizWithProgressApi.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(
+        GetPublishedQuizWithProgressApi.fulfilled,
+        (state, action: any) => {
+          state.loading = false;
+          state.singleData = action.payload?.result
+            ? action.payload?.result
+            : {};
+        }
+      )
+      .addCase(
+        GetPublishedQuizWithProgressApi.rejected,
+        (state, action: any) => {
+          state.loading = false;
+          state.status = action.payload.status;
+          state.message = action.payload.message;
+        }
+      )
 
       //%%%%%%%%%% EDIT QUIZ API HANDLE %%%%%%%%%%%%%%%%%%%%
       .addCase(EditQuizApi.pending, (state) => {

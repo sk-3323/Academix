@@ -132,6 +132,11 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
                     order: "asc",
                   },
                 },
+                completedBy: {
+                  where: {
+                    userId: userId,
+                  },
+                },
               },
               where: {
                 status: "PUBLISHED",

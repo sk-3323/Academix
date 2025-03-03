@@ -82,7 +82,7 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
 
     data.order = lastOption?.order ? lastOption?.order + 1 : 1;
 
-    if (data?.order < 6) {
+    if (data?.order > 5) {
       throw new ErrorHandler("You can add upto 5 options", 400);
     }
 

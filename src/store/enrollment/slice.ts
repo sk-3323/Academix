@@ -79,9 +79,9 @@ export const ApproveCoursePaymentApi = createAsyncThunk(
   }: {
     courseId: string;
     enroll_id: string;
-    razorpay_payment_id: string;
-    razorpay_order_id: string;
-    razorpay_signature: string;
+    razorpay_payment_id?: string;
+    razorpay_order_id?: string;
+    razorpay_signature?: string;
   }) => {
     try {
       const response = await api.update(

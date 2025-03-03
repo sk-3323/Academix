@@ -194,14 +194,15 @@ model Question {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  options Option[] @relation("QuestionOptions")
+  options         Option[]     @relation("QuestionOptions")
+  answeredByUsers QuizAnswer[]
 }
 
 model Option {
   id     String     @id @default(auto()) @map("_id") @db.ObjectId
   title  String
   order  Int?
-  status BlogStatus @default(DRAFT)
+  status BlogStatus @default(PUBLISHED)
 
   // Relations
   questionId String   @db.ObjectId
@@ -210,7 +211,8 @@ model Option {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  correctForQuestions Question[] @relation("CorrectAnswer")
+  correctForQuestions Question[]   @relation("CorrectAnswer")
+  choosedByUsers      QuizAnswer[]
 }
 
 model LiveClass {
@@ -329,17 +331,38 @@ model UserProgress {
 model QuizProgress {
   id          String  @id @default(auto()) @map("_id") @db.ObjectId
   isCompleted Boolean @default(false)
+  correct     Int?
+  wrong       Int?
 
   quizId String @db.ObjectId
   quiz   Quiz   @relation(fields: [quizId], references: [id])
   userId String @db.ObjectId
   user   User   @relation(fields: [userId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  answer    QuizAnswer[]
 
   @@unique([userId, quizId])
   @@index([quizId])
+}
+
+model QuizAnswer {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  answerId String? @db.ObjectId
+  answer   Option? @relation(fields: [answerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  questionId String   @db.ObjectId
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  quizProgressId String       @db.ObjectId
+  quizDetails    QuizProgress @relation(fields: [quizProgressId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([quizProgressId])
 }
 
 enum Role {

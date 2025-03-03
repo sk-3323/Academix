@@ -69,6 +69,9 @@ export const EditUserApi = createAsyncThunk(
       const response = await api.update(
         `${URL_USER}/${id}`,
         values,
+        {
+          "Content-type": "multipart/form-data",
+        },
         requiredFields
       );
       return response;

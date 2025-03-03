@@ -7,7 +7,6 @@ import { CustomCursor } from "@/components/CustomCursor/CustomCursor";
 import { signOut, useSession } from "next-auth/react";
 import React, { useCallback, useEffect } from "react";
 import Loading from "../Sidebar/Loading";
-import { APIClient } from "@/helpers/apiHelper";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { GetSingleUserApi } from "@/store/user/slice";

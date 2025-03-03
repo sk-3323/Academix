@@ -85,7 +85,13 @@ export default function UserManagement() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showBlockDialog, setShowBlockDialog] = useState(false);
 
+  const [showupdateRoleDialog, setShowupdateRoleDialog] = useState(false);
+  const [updatedUser, setUpdatedUser] = useState({
+    userId: "",
+    newRole: "",
+  });
   const getUsers = useCallback(async () => {
+
     setIsLoading(true);
     setError(null);
 
@@ -153,28 +159,32 @@ export default function UserManagement() {
 
       await getUsers();
       form.reset();
-      setshow;
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleUpdateRole = async (userId: string, newRole: string) => {
-    // try {
-    //   const response = await fetch(`/api/users/${userId}/role`, {
-    //     method: "PATCH",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({ role: newRole }),
-    //   });
-    //   if (!response.ok) {
-    //     throw new Error("Failed to update user role");
-    //   }
-    //   await getUsers();
-    // } catch (error) {
-    //   console.error(error);
-    // }
+  const handleUpdateRole = async () => {
+    const formData = new FormData();
+    formData.append("role", updatedUser.newRole);
+
+    try {
+      const api = new APIClient();
+      const response = await api.update(
+        `/users/${updatedUser.userId}`,
+        formData,
+        {
+          "Content-Type": "multipart/form-data",
+        }
+      );
+
+      if (!response) {
+        throw new Error("Failed to update user role");
+      }
+      await getUsers();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleBlockUser = async (userId: string) => {
@@ -308,7 +318,6 @@ export default function UserManagement() {
                           <SelectContent>
                             <SelectItem value="STUDENT">Student</SelectItem>
                             <SelectItem value="TEACHER">Instructor</SelectItem>
-                            <SelectItem value="ADMIN">Admin</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -368,7 +377,13 @@ export default function UserManagement() {
               <TableCell>
                 <Select
                   defaultValue={user.role}
-                  onValueChange={(value) => handleUpdateRole(user.id, value)}
+                  onValueChange={(value) => {
+                    setShowupdateRoleDialog(true);
+                    setUpdatedUser({
+                      userId: user.id,
+                      newRole: value,
+                    });
+                  }}
                 >
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Select role" />
@@ -376,7 +391,6 @@ export default function UserManagement() {
                   <SelectContent>
                     <SelectItem value="STUDENT">Student</SelectItem>
                     <SelectItem value="TEACHER">Instructor</SelectItem>
-                    <SelectItem value="ADMIN">Admin</SelectItem>
                   </SelectContent>
                 </Select>
               </TableCell>
@@ -463,6 +477,27 @@ export default function UserManagement() {
               onClick={() => selectedUser && handleDeleteUser(selectedUser.id)}
             >
               Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={showupdateRoleDialog}
+        onOpenChange={setShowupdateRoleDialog}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Change Role</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to change this user role? This action cannot
+              be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleUpdateRole}>
+              Update
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

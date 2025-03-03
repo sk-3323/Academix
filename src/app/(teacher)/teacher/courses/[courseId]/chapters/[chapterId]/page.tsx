@@ -82,7 +82,7 @@ const page = ({
       {singleData?.status && singleData?.status === "DRAFT" && (
         <Banner
           variant="warning"
-          label=" This chapter is unpublished. It will not be visible in the course. "
+          label=" This chapter is unpublished. It will not be visible in the course."
         />
       )}
       <div className="w-full p-6">

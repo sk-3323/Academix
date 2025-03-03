@@ -40,7 +40,7 @@ import { useTheme } from "next-themes";
 
 const items = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin/dashboard" },
-  { icon: BookAudioIcon, label: "Courses", href: "/admin/course" },
+  // { icon: BookAudioIcon, label: "Courses", href: "/admin/course" },
   { icon: BookOpen, label: "Payment", href: "/admin/payment" },
   { icon: ShieldCheck, label: "Certificates", href: "/admin/certificate" },
   { icon: UsersIcon, label: "Users", href: "/admin/user" },

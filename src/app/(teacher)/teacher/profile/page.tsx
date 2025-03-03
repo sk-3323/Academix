@@ -21,8 +21,7 @@ const ProfileManagement = () => {
   const { data: session } = useSession();
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState(data.singleData);
-  console.log("User from Redux:", user);
-
+  
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | undefined>(
     user?.avatar

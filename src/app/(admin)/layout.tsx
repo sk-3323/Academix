@@ -6,11 +6,23 @@ import { AdminSidebar } from "@/components/Sidebar/admin-sidebar";
 import Loading from "@/components/Sidebar/Loading";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useRole } from "@/hooks/useRole";
-import React from "react";
+import { AppDispatch } from "@/store/store";
+import { GetUserApi } from "@/store/user/slice";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const { isMobile } = useSidebar();
   const { status } = useRole();
+
+  const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    dispatch(
+      GetUserApi({
+        searchParams: {},
+      })
+    );
+  }, []);
   if (status === "loading") {
     return <Loading />;
   }

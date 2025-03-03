@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { apiHandler, ErrorHandler } from "./lib/errorHandler";
-
+import jwt from "jsonwebtoken";
 export { default } from "next-auth/middleware";
 
 const publicRoutesRegex = /^\/(|about|contact|courses(?:\/.*)?)$/;
@@ -27,6 +27,9 @@ export const middleware = apiHandler(async (request: NextRequest) => {
   if (token) {
     request.headers.set("x-user-token", token);
   }
+
+  // const decodeduser = jwt.verify(token, process.env.NEXTAUTH_SECRET);
+  // console.log(decodeduser);
 
   if (!token) {
     if (isApiRoute) {

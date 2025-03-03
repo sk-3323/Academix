@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import PageHeader from "@/components/LayoutContent/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -16,12 +17,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -45,18 +40,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Book,
   Users,
-  FileText,
   Layers,
   Plus,
   Edit,
-  Trash,
   GraduationCap,
+  FileText,
 } from "lucide-react";
-import { createCourseSchema } from "@/schema/course/schema";
 import { z } from "zod";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { GetCategoryApi } from "@/store/category/slice";
+import { GetCourseApi } from "@/store/course/slice";
+import { useSession } from "next-auth/react";
+import ChapterManagement from "./_components/chapter-management";
 
 const courseFormSchema = z.object({
   title: z.string().min(3, "Title is required"),
@@ -66,42 +62,38 @@ const courseFormSchema = z.object({
   level: z.string().optional(),
 });
 
-interface courseType {
-  id: number;
+interface CourseType {
+  id: string;
   title: string;
-  enrolled: number;
-  chapters: number;
-  status: "active" | "draft";
+  enrolled: number; // Note: Your data doesn’t provide this, so we’ll assume 0 or fetch it separately
+  chapters: any[]; // Updated to reflect the chapters array
+  status: "ACTIVE" | "DRAFT";
 }
+
 export default function CourseManagement() {
   const [activeTab, setActiveTab] = useState("courses");
-  const { data: categoryData } = useSelector(
-    (state: any) => state["CategoryStore"]
-  );
-
-  console.log(categoryData);
+  const { data: categoryData } = useSelector((state: any) => state["CategoryStore"]);
+  const { data: courseData } = useSelector((state: any) => state["CourseStore"]);
   const dispatch = useDispatch<AppDispatch>();
-  const [courses, setCourses] = useState([
-    {
-      id: 1,
-      title: "React Fundamentals",
-      enrolled: 45,
-      chapters: 12,
-      status: "active",
-    },
-    {
-      id: 2,
-      title: "Advanced JavaScript",
-      enrolled: 32,
-      chapters: 8,
-      status: "draft",
-    },
-  ]);
+  const { data: session } = useSession();
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCourse, setSelectedCourse] = useState<string>("");
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      dispatch(
+        GetCourseApi({
+          searchParams: {
+            instructorId: session?.user?.id,
+          },
+        })
+      );
+    }
+  }, [session?.user?.id, dispatch]);
 
   useEffect(() => {
     dispatch(GetCategoryApi());
-  }, []);
+  }, [dispatch]);
 
   const form = useForm({
     resolver: zodResolver(courseFormSchema),
@@ -114,19 +106,17 @@ export default function CourseManagement() {
     },
   });
 
-  const CourseCard: React.FC<{ course: courseType }> = ({ course }) => (
+  const CourseCard: React.FC<{ course: any }> = ({ course }) => (
     <Card className="mb-4">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle className="text-xl">{course.title}</CardTitle>
           <CardDescription className="flex items-center gap-2 mt-1">
-            <Users className="h-4 w-4" /> {course.enrolled} enrolled
-            <Layers className="h-4 w-4 ml-2" /> {course.chapters} chapters
+            <Users className="h-4 w-4" /> {course.enrolled || 0} enrolled
+            <Layers className="h-4 w-4 ml-2" /> {course.chapters.length} chapters
           </CardDescription>
         </div>
-        <Badge
-          variant={course.status === "active" ? "destructive" : "secondary"}
-        >
+        <Badge variant={course.status === "ACTIVE" ? "secondary" : "destructive"}>
           {course.status}
         </Badge>
       </CardHeader>
@@ -146,61 +136,25 @@ export default function CourseManagement() {
     </Card>
   );
 
-  const ChapterManagement = ({ courseId }) => (
-    <Accordion type="single" collapsible className="w-full">
-      <AccordionItem value="chapter-1">
-        <AccordionTrigger>Chapter 1: Introduction</AccordionTrigger>
-        <AccordionContent>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div>Topic 1: Getting Started</div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm">
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Trash className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <div>Topic 2: Basic Concepts</div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm">
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Trash className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            <Button variant="outline" size="sm" className="w-full">
-              <Plus className="h-4 w-4 mr-1" /> Add Topic
-            </Button>
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
-  );
-
   const EnrollmentManagement = () => (
     <Card>
       <CardHeader>
         <CardTitle>Course Enrollments</CardTitle>
-        <CardDescription>
-          Manage student enrollments for all courses
-        </CardDescription>
+        <CardDescription>Manage student enrollments for all courses</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <div className="flex gap-4">
-            <Select>
+            <Select onValueChange={(value) => setSelectedCourse(value)}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Select Course" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="react">React Fundamentals</SelectItem>
-                <SelectItem value="javascript">Advanced JavaScript</SelectItem>
+                {courseData.map((course: any) => (
+                  <SelectItem key={course.id} value={course.id}>
+                    {course.title}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Input placeholder="Search students..." className="flex-1" />
@@ -216,9 +170,7 @@ export default function CourseManagement() {
               </div>
               <div className="flex gap-2">
                 <Badge>In Progress</Badge>
-                <Button variant="outline" size="sm">
-                  Remove
-                </Button>
+                <Button variant="outline" size="sm">Remove</Button>
               </div>
             </div>
           </div>
@@ -226,7 +178,11 @@ export default function CourseManagement() {
       </CardContent>
     </Card>
   );
-  const handleSubmit = async (values: z.infer<typeof courseFormSchema>) => {};
+
+  const handleSubmit = async (values: z.infer<typeof courseFormSchema>) => {
+    console.log("Form Values:", values);
+    form.reset();
+  };
 
   return (
     <div className="space-y-6">
@@ -244,10 +200,7 @@ export default function CourseManagement() {
                 <DialogTitle>Create New Course</DialogTitle>
               </DialogHeader>
               <FormProvider {...form}>
-                <form
-                  onSubmit={form.handleSubmit(handleSubmit)}
-                  className="space-y-4"
-                >
+                <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
                   <FormField
                     control={form.control}
                     name="title"
@@ -268,10 +221,7 @@ export default function CourseManagement() {
                       <FormItem>
                         <FormLabel>Description</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Enter course description"
-                            {...field}
-                          />
+                          <Input placeholder="Enter course description" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -284,10 +234,7 @@ export default function CourseManagement() {
                       render={({ field }) => (
                         <FormItem className="flex-1">
                           <FormLabel>Category</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select Category" />
@@ -295,7 +242,7 @@ export default function CourseManagement() {
                             </FormControl>
                             <SelectContent>
                               {categoryData.map((category: any) => (
-                                <SelectItem value={category.id}>
+                                <SelectItem key={category.id} value={category.id}>
                                   {category.name}
                                 </SelectItem>
                               ))}
@@ -305,17 +252,13 @@ export default function CourseManagement() {
                         </FormItem>
                       )}
                     />
-
                     <FormField
                       control={form.control}
                       name="level"
                       render={({ field }) => (
                         <FormItem className="flex-1">
                           <FormLabel>Level</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select level" />
@@ -323,9 +266,7 @@ export default function CourseManagement() {
                             </FormControl>
                             <SelectContent>
                               <SelectItem value="BEGINNER">Beginner</SelectItem>
-                              <SelectItem value="INTERMEDIATE">
-                                Intermediate
-                              </SelectItem>
+                              <SelectItem value="INTERMEDIATE">Intermediate</SelectItem>
                               <SelectItem value="ADVANCED">Advanced</SelectItem>
                             </SelectContent>
                           </Select>
@@ -339,13 +280,12 @@ export default function CourseManagement() {
                     name="isFree"
                     render={({ field }) => (
                       <FormItem className="flex items-center space-x-2">
-                        <FormLabel className="text-sm font-medium">
-                          Is Free
-                        </FormLabel>
+                        <FormLabel className="text-sm font-medium">Is Free</FormLabel>
                         <FormControl>
                           <Input
                             type="checkbox"
-                            {...field}
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
                             className="h-4 w-4"
                           />
                         </FormControl>
@@ -386,32 +326,37 @@ export default function CourseManagement() {
         </TabsList>
 
         <TabsContent value="courses" className="mt-6">
-          {courses.map((course) => (
-            <CourseCard key={course.id} course={course} />
-          ))}
+          {courseData.length > 0 ? (
+            courseData
+              .filter((course: any) =>
+                course.title.toLowerCase().includes(searchTerm.toLowerCase())
+              )
+              .map((course: any) => <CourseCard key={course.id} course={course} />)
+          ) : (
+            <p>No courses available.</p>
+          )}
         </TabsContent>
 
         <TabsContent value="chapters" className="mt-6">
           <Card>
             <CardHeader>
               <CardTitle>Chapter Management</CardTitle>
-              <CardDescription>
-                Manage chapters and topics for each course
-              </CardDescription>
+              <CardDescription>Manage chapters and topics for each course</CardDescription>
             </CardHeader>
             <CardContent>
-              <Select>
+              <Select onValueChange={(value) => setSelectedCourse(value)}>
                 <SelectTrigger className="w-full mb-4">
                   <SelectValue placeholder="Select Course" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="react">React Fundamentals</SelectItem>
-                  <SelectItem value="javascript">
-                    Advanced JavaScript
-                  </SelectItem>
+                  {courseData.map((course: any) => (
+                    <SelectItem key={course.id} value={course.id}>
+                      {course.title}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-              <ChapterManagement courseId={1} />
+              {selectedCourse && <ChapterManagement courseId={selectedCourse} />}
             </CardContent>
           </Card>
         </TabsContent>

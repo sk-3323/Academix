@@ -5,7 +5,7 @@ import AdminNavbar from "@/components/Navbar/admin-navbar";
 import { AdminSidebar } from "@/components/Sidebar/admin-sidebar";
 import Loading from "@/components/Sidebar/Loading";
 import { useSidebar } from "@/components/ui/sidebar";
-import { useRole } from "@/hooks/useRole";
+import { useRole } from "@/hooks/use-role";
 import { AppDispatch } from "@/store/store";
 import { GetUserApi } from "@/store/user/slice";
 import React, { useEffect } from "react";

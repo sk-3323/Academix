@@ -18,7 +18,7 @@ import { clearEnrollmentState } from "@/store/enrollment/slice";
 import { usePathname } from "next/navigation";
 import CourseProgressButton from "../../_components/course-progress-button";
 import { clearUserProgressState } from "@/store/user-progress/slice";
-import { useConfetti } from "@/hooks/user-confetti";
+import { useConfetti } from "@/hooks/use-confetti";
 
 const TopicIdPage = ({
   params,

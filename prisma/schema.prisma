@@ -37,20 +37,20 @@ model User {
 }
 
 model Course {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
   title        String
   description  String?
   thumbnail    String?
   thumbnailKey String?
   price        Float?
-  isFree       Boolean    @default(false)
-  status       BlogStatus @default(DRAFT)
-level CourseLevel @default(BEGINNER)
+  isFree       Boolean     @default(false)
+  status       BlogStatus  @default(DRAFT)
+  level        CourseLevel @default(BEGINNER)
   // Relations
-  instructorId String    @db.ObjectId
-  instructor   User      @relation("CourseInstructor", fields: [instructorId], references: [id])
-  categoryId   String?   @db.ObjectId
-  category     Category? @relation(fields: [categoryId], references: [id])
+  instructorId String      @db.ObjectId
+  instructor   User        @relation("CourseInstructor", fields: [instructorId], references: [id])
+  categoryId   String?     @db.ObjectId
+  category     Category?   @relation(fields: [categoryId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -339,9 +339,9 @@ model QuizProgress {
   userId String @db.ObjectId
   user   User   @relation(fields: [userId], references: [id])
 
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  answer    QuizAnswer[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  userAnswers QuizAnswer[]
 
   @@unique([userId, quizId])
   @@index([quizId])

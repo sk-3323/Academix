@@ -7,7 +7,7 @@ import { NavigationMenuDemo } from "./NavMenuItems";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { SearchInput } from "./search-input";
-import { useRole } from "@/hooks/useRole";
+import { useRole } from "@/hooks/use-role";
 import Image from "next/image";
 import Link from "next/link";
 import DarkName from "../../../public/assets/logos/dark-name.svg";

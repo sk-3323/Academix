@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/card";
 
 import { cn } from "@/lib/utils";
-import { FlagIcon, Forward, Lock, Timer, Undo2 } from "lucide-react";
-import React, { useEffect, useMemo, useState } from "react";
+import { FlagIcon, Forward, Loader2, Lock, Timer, Undo2 } from "lucide-react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Label } from "recharts";
 import QuestionCounter from "./_components/question-counter";
 import { useDispatch, useSelector } from "react-redux";
@@ -27,6 +27,11 @@ import { clearQuizProgressState } from "@/store/quiz-progress/slice";
 import { Banner } from "@/components/banner";
 import StartPage from "./_components/start-page";
 import { useSession } from "next-auth/react";
+import {
+  AddQuizAnswerApi,
+  clearQuizAnswerState,
+} from "@/store/quiz-answer/slice";
+import { toast } from "sonner";
 
 const QuizIdPage = ({
   params,
@@ -34,9 +39,14 @@ const QuizIdPage = ({
   params: { courseId: string; quizId: string };
 }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { singleData: quiz } = useSelector((state: any) => state["QuizStore"]);
-  const { loading } = useSelector((state: any) => state["QuizProgressStore"]);
   const { data: session } = useSession();
+
+  const { singleData: quiz } = useSelector((state: any) => state["QuizStore"]);
+  const { loading: quizProgressLoading } = useSelector(
+    (state: any) => state["QuizProgressStore"]
+  );
+  const { loading: quizAnswerLoading, singleData: quizAnswerResult } =
+    useSelector((state: any) => state["QuizAnswerStore"]);
 
   useEffect(() => {
     dispatch(
@@ -46,15 +56,6 @@ const QuizIdPage = ({
       })
     );
   }, [params?.courseId]);
-
-  const handleSuccess = () => {
-    dispatch(
-      GetPublishedQuizWithProgressApi({
-        courseId: params?.courseId,
-        quizId: params?.quizId,
-      })
-    );
-  };
 
   const [isLocked, setIsLocked] = useState(
     quiz?.chapter?.course?.enrollments?.length === 0
@@ -66,26 +67,14 @@ const QuizIdPage = ({
     setIsLocked(flag);
   }, [quiz?.chapter?.course?.enrollments]);
 
-  const [isCompleteOnEnd, setIsCompleteOnEnd] = useState(
-    quiz?.chapter?.course?.enrollments?.length !== 0 &&
-      quiz?.completedBy?.length === 0
-  );
-
-  useEffect(() => {
-    let flag =
-      quiz?.chapter?.course?.enrollments?.length !== 0 &&
-      !quiz?.completedBy?.[0]?.isCompleted;
-
-    setIsCompleteOnEnd(flag);
-  }, [quiz?.completedBy, quiz?.chapter?.course?.enrollments]);
-
-  const [enrollmentActions, setEnrollmentActions] = useState({
-    clearState: clearEnrollmentState,
-    callbackFunction: () => {},
-  });
-  let pathname = usePathname();
-
-  useDynamicToast("EnrollmentStore", enrollmentActions, pathname);
+  const handleSuccess = () => {
+    dispatch(
+      GetPublishedQuizWithProgressApi({
+        courseId: params?.courseId,
+        quizId: params?.quizId,
+      })
+    );
+  };
 
   const [quizProgressActions, setQuizProgressActions] = useState({
     clearState: clearQuizProgressState,
@@ -95,7 +84,16 @@ const QuizIdPage = ({
   useDynamicToast("QuizProgressStore", quizProgressActions);
 
   const [questionIndex, setQuestionIndex] = useState(0);
-  const [selectedChoice, setSelectedChoice] = useState(0);
+  const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
+  const [correctAnswers, setCorrectAnswers] = useState(0);
+  const [wrongAnswers, setWrongAnswers] = useState(0);
+
+  const [quizAnswerActions, setQuizAnswerActions] = useState({
+    clearState: clearQuizAnswerState,
+    callbackFunction: () => {},
+  });
+
+  useDynamicToast("QuizAnswerStore", quizAnswerActions);
 
   const currentQuestion = useMemo(() => {
     return quiz?.questions?.[questionIndex];
@@ -118,6 +116,39 @@ const QuizIdPage = ({
     setIsAttempted(flag);
   }, [quiz?.completedBy]);
 
+  const handleNext = useCallback(async () => {
+    if (!selectedChoice) {
+      toast.error("Please select an option");
+    } else {
+      await dispatch(
+        AddQuizAnswerApi({
+          values: {
+            answerId: selectedChoice,
+            questionId: currentQuestion?.id,
+            quizProgressId: quiz?.completedBy?.[0]?.id,
+          },
+        })
+      );
+    }
+  }, [
+    params?.quizId,
+    currentQuestion?.id,
+    quiz?.completedBy?.[0]?.id,
+    selectedChoice,
+  ]);
+
+  useEffect(() => {
+    if (Object.keys(quizAnswerResult).length !== 0) {
+      if (quizAnswerResult?.isCorrect) {
+        setCorrectAnswers((pre) => pre + 1);
+      } else {
+        setWrongAnswers((pre) => pre + 1);
+      }
+      setQuestionIndex((pre) => pre + 1);
+      setSelectedChoice(null);
+    }
+  }, [quizAnswerResult?.isCorrect]);
+
   return (
     <>
       {isLocked && (
@@ -136,11 +167,11 @@ const QuizIdPage = ({
 
       {!isLocked && isAttempted && (
         <StartPage
-        quiz={quiz}
+          quiz={quiz}
           // setActions={setQuizProgressActions}
           quizId={params?.quizId}
           userId={session?.user?.id!}
-          loading={loading}
+          loading={quizProgressLoading}
         />
       )}
       {!isLocked && !isAttempted && (
@@ -155,7 +186,7 @@ const QuizIdPage = ({
                   </span>
                 </div>
               </div>
-              <QuestionCounter correct={3} wrong={1} />
+              <QuestionCounter correct={correctAnswers} wrong={wrongAnswers} />
             </div>
 
             <Card className="w-full mt-4">
@@ -176,9 +207,11 @@ const QuizIdPage = ({
                 <Button
                   key={i}
                   className="flex justify-start w-full py-8 mb-4"
-                  variant={selectedChoice === i ? "default" : "secondary"}
+                  variant={
+                    selectedChoice === option?.id ? "default" : "secondary"
+                  }
                   onClick={() => {
-                    setSelectedChoice(i);
+                    setSelectedChoice(option?.id);
                   }}
                 >
                   <div className="flex items-center justify-start">
@@ -189,16 +222,22 @@ const QuizIdPage = ({
                   </div>
                 </Button>
               ))}
-              <Button className="mt-2">
+              <Button
+                className="mt-2"
+                onClick={handleNext}
+                disabled={quizAnswerLoading}
+              >
                 {true ? (
                   <span className="flex items-center gap-2">
                     {" "}
-                    <Forward /> Next
+                    {quizAnswerLoading ? <Loader2 /> : <Forward />}
+                    Next
                   </span>
                 ) : (
                   <>
                     <span className="flex items-center gap-2">
-                      <FlagIcon className="text-xl" /> Finish
+                      {quizAnswerLoading ? <Loader2 /> : <FlagIcon />}
+                      Finish
                     </span>
                   </>
                 )}

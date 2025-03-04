@@ -43,7 +43,7 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
             userId: userId,
           },
           include: {
-            answer: true,
+            userAnswers: true,
           },
         },
         questions: {

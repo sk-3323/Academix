@@ -29,9 +29,11 @@ import StartPage from "./_components/start-page";
 import { useSession } from "next-auth/react";
 import {
   AddQuizAnswerApi,
+  clearQuizAnswerData,
   clearQuizAnswerState,
 } from "@/store/quiz-answer/slice";
 import { toast } from "sonner";
+import EndPage from "./_components/end-page";
 
 const QuizIdPage = ({
   params,
@@ -144,10 +146,29 @@ const QuizIdPage = ({
       } else {
         setWrongAnswers((pre) => pre + 1);
       }
-      setQuestionIndex((pre) => pre + 1);
       setSelectedChoice(null);
+      if (questionIndex === quiz?.questions?.length - 1) {
+        console.log("aave");
+        setIsEnded(true);
+        return;
+      }
+      setQuestionIndex((pre) => pre + 1);
+      dispatch(clearQuizAnswerData());
     }
   }, [quizAnswerResult?.isCorrect]);
+
+  const [isEnded, setIsEnded] = useState(false);
+
+  if (isEnded) {
+    return (
+      <EndPage
+        correctAnswers={correctAnswers}
+        incorrectAnswers={wrongAnswers}
+        totalQuestions={quiz?.questions?.length}
+        passingScore={quiz?.passingScore}
+      />
+    );
+  }
 
   return (
     <>

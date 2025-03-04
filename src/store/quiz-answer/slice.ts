@@ -112,6 +112,9 @@ const QuizAnswerSlice = createSlice({
       state.loading = false;
       state.message = "";
     },
+    clearQuizAnswerData: (state) => {
+      state.singleData = {};
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -191,5 +194,6 @@ const QuizAnswerSlice = createSlice({
   },
 });
 
-export const { clearQuizAnswerState } = QuizAnswerSlice.actions;
+export const { clearQuizAnswerState, clearQuizAnswerData } =
+  QuizAnswerSlice.actions;
 export default QuizAnswerSlice.reducer;

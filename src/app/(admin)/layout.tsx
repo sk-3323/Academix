@@ -8,13 +8,22 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { useRole } from "@/hooks/use-role";
 import { AppDispatch } from "@/store/store";
 import { GetUserApi } from "@/store/user/slice";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const { isMobile } = useSidebar();
-  const { status } = useRole();
-
+  // const pathname = usePathname();
+  // const { role, status } = useRole();
+  // const router = useRouter();
+  // useEffect(() => {
+  //   if (role === undefined) {
+  //     return;
+  //   } else if (role !== "ADMIN") {
+  //     router.back();
+  //   }
+  // }, [status]);
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     dispatch(
@@ -23,9 +32,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       })
     );
   }, []);
-  if (status === "loading") {
-    return <Loading />;
-  }
+
   return (
     <LayoutContent
       Navbar={<AdminNavbar isMobile={isMobile} />}

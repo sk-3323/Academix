@@ -17,6 +17,11 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
     conditions.userId_courseId = { courseId: courseId, userId: userId };
   }
 
+  const id = searchParams.get("userId");
+  if (userId) {
+    conditions.userId = id;
+  }
+
   const payment_status = searchParams.get("payment_status");
   if (payment_status) {
     conditions.payment_status = payment_status;

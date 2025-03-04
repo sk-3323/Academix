@@ -12,6 +12,7 @@ import OptionSlice from "@/store/options/slice";
 import UserSlice from "@/store/user/slice";
 import QuizProgressSlice from "@/store/quiz-progress/slice";
 import QuizAnswerSlice from "@/store/quiz-answer/slice";
+import PaymentRequestSlice from "@/store/payment-request/slice";
 
 const store = configureStore({
   reducer: {
@@ -28,6 +29,7 @@ const store = configureStore({
     OptionStore: OptionSlice,
     QuizProgressStore: QuizProgressSlice,
     QuizAnswerStore: QuizAnswerSlice,
+    PaymentRequestStore: PaymentRequestSlice,
   },
 });
 export default store;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -43,7 +43,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { GetEnrollmentApi } from "@/store/enrollment/slice";
+import { AppDispatch } from "@/store/store";
+import { useSession } from "next-auth/react";
+import { GetCategoryApi } from "@/store/category/slice";
+import { GetCourseApi } from "@/store/course/slice";
 
 const COLORS = ["#0ea5e9", "#8b5cf6", "#10b981", "#f59e0b"];
 
@@ -52,23 +57,57 @@ export default function TeacherDashboard() {
   const [payoutAmount, setPayoutAmount] = useState("");
   const [payoutNote, setPayoutNote] = useState("");
   const { singleData } = useSelector((state: any) => state.UserStore);
+  const { data: session } = useSession();
+  console.log(singleData);
 
+  const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    const id = session?.user?.id;
+    if (id) {
+      dispatch(
+        GetEnrollmentApi({
+          searchParams: {
+            // userId: id,
+          },
+        })
+      );
+    }
+  }, [dispatch]);
   const authoredCourses = singleData?.authoredCourses || [];
-  const enrollments = singleData?.enrollments || [];
+  const enrollments = useSelector((state: any) => state.EnrollmentStore.data);
 
   // Calculate total statistics
   const totalStudents = useMemo(() => {
-    const uniqueStudents = new Set(enrollments.map((e) => e.userId));
-    return uniqueStudents.size;
-  }, [enrollments]);
+    // const uniqueStudents = new Set(enrollments.map((e) => e.userId));
+    // return uniqueStudents.size;
+  }, []);
 
   const totalCourses = authoredCourses.length;
 
   const totalRevenue = useMemo(() => {
-    return enrollments.reduce((sum, enrollment) => sum + enrollment.price, 0);
-  }, [enrollments]);
+    let total = 0;
+    if (authoredCourses.length > 0) {
+      authoredCourses.forEach((course: any) => {
+        if (course.enrollments?.length > 0) {
+          course.enrollments.forEach((enroll: any) => {
+            total += enroll.price;
+          });
+        }
+      });
+    }
+    return total;
+  }, [authoredCourses]);
 
-  const totalEnrollments = enrollments.length;
+  const totalEnrollments = useMemo(() => {
+    let total = 0;
+    if (authoredCourses.length > 0) {
+      authoredCourses.forEach((course: any) => {
+        total += course.enrollments?.length;
+      });
+    }
+    return total;
+  }, [authoredCourses]);
+  console.log(totalRevenue * 0.5);
 
   // Prepare data for charts
   const courseData = useMemo(() => {

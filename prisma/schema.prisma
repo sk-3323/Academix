@@ -34,6 +34,7 @@ model User {
   liveClasses        LiveClass[]
   UserProgress       UserProgress[]
   QuizProgress       QuizProgress[]
+  teacherPaymentReq TeacherPaymentRequest[]
 }
 
 model Course {
@@ -59,6 +60,7 @@ model Course {
   enrollments  Enrollment[]
   liveClasses  LiveClass[]
   certificates Certificate[]
+  teacherPaymentReq TeacherPaymentRequest[]
 
   @@index([instructorId, categoryId])
 }
@@ -363,6 +365,23 @@ model QuizAnswer {
   updatedAt DateTime @updatedAt
 
   @@index([quizProgressId])
+}
+
+model TeacherPaymentRequest {
+  id                String     @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String     @db.ObjectId
+  user              User       @relation(fields: [userId], references: [id])
+  courseId          String     @db.ObjectId
+  course            Course      @relation(fields: [courseId], references: [id])
+  amount            Float
+  status RequestStatus @default(PENDING)
+  createdAt DateTime @default(now())
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 enum Role {

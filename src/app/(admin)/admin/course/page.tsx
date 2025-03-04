@@ -72,8 +72,12 @@ interface CourseType {
 
 export default function CourseManagement() {
   const [activeTab, setActiveTab] = useState("courses");
-  const { data: categoryData } = useSelector((state: any) => state["CategoryStore"]);
-  const { data: courseData } = useSelector((state: any) => state["CourseStore"]);
+  const { data: categoryData } = useSelector(
+    (state: any) => state["CategoryStore"]
+  );
+  const { data: courseData } = useSelector(
+    (state: any) => state["CourseStore"]
+  );
   const dispatch = useDispatch<AppDispatch>();
   const { data: session } = useSession();
   const [searchTerm, setSearchTerm] = useState("");
@@ -83,9 +87,7 @@ export default function CourseManagement() {
     if (session?.user?.id) {
       dispatch(
         GetCourseApi({
-          searchParams: {
-            instructorId: session?.user?.id,
-          },
+          searchParams: {},
         })
       );
     }
@@ -113,10 +115,13 @@ export default function CourseManagement() {
           <CardTitle className="text-xl">{course.title}</CardTitle>
           <CardDescription className="flex items-center gap-2 mt-1">
             <Users className="h-4 w-4" /> {course.enrolled || 0} enrolled
-            <Layers className="h-4 w-4 ml-2" /> {course.chapters.length} chapters
+            <Layers className="h-4 w-4 ml-2" /> {course.chapters.length}{" "}
+            chapters
           </CardDescription>
         </div>
-        <Badge variant={course.status === "ACTIVE" ? "secondary" : "destructive"}>
+        <Badge
+          variant={course.status === "ACTIVE" ? "secondary" : "destructive"}
+        >
           {course.status}
         </Badge>
       </CardHeader>
@@ -140,7 +145,9 @@ export default function CourseManagement() {
     <Card>
       <CardHeader>
         <CardTitle>Course Enrollments</CardTitle>
-        <CardDescription>Manage student enrollments for all courses</CardDescription>
+        <CardDescription>
+          Manage student enrollments for all courses
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -170,7 +177,9 @@ export default function CourseManagement() {
               </div>
               <div className="flex gap-2">
                 <Badge>In Progress</Badge>
-                <Button variant="outline" size="sm">Remove</Button>
+                <Button variant="outline" size="sm">
+                  Remove
+                </Button>
               </div>
             </div>
           </div>
@@ -200,7 +209,10 @@ export default function CourseManagement() {
                 <DialogTitle>Create New Course</DialogTitle>
               </DialogHeader>
               <FormProvider {...form}>
-                <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                <form
+                  onSubmit={form.handleSubmit(handleSubmit)}
+                  className="space-y-4"
+                >
                   <FormField
                     control={form.control}
                     name="title"
@@ -221,7 +233,10 @@ export default function CourseManagement() {
                       <FormItem>
                         <FormLabel>Description</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter course description" {...field} />
+                          <Input
+                            placeholder="Enter course description"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -234,7 +249,10 @@ export default function CourseManagement() {
                       render={({ field }) => (
                         <FormItem className="flex-1">
                           <FormLabel>Category</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select Category" />
@@ -242,7 +260,10 @@ export default function CourseManagement() {
                             </FormControl>
                             <SelectContent>
                               {categoryData.map((category: any) => (
-                                <SelectItem key={category.id} value={category.id}>
+                                <SelectItem
+                                  key={category.id}
+                                  value={category.id}
+                                >
                                   {category.name}
                                 </SelectItem>
                               ))}
@@ -258,7 +279,10 @@ export default function CourseManagement() {
                       render={({ field }) => (
                         <FormItem className="flex-1">
                           <FormLabel>Level</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select level" />
@@ -266,7 +290,9 @@ export default function CourseManagement() {
                             </FormControl>
                             <SelectContent>
                               <SelectItem value="BEGINNER">Beginner</SelectItem>
-                              <SelectItem value="INTERMEDIATE">Intermediate</SelectItem>
+                              <SelectItem value="INTERMEDIATE">
+                                Intermediate
+                              </SelectItem>
                               <SelectItem value="ADVANCED">Advanced</SelectItem>
                             </SelectContent>
                           </Select>
@@ -280,7 +306,9 @@ export default function CourseManagement() {
                     name="isFree"
                     render={({ field }) => (
                       <FormItem className="flex items-center space-x-2">
-                        <FormLabel className="text-sm font-medium">Is Free</FormLabel>
+                        <FormLabel className="text-sm font-medium">
+                          Is Free
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="checkbox"
@@ -331,7 +359,9 @@ export default function CourseManagement() {
               .filter((course: any) =>
                 course.title.toLowerCase().includes(searchTerm.toLowerCase())
               )
-              .map((course: any) => <CourseCard key={course.id} course={course} />)
+              .map((course: any) => (
+                <CourseCard key={course.id} course={course} />
+              ))
           ) : (
             <p>No courses available.</p>
           )}
@@ -341,7 +371,9 @@ export default function CourseManagement() {
           <Card>
             <CardHeader>
               <CardTitle>Chapter Management</CardTitle>
-              <CardDescription>Manage chapters and topics for each course</CardDescription>
+              <CardDescription>
+                Manage chapters and topics for each course
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Select onValueChange={(value) => setSelectedCourse(value)}>
@@ -356,7 +388,9 @@ export default function CourseManagement() {
                   ))}
                 </SelectContent>
               </Select>
-              {selectedCourse && <ChapterManagement courseId={selectedCourse} />}
+              {selectedCourse && (
+                <ChapterManagement courseId={selectedCourse} />
+              )}
             </CardContent>
           </Card>
         </TabsContent>

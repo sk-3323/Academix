@@ -4,14 +4,29 @@ import TeacherMobileMenu from "@/components/MobileMenu/teacher-mobile-menu";
 import TeacherNavbar from "@/components/Navbar/teacher-navbar";
 import { TeacherSidebar } from "@/components/Sidebar/teacher-sidebar";
 import { useSidebar } from "@/components/ui/sidebar";
-import React from "react";
+import { useRole } from "@/hooks/use-role";
+import { GetEnrollmentApi } from "@/store/enrollment/slice";
+import { AppDispatch } from "@/store/store";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 
 const TeacherLayout = ({ children }: { children: React.ReactNode }) => {
   const { isMobile } = useSidebar();
+  // const pathname = usePathname();
+  // const { role, status } = useRole();
+  // const router = useRouter();
+  // useEffect(() => {
+  //   if (role === undefined) {
+  //     return;
+  //   } else if (role !== "TEACHER") {
+  //     router.back();
+  //   }
+  // }, [status]);
   return (
     <LayoutContent
       Navbar={<TeacherNavbar isMobile={isMobile} />}
-      Sidebar={<TeacherSidebar collapsible="icon"/>}
+      Sidebar={<TeacherSidebar collapsible="icon" />}
       MobileSidebar={<TeacherMobileMenu />}
     >
       {children}

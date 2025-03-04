@@ -356,7 +356,7 @@ export default function PaymentManagement() {
                 </TableHeader>
                 <TableBody>
                   {filteredPayoutRequests.length > 0 ? (
-                    filteredPayoutRequests.map((request) => (
+                    filteredPayoutRequests.map((request: any) => (
                       <TableRow key={request.id}>
                         <TableCell>
                           <div className="flex items-center gap-2">

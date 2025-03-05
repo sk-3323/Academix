@@ -69,6 +69,12 @@ const QuizIdPage = ({
     setIsLocked(flag);
   }, [quiz?.chapter?.course?.enrollments]);
 
+  const [isEnded, setIsEnded] = useState(false);
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
+  const [correctAnswers, setCorrectAnswers] = useState(0);
+  const [wrongAnswers, setWrongAnswers] = useState(0);
+
   const handleSuccess = () => {
     dispatch(
       GetPublishedQuizWithProgressApi({
@@ -76,6 +82,11 @@ const QuizIdPage = ({
         quizId: params?.quizId,
       })
     );
+    setIsEnded(false);
+    setQuestionIndex(0);
+    setSelectedChoice(null);
+    setCorrectAnswers(0);
+    setWrongAnswers(0);
   };
 
   const [quizProgressActions, setQuizProgressActions] = useState({
@@ -84,11 +95,6 @@ const QuizIdPage = ({
   });
 
   useDynamicToast("QuizProgressStore", quizProgressActions);
-
-  const [questionIndex, setQuestionIndex] = useState(0);
-  const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
-  const [correctAnswers, setCorrectAnswers] = useState(0);
-  const [wrongAnswers, setWrongAnswers] = useState(0);
 
   const [quizAnswerActions, setQuizAnswerActions] = useState({
     clearState: clearQuizAnswerState,
@@ -111,12 +117,28 @@ const QuizIdPage = ({
   const [isAttempted, setIsAttempted] = useState(
     quiz?.completedBy?.length === 0
   );
-
   useEffect(() => {
     let flag = quiz?.completedBy?.length === 0;
 
     setIsAttempted(flag);
   }, [quiz?.completedBy]);
+
+  const [isCompleted, setIsCompleted] = useState(
+    quiz?.completedBy?.[0]?.isCompleted
+  );
+  useEffect(() => {
+    let flag = quiz?.completedBy?.[0]?.isCompleted;
+
+    setIsCompleted(flag);
+  }, [quiz?.completedBy?.[0]?.isCompleted]);
+
+  useEffect(() => {
+    if (isCompleted) {
+      setIsEnded(true);
+    } else {
+      setIsEnded(false);
+    }
+  }, [isCompleted]);
 
   const handleNext = useCallback(async () => {
     if (!selectedChoice) {
@@ -148,7 +170,6 @@ const QuizIdPage = ({
       }
       setSelectedChoice(null);
       if (questionIndex === quiz?.questions?.length - 1) {
-        console.log("aave");
         setIsEnded(true);
         return;
       }
@@ -157,7 +178,28 @@ const QuizIdPage = ({
     }
   }, [quizAnswerResult?.isCorrect]);
 
-  const [isEnded, setIsEnded] = useState(false);
+  useEffect(() => {
+    let correct = 0;
+    let wrong = 0;
+    let index = 0;
+    setSelectedChoice(null);
+    quiz?.completedBy?.[0]?.userAnswers?.forEach((ans: any, i: number) => {
+      if (ans?.isCorrect) {
+        correct += 1;
+      } else {
+        wrong += 1;
+      }
+      if (questionIndex === quiz?.questions?.length) {
+        setIsEnded(true);
+        return;
+      }
+      index = i + 1;
+    });
+
+    setCorrectAnswers(correct);
+    setWrongAnswers(wrong);
+    setQuestionIndex(index);
+  }, [quiz?.completedBy?.[0]?.userAnswers]);
 
   if (isEnded) {
     return (
@@ -166,6 +208,9 @@ const QuizIdPage = ({
         incorrectAnswers={wrongAnswers}
         totalQuestions={quiz?.questions?.length}
         passingScore={quiz?.passingScore}
+        loading={quizProgressLoading}
+        quizProgressId={quiz?.completedBy?.[0]?.id}
+        isCompleted={isCompleted}
       />
     );
   }
@@ -251,13 +296,21 @@ const QuizIdPage = ({
                 {true ? (
                   <span className="flex items-center gap-2">
                     {" "}
-                    {quizAnswerLoading ? <Loader2 /> : <Forward />}
+                    {quizAnswerLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Forward />
+                    )}
                     Next
                   </span>
                 ) : (
                   <>
                     <span className="flex items-center gap-2">
-                      {quizAnswerLoading ? <Loader2 /> : <FlagIcon />}
+                      {quizAnswerLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <FlagIcon />
+                      )}
                       Finish
                     </span>
                   </>

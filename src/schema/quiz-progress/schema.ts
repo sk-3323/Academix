@@ -17,6 +17,8 @@ const createQuizProgressSchema = z
         message: "Invalid user id provided",
       }),
     isCompleted: z.boolean(),
+    correct: z.number().int(),
+    wrong: z.number().int(),
   })
   .strict()
   .partial();

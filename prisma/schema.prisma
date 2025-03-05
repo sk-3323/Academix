@@ -27,14 +27,14 @@ model User {
 
   // Relations
   subscriptionStatus SubscriptionStatus?
-  authoredCourses    Course[]            @relation("CourseInstructor")
+  authoredCourses    Course[]                @relation("CourseInstructor")
   enrollments        Enrollment[]
   certificates       Certificate[]
   blogs              Blog[]
   liveClasses        LiveClass[]
   UserProgress       UserProgress[]
   QuizProgress       QuizProgress[]
-  teacherPaymentReq TeacherPaymentRequest[]
+  teacherPaymentReq  TeacherPaymentRequest[]
 }
 
 model Course {
@@ -56,10 +56,10 @@ model Course {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  chapters     Chapter[]
-  enrollments  Enrollment[]
-  liveClasses  LiveClass[]
-  certificates Certificate[]
+  chapters          Chapter[]
+  enrollments       Enrollment[]
+  liveClasses       LiveClass[]
+  certificates      Certificate[]
   teacherPaymentReq TeacherPaymentRequest[]
 
   @@index([instructorId, categoryId])
@@ -350,7 +350,8 @@ model QuizProgress {
 }
 
 model QuizAnswer {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  isCorrect Boolean?
 
   answerId String? @db.ObjectId
   answer   Option? @relation(fields: [answerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -368,14 +369,14 @@ model QuizAnswer {
 }
 
 model TeacherPaymentRequest {
-  id                String     @id @default(auto()) @map("_id") @db.ObjectId
-  userId            String     @db.ObjectId
-  user              User       @relation(fields: [userId], references: [id])
-  courseId          String     @db.ObjectId
-  course            Course      @relation(fields: [courseId], references: [id])
-  amount            Float
-  status RequestStatus @default(PENDING)
-  createdAt DateTime @default(now())
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String        @db.ObjectId
+  user      User          @relation(fields: [userId], references: [id])
+  courseId  String        @db.ObjectId
+  course    Course        @relation(fields: [courseId], references: [id])
+  amount    Float
+  status    RequestStatus @default(PENDING)
+  createdAt DateTime      @default(now())
 }
 
 enum RequestStatus {

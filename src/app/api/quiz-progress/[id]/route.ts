@@ -59,7 +59,6 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
     }
 
     let data = await request.json();
-
     data = await validateData(createQuizProgressSchema, data);
 
     return await tx.quizProgress.update({

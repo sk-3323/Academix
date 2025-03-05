@@ -83,12 +83,52 @@ export const EditQuizProgressApi = createAsyncThunk(
   }
 );
 
+// %%%%%%%%%% COMPLETE QUIZ-PROGRESS API %%%%%%%%%%%%
+export const CompleteQuizProgressApi = createAsyncThunk(
+  "CompleteQuizProgressApi",
+  async ({
+    id,
+    values,
+    requiredFields = [],
+  }: {
+    id: string;
+    values: any;
+    requiredFields?: string[];
+  }) => {
+    try {
+      const response = await api.update(
+        `${URL_QUIZ_PROGRESS}/${id}/complete`,
+        values,
+        requiredFields
+      );
+      return response;
+    } catch (error) {
+      console.error("error", error);
+      return error;
+    }
+  }
+);
+
 // %%%%%%%%%% DELETE QUIZ-PROGRESS API %%%%%%%%%%%%
 export const DeleteQuizProgressApi = createAsyncThunk(
   "DeleteQuizProgressApi",
   async ({ id }: { id: string }) => {
     try {
       const response = await api.delete(`${URL_QUIZ_PROGRESS}/${id}`);
+      return response;
+    } catch (error) {
+      console.error("error", error);
+      return error;
+    }
+  }
+);
+
+// %%%%%%%%%% RESET QUIZ-PROGRESS API %%%%%%%%%%%%
+export const ResetQuizProgressApi = createAsyncThunk(
+  "ResetQuizProgressApi",
+  async ({ id }: { id: string }) => {
+    try {
+      const response = await api.create(`${URL_QUIZ_PROGRESS}/${id}/reset`);
       return response;
     } catch (error) {
       console.error("error", error);
@@ -173,6 +213,21 @@ const QuizProgressSlice = createSlice({
         state.message = action.payload.message;
       })
 
+      //%%%%%%%%%% COMPLETE QUIZ-PROGRESS API HANDLE %%%%%%%%%%%%%%%%%%%%
+      .addCase(CompleteQuizProgressApi.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(CompleteQuizProgressApi.fulfilled, (state, action: any) => {
+        state.loading = false;
+        state.status = action.payload.status;
+        state.message = action.payload.message;
+      })
+      .addCase(CompleteQuizProgressApi.rejected, (state, action: any) => {
+        state.loading = false;
+        state.status = action.payload.status;
+        state.message = action.payload.message;
+      })
+
       //%%%%%%%%%% DELETE QUIZ-PROGRESS API HANDLE %%%%%%%%%%%%%%%%%%%%
       .addCase(DeleteQuizProgressApi.pending, (state) => {
         state.loading = true;
@@ -183,6 +238,21 @@ const QuizProgressSlice = createSlice({
         state.message = action.payload.message;
       })
       .addCase(DeleteQuizProgressApi.rejected, (state, action: any) => {
+        state.loading = false;
+        state.status = action.payload.status;
+        state.message = action.payload.message;
+      })
+
+      //%%%%%%%%%% RESET QUIZ-PROGRESS API HANDLE %%%%%%%%%%%%%%%%%%%%
+      .addCase(ResetQuizProgressApi.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(ResetQuizProgressApi.fulfilled, (state, action: any) => {
+        state.loading = false;
+        state.status = action.payload.status;
+        state.message = action.payload.message;
+      })
+      .addCase(ResetQuizProgressApi.rejected, (state, action: any) => {
         state.loading = false;
         state.status = action.payload.status;
         state.message = action.payload.message;

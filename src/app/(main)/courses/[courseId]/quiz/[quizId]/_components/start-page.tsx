@@ -15,7 +15,6 @@ import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 
 interface StartPageProps {
-  // setActions: any;
   quiz: any;
   quizId: string;
   userId?: string;
@@ -23,7 +22,6 @@ interface StartPageProps {
 }
 
 const StartPage = ({
-  // setActions,
   quiz,
   quizId,
   userId,
@@ -33,9 +31,6 @@ const StartPage = ({
 
   const handleQuizStart = async () => {
     try {
-      // setActions((current: any) => {
-      //   return { ...current, callbackFunction: () => {} };
-      // });
 
       await dispatch(
         AddQuizProgressApi({
@@ -65,13 +60,13 @@ const StartPage = ({
             onClick={handleQuizStart}
             disabled={loading}
           >
-            {loading && <Loader2 className="h-4 w-4 mr-2" />}
+            {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             Start
           </Button>
         </CardContent>
 
         <CardFooter className="pb-6 px-6">
-          <div className="w-full flex justify-between items-center text-sm font-medium">
+          <div className="w-full flex justify-between items-center text-sm font-medium gap-x-3">
             <span>
               {quiz?.questions?.length > 0 &&
                 `${quiz?.questions?.length} Questions`}

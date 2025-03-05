@@ -16,14 +16,23 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { toast } from "sonner";
+import {
+  CompleteQuizProgressApi,
+  ResetQuizProgressApi,
+} from "@/store/quiz-progress/slice";
 
 interface EndPageProps {
   correctAnswers: number;
   incorrectAnswers: number;
   totalQuestions: number;
   passingScore: number;
-
-  nextAction?: () => void;
+  loading: boolean;
+  quizProgressId: string;
+  isCompleted: boolean;
 }
 
 const EndPage = ({
@@ -31,10 +40,10 @@ const EndPage = ({
   incorrectAnswers,
   totalQuestions,
   passingScore,
-  nextAction,
+  loading,
+  quizProgressId,
+  isCompleted,
 }: EndPageProps) => {
-  const router = useRouter();
-
   const chartData = [
     {
       name: "Answers",
@@ -43,13 +52,41 @@ const EndPage = ({
     },
   ];
 
-  const handleNextAction = () => {
-    // if (nextAction) {
-    //   nextAction();
-    // } else {
-    //   // Default navigation if no specific action provided
-    //   router.push("/dashboard");
-    // }
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handleTryAgain = async () => {
+    try {
+      await dispatch(
+        ResetQuizProgressApi({
+          id: quizProgressId,
+        })
+      );
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.message);
+      throw error;
+    }
+  };
+  const handleNextAction = async () => {
+    try {
+      if (!isCompleted) {
+        await dispatch(
+          CompleteQuizProgressApi({
+            id: quizProgressId,
+            values: {
+              correct: correctAnswers,
+              wrong: incorrectAnswers,
+              isCompleted: true,
+            },
+            requiredFields: ["correct", "wrong", "isCompleted"],
+          })
+        );
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.message);
+      throw error;
+    }
   };
 
   const isPassed = correctAnswers >= passingScore;
@@ -81,18 +118,29 @@ const EndPage = ({
           {/* Bar Chart */}
           <div className="w-full h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData}>
-                <XAxis dataKey="name" />
-                <YAxis />
+              <BarChart
+                data={chartData}
+                margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+              >
                 <Tooltip />
-                <Bar dataKey="Correct" fill="#10B981" />
-                <Bar dataKey="Incorrect" fill="#EF4444" />
+                <Bar
+                  dataKey="Correct"
+                  fill="#10B981"
+                  radius={[4, 4, 0, 0]}
+                  barSize={50}
+                />
+                <Bar
+                  dataKey="Incorrect"
+                  fill="#EF4444"
+                  radius={[4, 4, 0, 0]}
+                  barSize={50}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
 
           {/* Detailed Results */}
-          <div className="flex justify-between text-sm font-medium text-gray-600">
+          <div className="flex justify-between text-sm font-medium text-gray-600 gap-x-3">
             <span>Total Questions: {totalQuestions}</span>
             <span>Correct Answers: {correctAnswers}</span>
             <span>Incorrect Answers: {incorrectAnswers}</span>
@@ -102,14 +150,17 @@ const EndPage = ({
         <CardFooter className="flex gap-x-3">
           <Button
             className="w-full text-md rounded"
-            onClick={handleNextAction}
+            onClick={handleTryAgain}
+            disabled={loading}
           >
+            {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             Try Again
           </Button>
           <Button
             className="w-full text-md rounded bg-[#27E0B3] hover:bg-[#27e0b2ac]"
             onClick={handleNextAction}
           >
+            {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             Go to Next
           </Button>
         </CardFooter>

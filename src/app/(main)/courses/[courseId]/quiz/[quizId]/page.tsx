@@ -230,6 +230,7 @@ const QuizIdPage = ({
       setSelectedChoice(null);
       if (questionIndex === quiz?.questions?.length - 1) {
         setIsEnded(true);
+        setTimerActive(false);
         return;
       }
       setQuestionIndex((pre) => pre + 1);
@@ -255,6 +256,7 @@ const QuizIdPage = ({
       }
       if (questionIndex === quiz?.questions?.length) {
         setIsEnded(true);
+        setTimerActive(false);
         return;
       }
       index = i + 1;
@@ -270,6 +272,12 @@ const QuizIdPage = ({
     }
   }, [quiz?.completedBy?.[0]?.userAnswers]);
 
+  useEffect(() => {
+    if (isLocked || isAttempted) {
+      setTimerActive(false);
+    }
+  }, [isLocked, isAttempted]);
+
   if (isEnded) {
     return (
       <EndPage
@@ -281,8 +289,8 @@ const QuizIdPage = ({
         quizProgressId={quiz?.completedBy?.[0]?.id}
         isCompleted={isCompleted}
         handleSuccess={handleSuccess}
-        nextTopicId={quiz?.nextTopic?.id}
-        nextType={quiz?.nextTopic?.nextType}
+        nextTopicId={quiz?.nextQuiz?.id}
+        nextType={quiz?.nextQuiz?.nextType}
         setQuizProgressActions={setQuizProgressActions}
         courseId={params?.courseId}
       />

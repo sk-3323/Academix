@@ -94,7 +94,6 @@ const EndPage = ({
   };
 
   const handleNextAction = async () => {
-    console.log("Aavsdf");
     try {
       if (!isCompleted) {
         setQuizProgressActions({

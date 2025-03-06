@@ -21,7 +21,8 @@ const createQuizAnswerSchema = z
       .min(1, "answer is required")
       .refine((val) => ObjectId.isValid(val), {
         message: "Invalid answer id provided",
-      }),
+      })
+      .nullable(),
   })
   .strict()
   .partial();

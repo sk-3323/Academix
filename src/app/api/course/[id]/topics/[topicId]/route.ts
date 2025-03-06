@@ -36,6 +36,14 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
               },
             },
             resources: true,
+            quiz: {
+              where: {
+                status: "PUBLISHED",
+              },
+              orderBy: {
+                order: "asc",
+              },
+            },
           },
         },
         muxData: true,
@@ -54,6 +62,7 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
       throw new ErrorHandler("Topic not found", 404);
     }
 
+    // Check if there's a next topic in the same chapter
     let nextTopic: any = await tx.topic.findFirst({
       where: {
         status: "PUBLISHED",
@@ -64,6 +73,20 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
       },
     });
 
+    if (nextTopic) {
+      nextTopic.nextType = "TOPIC";
+    }
+
+    // If no next topic, check if there are quizzes in the chapter
+    if (!nextTopic && topic?.chapter?.quiz?.length > 0) {
+      // Use the first quiz as the next item
+      nextTopic = {
+        id: topic?.chapter?.quiz?.[0].id,
+        nextType: "QUIZ",
+      };
+    }
+
+    // If still no next topic, look for the first topic in the next chapter
     if (!nextTopic) {
       let nextChapter = await tx.chapter.findFirst({
         where: {
@@ -75,6 +98,9 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
         },
         include: {
           topics: {
+            where: {
+              status: "PUBLISHED",
+            },
             orderBy: {
               order: "asc",
             },
@@ -83,7 +109,10 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
         },
       });
 
-      nextTopic = nextChapter?.topics?.[0];
+      if (nextChapter?.topics && nextChapter?.topics?.length > 0) {
+        nextTopic = nextChapter?.topics?.[0];
+        nextTopic.nextType = "TOPIC";
+      }
     }
 
     let progressCount = await getProgress(userId, course_id!);

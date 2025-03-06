@@ -32,6 +32,7 @@ import TitleForm from "@/components/Question/title-form";
 import PointForm from "@/components/Question/point-form";
 import AnswerForm from "@/components/Question/answer-form";
 import OptionForm from "@/components/Question/option-form";
+import { clearOptionState } from "@/store/options/slice";
 
 const page = ({
   params,
@@ -58,7 +59,7 @@ const page = ({
   useDynamicToast("QuestionStore", questionActions);
 
   const [optionActions, setOptionActions] = useState({
-    clearState: clearQuestionState,
+    clearState: clearOptionState,
     callbackFunction: () => {},
   });
 

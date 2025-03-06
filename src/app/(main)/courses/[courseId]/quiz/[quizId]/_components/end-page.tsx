@@ -21,6 +21,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { toast } from "sonner";
 import {
+  clearQuizProgressState,
   CompleteQuizProgressApi,
   ResetQuizProgressApi,
 } from "@/store/quiz-progress/slice";
@@ -33,6 +34,11 @@ interface EndPageProps {
   loading: boolean;
   quizProgressId: string;
   isCompleted: boolean;
+  handleSuccess: any;
+  setQuizProgressActions: any;
+  nextTopicId: string;
+  nextType: string;
+  courseId: string;
 }
 
 const EndPage = ({
@@ -43,6 +49,11 @@ const EndPage = ({
   loading,
   quizProgressId,
   isCompleted,
+  handleSuccess,
+  setQuizProgressActions,
+  nextTopicId,
+  nextType,
+  courseId,
 }: EndPageProps) => {
   const chartData = [
     {
@@ -53,9 +64,23 @@ const EndPage = ({
   ];
 
   const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
+
+  const handleNextSuccess = () => {
+    if (nextTopicId && nextType === "TOPIC") {
+      router.push(`/courses/${courseId}/topics/${nextTopicId}`);
+    } else if (nextType === "QUIZ") {
+      router.push(`/courses/${courseId}/quiz/${nextTopicId}`);
+    }
+  };
 
   const handleTryAgain = async () => {
     try {
+      setQuizProgressActions({
+        clearState: clearQuizProgressState,
+        callbackFunction: handleSuccess,
+      });
+
       await dispatch(
         ResetQuizProgressApi({
           id: quizProgressId,
@@ -67,9 +92,15 @@ const EndPage = ({
       throw error;
     }
   };
+
   const handleNextAction = async () => {
+    console.log("Aavsdf");
     try {
       if (!isCompleted) {
+        setQuizProgressActions({
+          clearState: clearQuizProgressState,
+          callbackFunction: handleNextSuccess,
+        });
         await dispatch(
           CompleteQuizProgressApi({
             id: quizProgressId,
@@ -81,6 +112,12 @@ const EndPage = ({
             requiredFields: ["correct", "wrong", "isCompleted"],
           })
         );
+      } else {
+        if (nextTopicId && nextType === "TOPIC") {
+          router.push(`/courses/${courseId}/topics/${nextTopicId}`);
+        } else if (nextType === "QUIZ") {
+          router.push(`/courses/${courseId}/quiz/${nextTopicId}`);
+        }
       }
     } catch (error: any) {
       console.error(error);
@@ -159,6 +196,7 @@ const EndPage = ({
           <Button
             className="w-full text-md rounded bg-[#27E0B3] hover:bg-[#27e0b2ac]"
             onClick={handleNextAction}
+            disabled={loading}
           >
             {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             Go to Next

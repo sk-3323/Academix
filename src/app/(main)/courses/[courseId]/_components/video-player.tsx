@@ -20,6 +20,7 @@ interface VideoPlayerProps {
   isCompleteOnEnd: boolean;
   setActions: any;
   startConfetti: any;
+  nextType: string;
 }
 
 const VideoPlayer = ({
@@ -32,6 +33,7 @@ const VideoPlayer = ({
   isCompleteOnEnd,
   setActions,
   startConfetti,
+  nextType,
 }: VideoPlayerProps) => {
   const [isReady, setIsReady] = useState(false);
   const router = useRouter();
@@ -49,8 +51,10 @@ const VideoPlayer = ({
         startConfetti();
       }
 
-      if (nextTopicId) {
+      if (nextTopicId && nextType === "TOPIC") {
         router.push(`/courses/${courseId}/topics/${nextTopicId}`);
+      } else if (nextType === "QUIZ") {
+        router.push(`/courses/${courseId}/quiz/${nextTopicId}`);
       }
     } catch (error: any) {
       console.error(error);

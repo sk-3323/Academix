@@ -35,6 +35,12 @@ import {
 import { toast } from "sonner";
 import EndPage from "./_components/end-page";
 
+const formatTime = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+};
+
 const QuizIdPage = ({
   params,
 }: {
@@ -74,6 +80,64 @@ const QuizIdPage = ({
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [wrongAnswers, setWrongAnswers] = useState(0);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [timerActive, setTimerActive] = useState(false);
+  const [isAttempted, setIsAttempted] = useState(
+    quiz?.completedBy?.length === 0
+  );
+  useEffect(() => {
+    let flag = quiz?.completedBy?.length === 0;
+
+    setIsAttempted(flag);
+  }, [quiz?.completedBy]);
+
+  const handleSubmitOnTimeExpire = async () => {
+    setTimerActive(false);
+
+    await dispatch(
+      AddQuizAnswerApi({
+        values: {
+          answerId: selectedChoice,
+          questionId: currentQuestion?.id,
+          quizProgressId: quiz?.completedBy?.[0]?.id,
+        },
+      })
+    );
+    toast.info("Time's up! Moving to next question.");
+  };
+
+  useEffect(() => {
+    if (!isLocked && !isAttempted && quiz?.timeLimit) {
+      // Convert timeLimit to seconds (assuming it's stored in seconds)
+      setTimeLeft(quiz.timeLimit);
+      setTimerActive(true);
+    }
+  }, [quiz?.timeLimit, isLocked, isAttempted]);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
+    if (timerActive && timeLeft !== null && timeLeft > 0) {
+      timer = setInterval(() => {
+        setTimeLeft((prev) => (prev !== null && prev > 0 ? prev - 1 : 0));
+      }, 1000);
+    } else if (timeLeft === 0 && timerActive) {
+      // Auto-submit when time expires
+      handleSubmitOnTimeExpire();
+    }
+
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [timerActive, timeLeft]);
+
+  // Reset timer when moving to next question
+  useEffect(() => {
+    if (!isLocked && !isAttempted && quiz?.timeLimit) {
+      setTimeLeft(quiz.timeLimit);
+      setTimerActive(true);
+    }
+  }, [questionIndex]);
 
   const handleSuccess = () => {
     dispatch(
@@ -87,6 +151,8 @@ const QuizIdPage = ({
     setSelectedChoice(null);
     setCorrectAnswers(0);
     setWrongAnswers(0);
+    setTimeLeft(quiz?.timeLimit || null);
+    setTimerActive(false);
   };
 
   const [quizProgressActions, setQuizProgressActions] = useState({
@@ -114,15 +180,6 @@ const QuizIdPage = ({
     return currentQuestion?.options;
   }, [currentQuestion]);
 
-  const [isAttempted, setIsAttempted] = useState(
-    quiz?.completedBy?.length === 0
-  );
-  useEffect(() => {
-    let flag = quiz?.completedBy?.length === 0;
-
-    setIsAttempted(flag);
-  }, [quiz?.completedBy]);
-
   const [isCompleted, setIsCompleted] = useState(
     quiz?.completedBy?.[0]?.isCompleted
   );
@@ -141,6 +198,8 @@ const QuizIdPage = ({
   }, [isCompleted]);
 
   const handleNext = useCallback(async () => {
+    setTimerActive(false);
+
     if (!selectedChoice) {
       toast.error("Please select an option");
     } else {
@@ -175,6 +234,11 @@ const QuizIdPage = ({
       }
       setQuestionIndex((pre) => pre + 1);
       dispatch(clearQuizAnswerData());
+
+      if (quiz?.timeLimit) {
+        setTimeLeft(quiz.timeLimit);
+        setTimerActive(true);
+      }
     }
   }, [quizAnswerResult?.isCorrect]);
 
@@ -199,6 +263,11 @@ const QuizIdPage = ({
     setCorrectAnswers(correct);
     setWrongAnswers(wrong);
     setQuestionIndex(index);
+
+    if (!isEnded && quiz?.timeLimit) {
+      setTimeLeft(quiz.timeLimit);
+      setTimerActive(true);
+    }
   }, [quiz?.completedBy?.[0]?.userAnswers]);
 
   if (isEnded) {
@@ -211,6 +280,11 @@ const QuizIdPage = ({
         loading={quizProgressLoading}
         quizProgressId={quiz?.completedBy?.[0]?.id}
         isCompleted={isCompleted}
+        handleSuccess={handleSuccess}
+        nextTopicId={quiz?.nextTopic?.id}
+        nextType={quiz?.nextTopic?.nextType}
+        setQuizProgressActions={setQuizProgressActions}
+        courseId={params?.courseId}
       />
     );
   }
@@ -248,7 +322,7 @@ const QuizIdPage = ({
                 <div className="flex items-end justify-end mt-3 text-slate-400">
                   <Timer className="h-8 w-8 mr-2" />
                   <span className="text-2xl flex items-end justify-end">
-                    0:0
+                    {timeLeft !== null ? formatTime(timeLeft) : "0:00"}
                   </span>
                 </div>
               </div>

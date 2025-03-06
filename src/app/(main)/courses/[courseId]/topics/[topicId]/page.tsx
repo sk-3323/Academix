@@ -96,6 +96,7 @@ const TopicIdPage = ({
           <VideoPlayer
             topicId={params?.topicId}
             nextTopicId={topic?.nextTopic?.id}
+            nextType={topic?.nextTopic?.nextType}
             playbackId={topic?.muxData?.playbackId!}
             isLocked={isLocked}
             isCompleteOnEnd={isCompleteOnEnd}
@@ -110,6 +111,7 @@ const TopicIdPage = ({
             <h2 className="text-2xl font-semibold mb-2">{topic?.title}</h2>
             {topic?.chapter?.course?.enrollments?.length !== 0 && (
               <CourseProgressButton
+                nextType={topic?.nextTopic?.nextType}
                 topicId={params?.topicId}
                 courseId={params?.courseId}
                 nextTopicId={topic?.nextTopic?.id}

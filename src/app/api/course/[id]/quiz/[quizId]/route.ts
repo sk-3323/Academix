@@ -74,7 +74,7 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
       throw new ErrorHandler("quiz not found", 404);
     }
 
-    let nextquiz: any = await tx.quiz.findFirst({
+    let nextQuiz: any = await tx.quiz.findFirst({
       where: {
         status: "PUBLISHED",
         order: {
@@ -84,7 +84,11 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
       },
     });
 
-    if (!nextquiz) {
+    if (nextQuiz) {
+      nextQuiz.nextType = "QUIZ";
+    }
+
+    if (!nextQuiz) {
       let nextChapter = await tx.chapter.findFirst({
         where: {
           status: "PUBLISHED",
@@ -94,7 +98,10 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
           courseId: course_id,
         },
         include: {
-          quiz: {
+          topics: {
+            where: {
+              status: "PUBLISHED",
+            },
             orderBy: {
               order: "asc",
             },
@@ -103,9 +110,12 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
         },
       });
 
-      nextquiz = nextChapter?.quiz?.[0];
+      if (nextChapter?.topics && nextChapter?.topics?.length > 0) {
+        nextQuiz = nextChapter?.topics?.[0];
+        nextQuiz.nextType = "TOPIC";
+      }
     }
-    quiz.nextquiz = nextquiz;
+    quiz.nextQuiz = nextQuiz;
 
     return quiz;
   });

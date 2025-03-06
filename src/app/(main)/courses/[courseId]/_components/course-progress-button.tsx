@@ -18,6 +18,7 @@ interface CourseProgressButtonProps {
   nextTopicId?: string;
   isCompleted?: boolean;
   startConfetti: any;
+  nextType: string;
 }
 
 const CourseProgressButton = ({
@@ -27,6 +28,7 @@ const CourseProgressButton = ({
   isCompleted,
   setActions,
   startConfetti,
+  nextType,
 }: CourseProgressButtonProps) => {
   const Icon = isCompleted ? XCircle : CheckCircle;
   const router = useRouter();
@@ -46,9 +48,12 @@ const CourseProgressButton = ({
       }
 
       if (!isCompleted && nextTopicId) {
-        router.push(`/courses/${courseId}/topics/${nextTopicId}`);
+        if (nextType === "TOPIC") {
+          router.push(`/courses/${courseId}/topics/${nextTopicId}`);
+        } else if (nextType === "QUIZ") {
+          router.push(`/courses/${courseId}/quiz/${nextTopicId}`);
+        }
       } else {
-        console.log("Aaveaavdas");
         dispatch(
           GetPublishedTopicWithProgressApi({
             courseId: courseId,

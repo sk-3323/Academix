@@ -119,7 +119,7 @@ export default function CourseManagement() {
         <div>
           <CardTitle className="text-xl">{course.title}</CardTitle>
           <CardDescription className="flex items-center gap-2 mt-1">
-            <Users className="h-4 w-4" /> {course.enrolled || 0} enrolled
+            <Users className="h-4 w-4" /> {course?.enrollments?.length} enrolled
             <Layers className="h-4 w-4 ml-2" /> {course.chapters.length}{" "}
             chapters
           </CardDescription>

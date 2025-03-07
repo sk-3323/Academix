@@ -68,6 +68,11 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
         category: true,
         chapters: true,
         certificates: true,
+        enrollments: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
   });

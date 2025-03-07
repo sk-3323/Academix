@@ -36,6 +36,7 @@ import LightLogo from "../../../public/assets/logos/light-logo.svg";
 import DarkName from "../../../public/assets/logos/dark-name.svg";
 import LightName from "../../../public/assets/logos/light-name.svg";
 import { useTheme } from "next-themes";
+import { signOut } from "next-auth/react";
 
 const items = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/student/dashboard" },
@@ -146,7 +147,10 @@ export function StudentSidebar({
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter className="p-2">
-          <Button className="bg-red-500 font-semibold">
+          <Button
+            className="bg-red-500 font-semibold"
+            onClick={async () => await signOut({ callbackUrl: "/" })}
+          >
             {!isHovering && !isMobile ? <LogOut /> : "Logout"}
           </Button>
         </SidebarFooter>

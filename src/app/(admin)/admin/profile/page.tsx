@@ -89,7 +89,7 @@ const ProfileManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/30">
+    <div className="min-h-screen">
       <PageHeader headerTitle="Profile" />
       <div className="grid grid-cols-12 gap-6">
         {/* Left Sidebar */}

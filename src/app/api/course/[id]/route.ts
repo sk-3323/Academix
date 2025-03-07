@@ -41,6 +41,11 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
             order: "asc",
           },
         },
+        enrollments: {
+          include: {
+            user: true,
+          },
+        },
         certificates: true,
       },
     });

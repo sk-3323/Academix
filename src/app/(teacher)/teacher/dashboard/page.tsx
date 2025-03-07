@@ -67,20 +67,33 @@ export default function TeacherDashboard() {
       dispatch(
         GetEnrollmentApi({
           searchParams: {
-            // userId: id,
+            // courseId: id,
           },
         })
       );
     }
   }, [dispatch]);
   const authoredCourses = singleData?.authoredCourses || [];
-  const enrollments = useSelector((state: any) => state.EnrollmentStore.data);
+  const { data: enrollments } = useSelector(
+    (state: any) => state.EnrollmentStore
+  );
+  console.log(enrollments);
 
   // Calculate total statistics
   const totalStudents = useMemo(() => {
-    // const uniqueStudents = new Set(enrollments.map((e) => e.userId));
-    // return uniqueStudents.size;
+    let totalUser: string[] = [];
+    if (authoredCourses.length > 0) {
+      authoredCourses.forEach((course: any) => {
+        if (course.enrollments?.length > 0) {
+          course.enrollments.forEach((enroll: any) => {
+            totalUser.push(enroll.user?.username);
+          });
+        }
+      });
+    }
+    return totalUser;
   }, []);
+  console.log(totalStudents);
 
   const totalCourses = authoredCourses.length;
 
@@ -195,7 +208,7 @@ export default function TeacherDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalStudents}</div>
+            <div className="text-2xl font-bold">{totalStudents.length}</div>
           </CardContent>
         </Card>
         <Card>

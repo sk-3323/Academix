@@ -40,11 +40,11 @@ import { useTheme } from "next-themes";
 
 const items = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin/dashboard" },
-  // { icon: BookAudioIcon, label: "Courses", href: "/admin/course" },
+  { icon: BookAudioIcon, label: "Courses", href: "/admin/courses" },
   { icon: BookOpen, label: "Payment", href: "/admin/payment" },
   { icon: ShieldCheck, label: "Certificates", href: "/admin/certificate" },
   { icon: UsersIcon, label: "Users", href: "/admin/user" },
-  { icon: CreditCard, label: "Payment", href: "/admin/payment" },
+  // { icon: CreditCard, label: "Payment", href: "/admin/payment" },
   { icon: User, label: "Profile", href: "/admin/profile" },
 ];
 

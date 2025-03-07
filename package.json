@@ -81,6 +81,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@next/bundle-analyzer": "^14.2.20",
     "@types/formidable": "^3.4.5",
     "@types/fs-extra": "^11.0.4",
     "@types/js-cookie": "^3.0.6",

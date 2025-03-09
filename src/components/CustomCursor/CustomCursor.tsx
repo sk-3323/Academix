@@ -78,12 +78,19 @@ export const CustomCursor = () => {
   );
 
   useEffect(() => {
+    // if (isActive) {
+    //   scaleBySize(cursorInnerRef.current, 20, 0.6);
+    //   scaleBySize(cursorOuterRef.current, 20, 6);
+    // } else {
+    //   scaleBySize(cursorInnerRef.current, 20, 1);
+    //   scaleBySize(cursorOuterRef.current, 25, 1);
+    // }
     if (isActive) {
       scaleBySize(cursorInnerRef.current, 20, 0.6);
       scaleBySize(cursorOuterRef.current, 20, 6);
     } else {
-      scaleBySize(cursorInnerRef.current, 20, 1);
-      scaleBySize(cursorOuterRef.current, 25, 1);
+      scaleBySize(cursorInnerRef.current, 2, 0.8);
+      scaleBySize(cursorOuterRef.current, 10, 1);
     }
   }, [scaleBySize, isActive]);
 

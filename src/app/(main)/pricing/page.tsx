@@ -1,145 +1,120 @@
+"use client";
+
 import React from "react";
 import { Gem, CheckCircle, XCircle, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils"; // Assuming you have a utility for className merging
 
 const Page = () => {
   return (
-    <div className="min-h-screen flex justify-center items-center text-gray-900 dark:text-gray-100">
-      <section className="py-16 text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 py-12">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        {/* Header */}
         <div className="mb-12">
-          <span className="text-lg font-semibold uppercase text-emerald-500">
-            Get plan
+          <span className="inline-block px-4 py-1 bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-400 rounded-full text-sm font-semibold uppercase tracking-wide">
+            Select Your Plan
           </span>
-          <h2 className="text-4xl mt-2 mb-8">Choose a Plan</h2>
+          <h2 className="text-4xl md:text-5xl font-extrabold mt-4 mb-6 bg-gradient-to-r from-gray-900 to-emerald-600 bg-clip-text text-transparent dark:from-gray-100 dark:to-emerald-400">
+            Pricing That Fits Your Needs
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-400">
+            Unlock the full potential of your learning journey with our plans.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 justify-center">
+        {/* Pricing Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Basic Plan */}
-          <div className="max-w-md mx-auto">
-            <div className="relative bg-white dark:bg-gray-800 shadow-xl rounded-3xl overflow-hidden border-b-8 border-gray-900 dark:border-gray-300">
-              <div className="relative pt-12 pb-16 px-8 text-center bg-gray-900 dark:bg-gray-200">
-                <div className="absolute left-0 bottom-0 h-20 w-full bg-white dark:bg-gray-800 rounded-t-full"></div>
-                <div className="relative z-10">
-                  <div className="h-40 w-40 bg-white dark:bg-gray-800 rounded-full mx-auto p-2.5 border-4 border-gray-900 dark:border-gray-300 flex items-center justify-center">
-                    <Gem
-                      size={70}
-                      className="text-gray-900 dark:text-gray-200"
-                    />
-                  </div>
+          <div className="relative group bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+            <div className="p-8">
+              <div className="flex justify-center mb-6">
+                <div className="h-20 w-20 bg-gradient-to-br from-gray-200 to-gray-400 dark:from-gray-700 dark:to-gray-900 rounded-full p-3 flex items-center justify-center">
+                  <Gem size={40} className="text-gray-900 dark:text-gray-200" />
                 </div>
               </div>
-              <div className="px-6 py-6 text-center">
-                <div className="text-xl font-semibold">Basic</div>
-                <h4 className="text-2xl font-bold my-2">FREE</h4>
-                <ul className="my-6 mx-4 space-y-2">
-                  <li className="flex items-center py-2 border-b border-dashed border-gray-300 dark:border-gray-300">
-                    <CheckCircle
-                      size={18}
-                      className="mr-3 text-gray-900 dark:text-gray-200"
-                    />{" "}
-                    Conference plans
-                  </li>
-                  <li className="flex items-center py-2 border-b border-dashed border-gray-300 dark:border-gray-300">
-                    <CheckCircle
-                      size={18}
-                      className="mr-3 text-gray-900 dark:text-gray-200"
-                    />{" "}
-                    Free Lunch And Coffee
-                  </li>
-                  <li className="flex items-center py-2 border-b border-dashed border-gray-300 dark:border-gray-300">
-                    <CheckCircle
-                      size={18}
-                      className="mr-3 text-gray-900 dark:text-gray-200"
-                    />{" "}
-                    Certificate
-                  </li>
-                  <li className="flex items-center py-2 border-b border-dashed border-gray-300 dark:border-gray-300">
-                    <XCircle
-                      size={18}
-                      className="mr-3 text-gray-900 dark:text-gray-200"
-                    />{" "}
-                    Easy Access
-                  </li>
-                  <li className="flex items-center py-2 border-b border-dashed border-gray-300 dark:border-gray-300">
-                    <XCircle
-                      size={18}
-                      className="mr-3 text-gray-900 dark:text-gray-200"
-                    />{" "}
-                    Free Contacts
-                  </li>
-                </ul>
-                <div className="mt-8 mb-4">
-                  <Button
-                    disabled
-                    className="px-6 py-2 font-bold rounded cursor-not-allowed text-gray-900 dark:text-gray-200 border  border-gray-900 dark:border-gray-300 bg-transparent"
+              <h3 className="text-2xl font-bold mb-2">Basic</h3>
+              <p className="text-3xl font-extrabold mb-6">
+                FREE
+                <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                  {" "}
+                  / forever
+                </span>
+              </p>
+              <ul className="space-y-4 text-left mx-4 mb-8">
+                {[
+                  { text: "Conference plans", included: true },
+                  { text: "Free Lunch And Coffee", included: true },
+                  { text: "Certificate", included: true },
+                  { text: "Easy Access", included: false },
+                  { text: "Free Contacts", included: false },
+                ].map((feature, index) => (
+                  <li
+                    key={index}
+                    className="flex items-center text-gray-700 dark:text-gray-300"
                   >
-                    Current Plan
-                  </Button>
-                </div>
-              </div>
+                    {feature.included ? (
+                      <CheckCircle
+                        size={20}
+                        className="mr-3 text-emerald-500"
+                      />
+                    ) : (
+                      <XCircle size={20} className="mr-3 text-gray-400" />
+                    )}
+                    {feature.text}
+                  </li>
+                ))}
+              </ul>
+              <Button
+                disabled
+                className="w-full py-3 bg-transparent border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 font-semibold rounded-lg cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                Current Plan
+              </Button>
             </div>
           </div>
 
           {/* Premium Plan */}
-          <div className="max-w-sm mx-auto">
-            <div className="relative bg-white dark:bg-gray-800 shadow-xl rounded-3xl overflow-hidden border-b-8 border-yellow-500">
-              <div className="relative pt-12 pb-16 px-8 text-center bg-yellow-500">
-                <div className="absolute left-0 bottom-0 h-20 w-full bg-white dark:bg-gray-800 rounded-t-full"></div>
-                <div className="relative z-10">
-                  <div className="h-40 w-40 bg-white dark:bg-gray-800 rounded-full mx-auto p-2.5 border-4 border-yellow-500 flex items-center justify-center">
-                    <Crown size={70} className="text-yellow-500" />
-                  </div>
+          <div className="relative group bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border-4 border-yellow-500 transition-all duration-300 hover:shadow-2xl scale-105 md:scale-100 md:hover:scale-105">
+            <div className="absolute inset-0 bg-gradient-to-t from-yellow-500/20 to-transparent pointer-events-none"></div>
+            <div className="p-8 relative z-10">
+              <div className="flex justify-center mb-6">
+                <div className="h-20 w-20 bg-gradient-to-br from-yellow-200 to-yellow-400 rounded-full p-3 flex items-center justify-center">
+                  <Crown size={40} className="text-yellow-600" />
                 </div>
               </div>
-              <div className="px-6 py-6 text-center">
-                <div className="text-xl font-semibold">Premium</div>
-                <h4 className="text-2xl font-bold my-2 text-yellow-500">
-                  ₹299
-                </h4>
-                <ul className="my-6 mx-4 space-y-2">
-                  <li className="flex items-center py-2 border-b border-dashed border-gray-300 dark:border-gray-300">
-                    <CheckCircle
-                      size={18}
-                      className="mr-3 text-gray-900 dark:text-gray-200"
-                    />{" "}
-                    Conference plans
+              <h3 className="text-2xl font-bold mb-2">Premium</h3>
+              <p className="text-3xl font-extrabold mb-6 text-yellow-500">
+                ₹299
+                <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                  {" "}
+                  / month
+                </span>
+              </p>
+              <ul className="space-y-4 text-left mx-4 mb-8">
+                {[
+                  { text: "Conference plans", included: true },
+                  { text: "Free Lunch And Coffee", included: true },
+                  { text: "Certificate", included: true },
+                  { text: "Easy Access", included: true },
+                  { text: "Free Contacts", included: false },
+                ].map((feature, index) => (
+                  <li
+                    key={index}
+                    className="flex items-center text-gray-700 dark:text-gray-300"
+                  >
+                    {feature.included ? (
+                      <CheckCircle size={20} className="mr-3 text-yellow-500" />
+                    ) : (
+                      <XCircle size={20} className="mr-3 text-gray-400" />
+                    )}
+                    {feature.text}
                   </li>
-                  <li className="flex items-center py-2 border-b border-dashed border-gray-300 dark:border-gray-300">
-                    <CheckCircle
-                      size={18}
-                      className="mr-3 text-gray-900 dark:text-gray-200"
-                    />{" "}
-                    Free Lunch And Coffee
-                  </li>
-                  <li className="flex items-center py-2 border-b border-dashed border-gray-300 dark:border-gray-300">
-                    <CheckCircle
-                      size={18}
-                      className="mr-3 text-gray-900 dark:text-gray-200"
-                    />{" "}
-                    Certificate
-                  </li>
-                  <li className="flex items-center py-2 border-b border-dashed border-gray-300 dark:border-gray-300">
-                    <CheckCircle
-                      size={18}
-                      className="mr-3 text-gray-900 dark:text-gray-200"
-                    />{" "}
-                    Easy Access
-                  </li>
-                  <li className="flex items-center py-2 border-b border-dashed border-gray-300 dark:border-gray-300">
-                    <XCircle
-                      size={18}
-                      className="mr-3 text-gray-900 dark:text-gray-200"
-                    />{" "}
-                    Free Contacts
-                  </li>
-                </ul>
-                <div className="mt-8 mb-4">
-                  <Button className="px-6 py-2 font-bold rounded cursor-pointer text-white hover:bg-yellow-700 bg-yellow-500 border border-yellow-500">
-                    Upgrade Premium Plan{" "}
-                    <Crown size={16} className="inline-block ml-2 -mt-1" />
-                  </Button>
-                </div>
-              </div>
+                ))}
+              </ul>
+              <Button className="w-full py-3 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-yellow-600 transition-colors flex items-center justify-center gap-2">
+                Upgrade to Premium
+                <Crown size={18} />
+              </Button>
             </div>
           </div>
         </div>

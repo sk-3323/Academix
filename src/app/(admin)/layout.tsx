@@ -24,6 +24,9 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   //     router.back();
   //   }
   // }, [status]);
+  const { data: userData } = useSelector((state: any) => state["UserStore"]);
+  console.log(userData);
+
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     dispatch(

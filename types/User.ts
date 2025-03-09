@@ -1,3 +1,9 @@
+enum Role {
+  STUDENT = "STUDENT",
+  TEACHER = "TEACHER",
+  ADMIN = "ADMIN",
+}
+
 export interface User {
   id: string;
   username: string;
@@ -6,7 +12,7 @@ export interface User {
   confirmPassword?: string;
   phone: string;
   avatar?: string;
-  role?: string;
+  role?: Role;
   verified?: boolean;
   verifyCode?: string;
   isBlocked?: boolean;

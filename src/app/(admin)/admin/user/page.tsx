@@ -51,13 +51,14 @@ import { Badge } from "@/components/ui/badge";
 // import PageHeader from "@/components/LayoutContent/PageHeader";
 // import { User } from "../../../../types/User";
 // import { ApiResponse } from "../../../../types/ApiResponse";
-import { Ban, UserCheck, History, Shield, Mail } from "lucide-react";
+import { Ban, UserCheck, History, Shield, Mail, Download } from "lucide-react";
 import { ApiResponse } from "../../../../../types/ApiResponse";
 import PageHeader from "@/components/LayoutContent/PageHeader";
-import { User } from "../../../../../types/User";
 import Loading from "@/components/Sidebar/Loading";
 import { Skeleton } from "@/components/ui/skeleton";
 import { APIClient } from "@/helpers/apiHelper";
+import ReportGenerator from "@/components/Report/user-report";
+import { User } from "../../../../../types/allType";
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -91,7 +92,6 @@ export default function UserManagement() {
     newRole: "",
   });
   const getUsers = useCallback(async () => {
-
     setIsLoading(true);
     setError(null);
 
@@ -249,107 +249,119 @@ export default function UserManagement() {
       <PageHeader
         headerTitle="User Management"
         renderRight={() => (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline">Add User</Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Add User</DialogTitle>
-              </DialogHeader>
-              <FormProvider {...form}>
-                <form
-                  onSubmit={form.handleSubmit(handleSubmit)}
-                  className="space-y-4"
-                  encType="multipart/form-data"
-                >
-                  <FormField
-                    control={form.control}
-                    name="username"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter email" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter password" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="role"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Role</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select role" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="STUDENT">Student</SelectItem>
-                            <SelectItem value="TEACHER">Instructor</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Mobile Number</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter mobile number"
-                            type="text"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit">Submit</Button>
-                </form>
-              </FormProvider>
-            </DialogContent>
-          </Dialog>
+          <div className="flex justify-center items-center">
+            <ReportGenerator userData={users} />
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline">Add User</Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Add User</DialogTitle>
+                </DialogHeader>
+                <FormProvider {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(handleSubmit)}
+                    className="space-y-4"
+                    encType="multipart/form-data"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="username"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter email" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter password" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="role"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Role</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select role" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="STUDENT">Student</SelectItem>
+                              <SelectItem value="TEACHER">
+                                Instructor
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Mobile Number</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter mobile number"
+                              type="text"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit">Submit</Button>
+                  </form>
+                </FormProvider>
+              </DialogContent>
+            </Dialog>
+          </div>
         )}
       />
 
       <div className="flex justify-between items-center">
+        {/* <div className="flex items-center gap-2">
+          <Button variant="outline">
+            <Download className="mr-2 h-4 w-4" />
+            Export Data
+          </Button>
+        </div> */}
+
         <Input
           className="w-64"
           placeholder="Search users..."

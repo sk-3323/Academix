@@ -77,7 +77,7 @@ const CourseIdPage = ({ params }: { params: { courseId: string } }) => {
       )}
       <div className="w-full p-6">
         <Link
-          href={`/teacher/courses`}
+          href={`/admin/courses`}
           className="flex items-center text-sm hover:opacity-75 transition mb-6"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -109,7 +109,10 @@ const CourseIdPage = ({ params }: { params: { courseId: string } }) => {
               setActions={setCourseActions}
             />
             <DescriptionForm
-              initialData={{ description: singleData?.description }}
+              initialData={{
+                description: singleData?.description,
+                title: singleData?.title,
+              }}
               courseId={params?.courseId}
               setActions={setCourseActions}
             />

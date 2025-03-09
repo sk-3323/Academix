@@ -42,13 +42,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 
 export default function AdminDashboard() {
   const { data: allUserData, singleData } = useSelector(
     (state: any) => state.UserStore
   );
   const [selectedTimeRange, setSelectedTimeRange] = useState("all");
-
+  const router = useRouter();
   // Aggregate data from all users
   const allAuthoredCourses = useMemo(
     () => allUserData?.flatMap((user: any) => user.authoredCourses || []) || [],
@@ -245,7 +246,13 @@ export default function AdminDashboard() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>View Details</DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                router.push(`/admin/courses/${course.id}`)
+                              }
+                            >
+                              View Details
+                            </DropdownMenuItem>
                             <DropdownMenuItem>Edit Course</DropdownMenuItem>
                             {course.status === "DRAFT" && (
                               <DropdownMenuItem>

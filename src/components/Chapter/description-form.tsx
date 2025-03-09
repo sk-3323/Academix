@@ -11,21 +11,23 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { useDispatch } from "react-redux";
+import { EditCourseApi, GetSingleCourseApi } from "@/store/course/slice";
+import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { toast } from "sonner";
-import { Pencil } from "lucide-react";
+import { Pencil, Sparkles } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { Chapter } from "@prisma/client";
-import { EditChapterApi, GetSingleChapterApi } from "@/store/chapter/slice";
+import { Course } from "@prisma/client";
 import Editor from "../editor";
 import Preview from "../preview";
+import { APIClient } from "@/helpers/apiHelper";
+import { EditChapterApi, GetSingleChapterApi } from "@/store/chapter/slice";
 
-type ChapterFormValues = Pick<Chapter, "description">;
+type CourseFormValues = Pick<Course, "description">;
 
 interface DescriptionFormProps {
-  initialData: ChapterFormValues;
+  initialData: CourseFormValues & { title: string };
   chapterId: string;
   setActions: any;
 }
@@ -42,8 +44,8 @@ const DescriptionForm = ({
   setActions,
 }: DescriptionFormProps) => {
   const dispatch = useDispatch<AppDispatch>();
-
   const [isEditing, setIsEditing] = useState(false);
+  const [isFetchingAI, setIsFetchingAI] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,9 +62,30 @@ const DescriptionForm = ({
         description: initialData?.description || "",
       });
     }
-  }, [initialData?.description]);
+  }, [initialData?.description, form]);
 
   const { isSubmitting, isValid } = form.formState;
+
+  const fetchAIDescription = async (
+    courseTitle: string
+  ): Promise<string | null> => {
+    try {
+      const formData = new FormData();
+      formData.append("courseTitle", courseTitle);
+      const api = new APIClient();
+      const response: any = await api.create(
+        `/course/fetch-description`,
+        formData,
+        { "Content-Type": "multipart/form-data" }
+      );
+      if (!response.success) throw new Error("Failed to fetch AI description");
+      return response.result;
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to fetch AI description");
+      return null;
+    }
+  };
 
   const toggleEdit = () => {
     form.setValue("description", initialData?.description || "");
@@ -75,9 +98,10 @@ const DescriptionForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      setActions((current: any) => {
-        return { ...current, callbackFunction: handleSuccess };
-      });
+      setActions((current: any) => ({
+        ...current,
+        callbackFunction: handleSuccess,
+      }));
 
       await dispatch(
         EditChapterApi({
@@ -87,30 +111,56 @@ const DescriptionForm = ({
         })
       );
       setIsEditing(false);
+      toast.success("Description updated successfully!");
     } catch (error: any) {
       console.error(error);
       toast.error(error.message);
     }
   };
 
+  const handleAIGenerate = async () => {
+    setIsFetchingAI(true);
+    try {
+      const aiDescription = await fetchAIDescription(initialData.title);
+      if (aiDescription) form.setValue("description", aiDescription);
+      toast.success("AI-generated description loaded!");
+    } catch (error) {
+      toast.error("Failed to fetch AI description");
+    } finally {
+      setIsFetchingAI(false);
+    }
+  };
+
   return (
     <div className="mt-6 bg-slate-100 dark:bg-gray-800 rounded-lg shadow-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Chapter Description
-        <Button
-          variant={"ghost"}
-          onClick={toggleEdit}
-          className="hover:bg-[#a1a1aa]"
-        >
-          {isEditing ? (
-            <>Cancel</>
-          ) : (
-            <>
-              <Pencil className="h-4 w-4 mr-2" />
-              Edit Description
-            </>
+        Course Description
+        <div className="flex items-center gap-2">
+          {isEditing && (
+            <Button
+              onClick={handleAIGenerate}
+              variant="outline"
+              className="hover:bg-[#a1a1aa]"
+              disabled={isFetchingAI || isSubmitting}
+            >
+              <Sparkles className="h-4 w-4 mr-2" />
+              {isFetchingAI ? "Generating..." : "AI Generate Description"}
+            </Button>
           )}
-        </Button>
+          <Button
+            onClick={toggleEdit}
+            variant="ghost"
+            className="hover:bg-[#a1a1aa]"
+          >
+            {isEditing ? (
+              "Cancel"
+            ) : (
+              <>
+                <Pencil className="h-4 w-4 mr-2" /> Edit Description
+              </>
+            )}
+          </Button>
+        </div>
       </div>
       {isEditing ? (
         <Form {...form}>
@@ -125,7 +175,10 @@ const DescriptionForm = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Editor disabled={isSubmitting} {...field} />
+                      <Editor
+                        disabled={isSubmitting || isFetchingAI}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -136,7 +189,7 @@ const DescriptionForm = ({
               <Button
                 className="py-2 px-4 bg-[#27E0B3] text-white rounded-lg hover:bg-[#27e0b2ac] transition"
                 type="submit"
-                disabled={!isValid || isSubmitting}
+                disabled={!isValid || isSubmitting || isFetchingAI}
               >
                 Save
               </Button>

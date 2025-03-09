@@ -296,7 +296,7 @@ export default function TeacherDashboard() {
             <CardDescription>Students enrolled in each course</CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center">
-            <div className="h-[300px] w-full max-w-[300px]">
+            <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie

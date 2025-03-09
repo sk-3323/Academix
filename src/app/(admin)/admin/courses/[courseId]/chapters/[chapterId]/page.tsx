@@ -32,6 +32,7 @@ const page = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { singleData } = useSelector((state: any) => state["ChapterStore"]);
+  console.log(singleData);
 
   useEffect(() => {
     dispatch(GetSingleChapterApi({ id: params?.chapterId }));
@@ -120,7 +121,10 @@ const page = ({
               setActions={setChapterActions}
             />
             <DescriptionForm
-              initialData={{ description: singleData?.description }}
+              initialData={{
+                description: singleData?.description,
+                title: singleData?.title,
+              }}
               chapterId={params?.chapterId}
               setActions={setChapterActions}
             />

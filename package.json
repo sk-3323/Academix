@@ -16,6 +16,7 @@
     "@hookform/resolvers": "^3.10.0",
     "@mux/mux-node": "^9.0.1",
     "@mux/mux-player-react": "^3.2.4",
+    "@netlify/plugin-nextjs": "^5.10.0",
     "@next-auth/prisma-adapter": "^1.0.7",
     "@prisma/client": "^6.0.1",
     "@radix-ui/react-accordion": "^1.2.2",

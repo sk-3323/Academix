@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { APIClient } from "@/helpers/apiHelper";
 
-const page = () => {
+const VerifyOTPPage = () => {
   const api = new APIClient();
   const [isVerifying, setIsVerifying] = useState(false);
   const [email, setEmail] = useState("");
@@ -25,6 +25,7 @@ const page = () => {
   const { handleSubmit } = useForm();
   const searchParams = useSearchParams();
   const router = useRouter();
+
   useEffect(() => {
     const emailParam = searchParams.get("uid");
     if (emailParam) {
@@ -35,9 +36,7 @@ const page = () => {
   console.log(email);
 
   const handleResendOtp = async () => {
-    const res: any = await api.update("/auth/verify-otp", {
-      id: email,
-    });
+    const res: any = await api.update("/auth/verify-otp", { id: email });
     if (res.status) {
       toast.success("Verification code has been resent.");
     } else {
@@ -48,10 +47,7 @@ const page = () => {
   const onSubmit = async (otp: string) => {
     setIsVerifying(true);
 
-    const data: any = await api.create("/auth/verify-otp", {
-      email,
-      otp,
-    });
+    const data: any = await api.create("/auth/verify-otp", { email, otp });
 
     if (data?.result?.isVerified) {
       toast.success(data.message);
@@ -63,6 +59,7 @@ const page = () => {
     }
     setIsVerifying(false);
   };
+
   return (
     <div className="h-[95vh] flex items-center w-full justify-center">
       <Card className="w-full max-w-md">
@@ -108,4 +105,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default VerifyOTPPage;

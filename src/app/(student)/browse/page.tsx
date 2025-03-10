@@ -2,13 +2,14 @@
 
 import { GetCategoryApi } from "@/store/category/slice";
 import { AppDispatch } from "@/store/store";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Categories from "./_components/categories";
 import { SearchInput } from "@/components/Navbar/search-input";
 import { useSession } from "next-auth/react";
 import CourseList from "./_components/course-list";
 import { GetCourseWithProgressApi } from "@/store/course/slice";
+import Loading from "@/components/Sidebar/Loading";
 
 interface searchPageProps {
   searchParams: {
@@ -17,7 +18,16 @@ interface searchPageProps {
   };
 }
 
-const searchPage = ({ searchParams }: searchPageProps) => {
+const SearchCoursePage = ({ searchParams }: searchPageProps) => {
+  return (
+    <Suspense fallback={<Loading />}>
+      <SearchPage searchParams={searchParams} />
+    </Suspense>
+  );
+};
+
+
+const SearchPage = ({ searchParams }: searchPageProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const { data } = useSelector((state: any) => state["CategoryStore"]);
   const { data: courseData } = useSelector(
@@ -54,4 +64,4 @@ const searchPage = ({ searchParams }: searchPageProps) => {
   );
 };
 
-export default searchPage;
+export default SearchCoursePage;

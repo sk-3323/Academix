@@ -12,9 +12,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { MailIcon, RefreshCwIcon, ArrowLeftIcon } from "lucide-react";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import Loading from "@/components/Sidebar/Loading";
 
-export default function CheckEmail() {
+const CheckEmailPage = () => {
+  return (
+    <Suspense fallback={<Loading />}>
+      <CheckEmail />
+    </Suspense>
+  );
+};
+
+const CheckEmail = () => {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
   //   const [isResending, setIsResending] = useState(false);
@@ -59,4 +68,6 @@ export default function CheckEmail() {
       </Card>
     </div>
   );
-}
+};
+
+export default CheckEmailPage;

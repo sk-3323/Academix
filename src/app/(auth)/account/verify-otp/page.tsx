@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Card,
@@ -16,7 +16,14 @@ import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { APIClient } from "@/helpers/apiHelper";
-
+import Loading from "@/components/Sidebar/Loading";
+const VerifyOTP = () => {
+  return (
+    <Suspense fallback={<Loading />}>
+      <VerifyOTPPage />
+    </Suspense>
+  );
+};
 const VerifyOTPPage = () => {
   const api = new APIClient();
   const [isVerifying, setIsVerifying] = useState(false);
@@ -105,4 +112,4 @@ const VerifyOTPPage = () => {
   );
 };
 
-export default VerifyOTPPage;
+export default VerifyOTP;

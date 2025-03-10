@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"; // Assuming you have a utility for className m
 
 const Page = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 py-12">
+    <div className="min-h-screen flex items-center justify-center py-12">
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Header */}
         <div className="mb-12">

@@ -107,7 +107,7 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
     let data = formDataToJsonWithoutFiles(formdata);
     const avatar = formdata?.get("avatar") as File;
 
-    data = await validateData(createUserSchema, data);
+    // data = await validateData(createUserSchema, data);
 
     if (avatar) {
       const uploadedFile = await utapi.uploadFiles(avatar);

@@ -39,7 +39,7 @@ export const POST = apiHandler(async (request: NextRequest) => {
     if (existUserByEmail.isVerified) {
       throw new ErrorHandler("User already exist with this email.", 400);
     } else {
-      const hashedPassword = await hashPassword(password);
+      const hashedPassword = await hashPassword(password ?? "");
       const verifyExpiryDate = new Date(Date.now() + 120000);
       await prisma.user.update({
         where: { email },
@@ -51,7 +51,7 @@ export const POST = apiHandler(async (request: NextRequest) => {
       });
     }
   } else {
-    const hashedPassword = await hashPassword(password);
+    const hashedPassword = await hashPassword(password ?? "");
     const verifyExpiryDate = new Date();
     verifyExpiryDate.setHours(verifyExpiryDate.getMinutes() + 2);
 
@@ -64,6 +64,7 @@ export const POST = apiHandler(async (request: NextRequest) => {
         isVerified: false,
         verifyCode,
         verifyCodeExpiry: verifyExpiryDate,
+        avatar: `https://api.dicebear.com/9.x/avataaars/svg?seed=${username}`,
       },
     });
   }

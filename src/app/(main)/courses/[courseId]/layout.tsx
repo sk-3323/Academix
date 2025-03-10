@@ -21,6 +21,7 @@ const courseIdLayout = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { singleData } = useSelector((state: any) => state["CourseStore"]);
+  console.log(singleData);
 
   useEffect(() => {
     dispatch(

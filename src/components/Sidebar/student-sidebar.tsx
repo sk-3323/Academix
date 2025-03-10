@@ -91,7 +91,7 @@ export function StudentSidebar({
         onMouseLeave={handleMouseLeave}
         className="transition-all duration-300 ease-in"
       >
-        <SidebarHeader className="p-2">
+        <SidebarHeader className="p-2 min-h-16 flex items-center justify-center">
           {" "}
           <Link href="/" legacyBehavior passHref>
             <>

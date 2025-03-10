@@ -14,7 +14,7 @@ export const POST = apiHandler(async (req: NextRequest, content: any) => {
     messages: [
       {
         role: "user",
-        content: `Give me short description about 3-5 lines related to ${courseTitle}`,
+        content: `Give me short description about 50 words related to ${courseTitle}`,
       }, // The user's prompt
     ],
     max_tokens: 150,

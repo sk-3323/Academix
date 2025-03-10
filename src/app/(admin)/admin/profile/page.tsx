@@ -100,8 +100,8 @@ const ProfileManagement = () => {
                 <Avatar className="w-32 h-32">
                   <AvatarImage
                     src={
-                      avatarPreview ||
-                      `https://api.dicebear.com/6.x/initials/svg?seed=${user?.username}`
+                      avatarPreview
+                      // ||`https://api.dicebear.com/6.x/avataaars/svg?seed=${user?.username}`
                     }
                     alt={user?.username}
                   />

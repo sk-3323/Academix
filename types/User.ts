@@ -8,8 +8,8 @@ export interface User {
   id: string;
   username: string;
   email: string;
-  password?: string;
-  confirmPassword?: string;
+  password?: string | undefined;
+  confirmPassword?: string | undefined;
   phone: string;
   avatar?: string;
   role?: Role;

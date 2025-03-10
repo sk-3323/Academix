@@ -56,7 +56,7 @@ const page = () => {
     if (data?.result?.isVerified) {
       toast.success(data.message);
       setTimeout(() => {
-        router.push("/");
+        router.push("/account/login");
       }, 700);
     } else {
       toast.error(data.message);

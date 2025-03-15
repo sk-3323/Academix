@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { Award, Check, Download, FileText, User } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { Award, Check, Download, FileText } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -45,10 +45,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { AppDispatch } from "@/store/store";
+import { GetCourseApi } from "@/store/course/slice";
+import { Course } from "../../../../../types/allType";
+import { GetSingleUserProgressApi } from "@/store/user-progress/slice";
 
-export default function DynamicCertificateGenerator({ isAdmin = false }) {
+export default function DynamicCertificateGenerator() {
   const { singleData } = useSelector((state: any) => state.UserStore);
-  const [selectedCourse, setSelectedCourse] = useState(null);
+  const dispatch = useDispatch<AppDispatch>();
+
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [eligibleUsers, setEligibleUsers] = useState([]);
   const [certificateSettings, setCertificateSettings] = useState({
@@ -72,39 +78,63 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedCertificates, setGeneratedCertificates] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [courses, setCourses] = useState([]); // State to store courses
+  const [isLoadingCourses, setIsLoadingCourses] = useState(false); // State to track loading
+  const [courseError, setCourseError] = useState<string | null>(""); // State to track errors
 
   const canvasRef = useRef(null);
   const liveCanvasRef = useRef(null);
   const logoRef = useRef(null);
   const signatureRef = useRef(null);
 
-  // Get all courses (for admin) or just authored courses (for teacher)
-  const courses = isAdmin
-    ? getAllCourses() // This would be a function to get all courses from your state
-    : singleData?.authoredCourses || [];
-
+  // Load logo and signature images
   useEffect(() => {
-    // Load logo and signature images
-    const logo = new Image();
+    const logo: any = new Image();
     logo.src = "/assets/logos/light-logo.svg";
     logo.crossOrigin = "anonymous";
     logoRef.current = logo;
 
-    const signature = new Image();
+    const signature: any = new Image();
     signature.src = "/assets/logos/light-name.svg";
     signature.crossOrigin = "anonymous";
     signatureRef.current = signature;
   }, []);
 
+  // Fetch courses when the component mounts or user role changes
+  useEffect(() => {
+    const fetchCourses = async () => {
+      if (singleData?.role === "ADMIN") {
+        setIsLoadingCourses(true);
+        setCourseError(null);
+        try {
+          const resp: any = await dispatch(GetCourseApi({ searchParams: {} }));
+          if (resp.meta.requestStatus === "fulfilled") {
+            setCourses(resp?.payload?.result || []);
+          } else {
+            setCourseError("Failed to fetch courses. Please try again.");
+          }
+        } catch (error) {
+          setCourseError("An error occurred while fetching courses.");
+          console.error(error);
+        } finally {
+          setIsLoadingCourses(false);
+        }
+      } else {
+        // For non-admin users, use authoredCourses
+        setCourses(singleData?.authoredCourses || []);
+      }
+    };
+
+    fetchCourses();
+  }, [singleData, dispatch]);
+
   useEffect(() => {
     if (selectedCourse) {
-      // Get eligible users for the selected course
-      const users = getEligibleUsersForCourse(selectedCourse);
+      const users: any = getEligibleUsersForCourse(selectedCourse);
       setEligibleUsers(users);
       setSelectedUsers([]);
       setSelectAll(false);
 
-      // Set a default preview user for the live preview
       if (users.length > 0 && !previewUser) {
         setPreviewUser(users[0]);
       }
@@ -125,65 +155,23 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
     }
   }, [isPreviewOpen, previewUser]);
 
-  function getAllCourses() {
-    // In a real app, this would get all courses from your state
-    // For now, we'll just use the authored courses as a placeholder
-    return singleData?.authoredCourses || [];
+  function getEligibleUsersForCourse(course: Course) {
+    const userprogres = dispatch(
+      GetSingleUserProgressApi({
+        id: "67cc166404592fe5d573d1ce",
+      })
+    );
+    console.log(userprogres, "prororor");
+
+    return course?.enrollments?.map((enroll) => enroll.user);
   }
 
-  function getEligibleUsersForCourse(course) {
-    // In a real app, this would query your API for students who have completed the course
-    // For now, we'll create mock data
-    return [
-      {
-        id: "user-001",
-        name: "Rishi Gaiwala",
-        email: "rishi@example.com",
-        avatar: null,
-        completionDate: "2025-02-15",
-        progress: 100,
-      },
-      {
-        id: "user-002",
-        name: "Priya Sharma",
-        email: "priya@example.com",
-        avatar: null,
-        completionDate: "2025-03-01",
-        progress: 100,
-      },
-      {
-        id: "user-003",
-        name: "Amit Patel",
-        email: "amit@example.com",
-        avatar: null,
-        completionDate: "2025-02-20",
-        progress: 95,
-      },
-      {
-        id: "user-004",
-        name: "Neha Gupta",
-        email: "neha@example.com",
-        avatar: null,
-        completionDate: "2025-01-30",
-        progress: 100,
-      },
-      {
-        id: "user-005",
-        name: "Vikram Singh",
-        email: "vikram@example.com",
-        avatar: null,
-        completionDate: "2025-02-10",
-        progress: 98,
-      },
-    ];
-  }
-
-  const handleCourseChange = (courseId) => {
-    const course = courses.find((c) => c.id === courseId);
+  const handleCourseChange = (courseId: string) => {
+    const course: Course = courses.find((c: Course) => c.id === courseId);
     setSelectedCourse(course);
   };
 
-  const handleUserSelect = (userId) => {
+  const handleUserSelect = (userId: string) => {
     if (selectedUsers.includes(userId)) {
       setSelectedUsers(selectedUsers.filter((id) => id !== userId));
       setSelectAll(false);
@@ -195,7 +183,7 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
     }
   };
 
-  const handleSelectAllChange = (checked) => {
+  const handleSelectAllChange = (checked: boolean) => {
     setSelectAll(checked);
     if (checked) {
       setSelectedUsers(eligibleUsers.map((user) => user.id));
@@ -223,17 +211,14 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
     const width = canvas.width;
     const height = canvas.height;
 
-    // Clear canvas
     ctx.clearRect(0, 0, width, height);
 
-    // Background
     const gradient = ctx.createLinearGradient(0, 0, width, height);
     gradient.addColorStop(0, "#ffffff");
     gradient.addColorStop(1, "#f8fafc");
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
 
-    // Border
     if (certificateSettings.showBorder) {
       ctx.strokeStyle = certificateSettings.primaryColor;
       ctx.lineWidth = certificateSettings.borderWidth;
@@ -245,45 +230,37 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
       );
     }
 
-    // Logo
     if (certificateSettings.showLogo && logoRef.current) {
       ctx.drawImage(logoRef.current, width / 2 - 50, 50, 100, 100);
     }
 
-    // Title
     ctx.font = `bold ${certificateSettings.fontSize}px ${certificateSettings.fontFamily}`;
     ctx.fillStyle = certificateSettings.primaryColor;
     ctx.textAlign = "center";
     ctx.fillText(certificateSettings.title, width / 2, 200);
 
-    // Subtitle
     ctx.font = `italic ${certificateSettings.fontSize * 0.6}px ${certificateSettings.fontFamily}`;
     ctx.fillStyle = "#64748b";
     ctx.fillText("This is to certify that", width / 2, 250);
 
-    // Student Name
     ctx.font = `bold ${certificateSettings.fontSize * 1.2}px ${certificateSettings.fontFamily}`;
     ctx.fillStyle = certificateSettings.secondaryColor;
     ctx.fillText(user.name, width / 2, 300);
 
-    // Course Completion Text
     ctx.font = `${certificateSettings.fontSize * 0.6}px ${certificateSettings.fontFamily}`;
     ctx.fillStyle = "#64748b";
     ctx.fillText(certificateSettings.subtitle, width / 2, 340);
 
-    // Course Name
     ctx.font = `bold ${certificateSettings.fontSize * 0.8}px ${certificateSettings.fontFamily}`;
     ctx.fillStyle = "#0f172a";
     ctx.fillText(selectedCourse.title, width / 2, 380);
 
-    // Date
     if (certificateSettings.showDate) {
       ctx.font = `${certificateSettings.fontSize * 0.6}px ${certificateSettings.fontFamily}`;
       ctx.fillStyle = "#64748b";
       ctx.fillText(`Issued on ${user.completionDate}`, width / 2, 430);
     }
 
-    // Signature
     if (signatureRef.current) {
       const signatureX =
         certificateSettings.signaturePosition === "right"
@@ -303,7 +280,6 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
       ctx.fillText("Instructor", signatureX, 560);
     }
 
-    // QR Code (mock)
     if (certificateSettings.includeQR) {
       ctx.fillStyle = "#e2e8f0";
       ctx.fillRect(width - 100, height - 100, 80, 80);
@@ -313,7 +289,6 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
       ctx.fillText("QR Code", width - 60, height - 50);
     }
 
-    // Certificate ID
     ctx.font = `${certificateSettings.fontSize * 0.4}px ${certificateSettings.fontFamily}`;
     ctx.fillStyle = "#94a3b8";
     ctx.textAlign = "center";
@@ -327,15 +302,9 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
   const handleGenerateCertificates = () => {
     setIsGenerating(true);
 
-    // In a real app, you would:
-    // 1. Generate certificates for all selected users
-    // 2. Save them to your database
-    // 3. Possibly email them to students
-
-    // For this demo, we'll simulate the process
     setTimeout(() => {
       const newCertificates = selectedUsers.map((userId) => {
-        const user = eligibleUsers.find((u) => u.id === userId);
+        const user: any = eligibleUsers.find((u: any) => u.id === userId);
         return {
           id: `CERT-${user.id}-${Date.now().toString().slice(-6)}`,
           userId: user.id,
@@ -353,18 +322,14 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
       setIsGenerating(false);
       setSelectedUsers([]);
       setSelectAll(false);
-
-      // Show success message or notification here
     }, 2000);
   };
 
-  const downloadCertificate = (canvasRef) => {
+  const downloadCertificate = (canvasRef: any) => {
     if (!canvasRef.current) return;
 
-    // Convert canvas to data URL
     const dataUrl = canvasRef.current.toDataURL("image/png");
 
-    // Create a download link
     const link = document.createElement("a");
     link.download = `certificate-${previewUser.name}-${selectedCourse.title}.png`;
     link.href = dataUrl;
@@ -373,7 +338,7 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
     document.body.removeChild(link);
   };
 
-  const handlePreviewUserChange = (userId) => {
+  const handlePreviewUserChange = (userId: string) => {
     const user = eligibleUsers.find((u) => u.id === userId);
     setPreviewUser(user);
   };
@@ -414,36 +379,52 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Select onValueChange={handleCourseChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a course" />
-                </SelectTrigger>
-                <SelectContent>
-                  {courses.map((course) => (
-                    <SelectItem key={course.id} value={course.id}>
-                      {course.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              {selectedCourse && (
-                <div className="mt-4 space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium">Course:</span>
-                    <span className="text-sm">{selectedCourse.title}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium">
-                      Eligible Students:
-                    </span>
-                    <span className="text-sm">{eligibleUsers.length}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium">Selected:</span>
-                    <span className="text-sm">{selectedUsers.length}</span>
-                  </div>
+              {isLoadingCourses ? (
+                <div className="flex items-center justify-center h-20">
+                  <p>Loading courses...</p>
                 </div>
+              ) : courseError ? (
+                <div className="flex items-center justify-center h-20 text-red-500">
+                  <p>{courseError}</p>
+                </div>
+              ) : courses.length === 0 ? (
+                <div className="flex items-center justify-center h-20">
+                  <p>No courses available.</p>
+                </div>
+              ) : (
+                <>
+                  <Select onValueChange={handleCourseChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a course" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {courses.map((course: Course) => (
+                        <SelectItem key={course.id} value={course.id}>
+                          {course.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {selectedCourse && (
+                    <div className="mt-4 space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium">Course:</span>
+                        <span className="text-sm">{selectedCourse.title}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium">
+                          Eligible Students:
+                        </span>
+                        <span className="text-sm">{eligibleUsers.length}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium">Selected:</span>
+                        <span className="text-sm">{selectedUsers.length}</span>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </CardContent>
           </Card>
@@ -487,7 +468,7 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
 
                   <ScrollArea className="h-[200px] pr-4">
                     <div className="space-y-2">
-                      {eligibleUsers.map((user) => (
+                      {eligibleUsers.map((user: any) => (
                         <div
                           key={user.id}
                           className={`flex items-center space-x-4 p-3 rounded-md ${
@@ -857,7 +838,7 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
                       <SelectValue placeholder="Select student" />
                     </SelectTrigger>
                     <SelectContent>
-                      {eligibleUsers.map((user) => (
+                      {eligibleUsers.map((user: any) => (
                         <SelectItem key={user.id} value={user.id}>
                           {user.name}
                         </SelectItem>
@@ -889,7 +870,7 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {generatedCertificates.slice(0, 5).map((cert) => (
+                    {generatedCertificates.slice(0, 5).map((cert: any) => (
                       <TableRow key={cert.id}>
                         <TableCell>{cert.userName}</TableCell>
                         <TableCell>{cert.courseName}</TableCell>

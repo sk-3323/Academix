@@ -39,13 +39,13 @@ import { useTheme } from "next-themes";
 import { signOut } from "next-auth/react";
 
 const items = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/student/dashboard" },
-  { icon: BookOpen, label: "Courses", href: "/student/course" },
-  { icon: ShieldCheck, label: "Certificates", href: "/student/certificate" },
-  { icon: CreditCard, label: "Payment", href: "/student/payment" },
-  { icon: VideoIcon, label: "Video Lectures", href: "/student/video" },
-  { icon: MessageCircleQuestion, label: "Quiz", href: "/student/quiz" },
-  { icon: User, label: "Profile", href: "/admin/profile" },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
+  { icon: BookOpen, label: "Courses", href: "/course" },
+  { icon: ShieldCheck, label: "Certificates", href: "/certificate" },
+  { icon: CreditCard, label: "Payment", href: "/payment" },
+  { icon: VideoIcon, label: "Video Lectures", href: "/video" },
+  { icon: MessageCircleQuestion, label: "Quiz", href: "/quiz" },
+  { icon: User, label: "Profile", href: "/profile" },
 ];
 
 export function StudentSidebar({

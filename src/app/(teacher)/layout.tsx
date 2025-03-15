@@ -10,19 +10,21 @@ import { AppDispatch } from "@/store/store";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 
 const TeacherLayout = ({ children }: { children: React.ReactNode }) => {
   const { isMobile } = useSidebar();
   // const pathname = usePathname();
-  // const { role, status } = useRole();
-  // const router = useRouter();
-  // useEffect(() => {
-  //   if (role === undefined) {
-  //     return;
-  //   } else if (role !== "TEACHER") {
-  //     router.back();
-  //   }
-  // }, [status]);
+  const { role, status } = useRole();
+  const router = useRouter();
+  useEffect(() => {
+    if (role === undefined) {
+      return;
+    } else if (role !== "TEACHER") {
+      router.back();
+      toast.error("You can not access Teacher Route")
+    }
+  }, [status]);
   return (
     <LayoutContent
       Navbar={<TeacherNavbar isMobile={isMobile} />}

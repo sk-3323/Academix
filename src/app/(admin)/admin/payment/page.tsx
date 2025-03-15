@@ -45,16 +45,21 @@ import { format } from "date-fns";
 export default function PaymentManagement() {
   const [activeTab, setActiveTab] = useState("overview");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [totalRevenue, setTotalRevenue] = useState(0);
+  const [adminWallet, setAdminWallet] = useState(0);
   const { data: users } = useSelector((state: any) => state.UserStore);
 
   // Calculate total revenue and update metrics
   useEffect(() => {
     if (users && users.length > 0) {
       const revenue = users.reduce((acc: number, user: any) => {
-        if (user.enrollments && user.enrollments.length > 0) {
+        if (
+          user.role !== "ADMIN" &&
+          user.enrollments &&
+          user.enrollments.length > 0
+        ) {
           return (
             acc +
             user.enrollments.reduce(
@@ -66,6 +71,24 @@ export default function PaymentManagement() {
         return acc;
       }, 0);
       setTotalRevenue(revenue);
+
+      const adminWalletRevenue = users.reduce((acc: number, user: any) => {
+        if (
+          user.role === "ADMIN" &&
+          user.enrollments &&
+          user.enrollments.length > 0
+        ) {
+          return (
+            acc +
+            user.enrollments.reduce(
+              (sum: number, enroll: any) => sum + (enroll.price || 0),
+              0
+            )
+          );
+        }
+        return acc;
+      }, 0);
+      setAdminWallet(adminWalletRevenue + revenue * 0.5);
     }
   }, [users]);
 
@@ -84,7 +107,7 @@ export default function PaymentManagement() {
             : "Pending",
       }))
     )
-    .filter((t) => t.course !== "Unknown Course");
+    .filter((t: any) => t.course !== "Unknown Course");
 
   // Generate teacher payout requests
   const payoutRequests = users
@@ -119,24 +142,24 @@ export default function PaymentManagement() {
         ),
       };
     })
-    .filter((request) => request.amount > 0);
+    .filter((request: any) => request.amount > 0);
 
   // Filter transactions based on search query
   const filteredTransactions = transactions.filter(
-    (transaction) =>
+    (transaction: any) =>
       transaction.user.toLowerCase().includes(searchQuery.toLowerCase()) ||
       transaction.course.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Filter payout requests based on search query
-  const filteredPayoutRequests = payoutRequests.filter((request) =>
+  const filteredPayoutRequests = payoutRequests.filter((request: any) =>
     request.teacher.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleApproveRequest = (requestId: string) => {
     console.log(`Approving request ${requestId}`);
     // Simulate payout completion (update status in real app via API)
-    const updatedRequests = payoutRequests.map((req) =>
+    const updatedRequests = payoutRequests.map((req: any) =>
       req.id === requestId ? { ...req, status: "Completed" } : req
     );
     setIsDialogOpen(false);
@@ -146,7 +169,7 @@ export default function PaymentManagement() {
   const handleRejectRequest = (requestId: string) => {
     console.log(`Rejecting request ${requestId}`);
     // Simulate rejection (update status in real app via API)
-    const updatedRequests = payoutRequests.map((req) =>
+    const updatedRequests = payoutRequests.map((req: any) =>
       req.id === requestId ? { ...req, status: "Rejected" } : req
     );
     setIsDialogOpen(false);
@@ -198,16 +221,16 @@ export default function PaymentManagement() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">₹{totalRevenue.toFixed(2)}</div>
+            <div className="text-2xl font-bold">₹{adminWallet.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground mt-1">
-              From all enrollments
+              From All Enrollments
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Admin Wallet Balance
+              Revenue From Other Courses
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -228,14 +251,17 @@ export default function PaymentManagement() {
               ₹
               {payoutRequests
                 .reduce(
-                  (acc, req) =>
+                  (acc: any, req: any) =>
                     acc + (req.status === "Pending" ? req.amount : 0),
                   0
                 )
                 .toFixed(2)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {payoutRequests.filter((req) => req.status === "Pending").length}{" "}
+              {
+                payoutRequests.filter((req: any) => req.status === "Pending")
+                  .length
+              }{" "}
               requests pending
             </p>
           </CardContent>
@@ -297,7 +323,7 @@ export default function PaymentManagement() {
                 </TableHeader>
                 <TableBody>
                   {filteredTransactions.length > 0 ? (
-                    filteredTransactions.map((transaction) => (
+                    filteredTransactions.map((transaction: any) => (
                       <TableRow key={transaction.id}>
                         <TableCell>{transaction.user}</TableCell>
                         <TableCell>{transaction.course}</TableCell>
@@ -452,7 +478,7 @@ export default function PaymentManagement() {
               <div className="flex items-center gap-4">
                 <Avatar className="h-12 w-12">
                   <AvatarFallback>
-                    {selectedRequest.teacher.charAt(0)}
+                    {selectedRequest?.teacher?.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div>

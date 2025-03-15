@@ -241,7 +241,7 @@ const TopicIdPage = ({
       {/* Course Header */}
       <div className=" border-b">
         <div className="container mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row gap-8">
+          <div className="flex flex-col md:flex-row gap-8 mb-3">
             <div className="w-full md:w-2/3">
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                 <Link href="/courses" className="hover:text-primary">
@@ -334,7 +334,7 @@ const TopicIdPage = ({
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-bold">
-                    {course.isFree ? "Free" : `$${course.price}`}
+                    {course.isFree ? "Free" : `₹${course.price}`}
                   </span>
                 </div>
 
@@ -353,19 +353,21 @@ const TopicIdPage = ({
               </div>
             </div>
           </div>
+          {/* Notification Banners */}
+          {topic?.userProgress?.[0]?.isCompleted && (
+            <Banner
+              variant="success"
+              label="You already completed this topic"
+            />
+          )}
+          {isLocked && (
+            <Banner
+              variant="warning"
+              label="You need to purchase this course to watch this topic"
+            />
+          )}
         </div>
       </div>
-
-      {/* Notification Banners */}
-      {topic?.userProgress?.[0]?.isCompleted && (
-        <Banner variant="success" label="You already completed this topic" />
-      )}
-      {isLocked && (
-        <Banner
-          variant="warning"
-          label="You need to purchase this course to watch this topic"
-        />
-      )}
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">

@@ -134,7 +134,7 @@ export default function TeacherDashboard() {
 
   const monthlyData = useMemo(() => {
     const monthlyStats = {};
-    enrollments.forEach((enrollment) => {
+    enrollments.forEach((enrollment:any) => {
       const date = new Date(enrollment.createdAt);
       const monthYear = `${date.getMonth() + 1}/${date.getFullYear()}`;
       if (!monthlyStats[monthYear]) {
@@ -311,7 +311,7 @@ export default function TeacherDashboard() {
                       `${name} ${(percent * 100).toFixed(0)}%`
                     }
                   >
-                    {courseData.map((entry, index) => (
+                    {courseData.map((entry:any, index:any) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}
@@ -348,7 +348,7 @@ export default function TeacherDashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {authoredCourses.map((course) => (
+              {authoredCourses.map((course:any) => (
                 <TableRow key={course.id}>
                   <TableCell className="font-medium">{course.title}</TableCell>
                   <TableCell>{getStatusBadge(course.status)}</TableCell>

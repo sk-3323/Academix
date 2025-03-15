@@ -7,7 +7,6 @@ export { default } from "next-auth/middleware";
 
 const publicRoutesRegex = /^\/(|about|contact|courses(?:\/.*)?)$/;
 
-// This function can be marked `async` if using `await` inside
 export const middleware = apiHandler(async (request: NextRequest) => {
   const path = request.nextUrl.pathname;
 
@@ -29,9 +28,6 @@ export const middleware = apiHandler(async (request: NextRequest) => {
     request.headers.set("x-user-token", token);
   }
 
-  // const decodeduser = jwt.verify(token, process.env.NEXTAUTH_SECRET);
-  // console.log(decodeduser);
-
   if (!token) {
     if (isApiRoute) {
       if (isAuthRoute)
@@ -46,6 +42,13 @@ export const middleware = apiHandler(async (request: NextRequest) => {
       });
     return NextResponse.redirect(new URL("/account/login", request.nextUrl));
   }
+
+  const payload = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+
+  console.log(payload, "payload");
 
   if (isApiRoute)
     return NextResponse.next({

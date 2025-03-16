@@ -11,21 +11,22 @@ import { GetUserApi } from "@/store/user/slice";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const { isMobile } = useSidebar();
   // const pathname = usePathname();
-  // const { role, status } = useRole();
-  // const router = useRouter();
-  // useEffect(() => {
-  //   if (role === undefined) {
-  //     return;
-  //   } else if (role !== "ADMIN") {
-  //     router.back();
-  //   }
-  // }, [status]);
+  const { role, status } = useRole();
+  const router = useRouter();
+  useEffect(() => {
+    if (role === undefined) {
+      return;
+    } else if (role !== "ADMIN") {
+      router.back();
+      toast.error("You can not access Teacher Route");
+    }
+  }, [status]);
   const { data: userData } = useSelector((state: any) => state["UserStore"]);
-  console.log(userData);
 
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {

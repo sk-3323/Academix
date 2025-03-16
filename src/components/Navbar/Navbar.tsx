@@ -14,6 +14,7 @@ import DarkName from "../../../public/assets/logos/dark-name.svg";
 import LightName from "../../../public/assets/logos/light-name.svg";
 import DarkHLogoName from "../../../public/assets/logos/dark-h-logo-with-name.svg";
 import LightHLogoName from "../../../public/assets/logos/light-h-logo-with-name.svg";
+import { useSession } from "next-auth/react";
 
 const Navbar = ({ isMobile }: { isMobile: boolean }) => {
   const { setTheme, theme } = useTheme();
@@ -22,6 +23,9 @@ const Navbar = ({ isMobile }: { isMobile: boolean }) => {
   const isSearchPage = pathname === "/search";
   const router = useRouter();
   const { status } = useRole();
+  const { data: session } = useSession();
+  console.log(session);
+
   // Only render theme toggle after component is mounted
   useEffect(() => {
     setMounted(true);
@@ -95,13 +99,23 @@ const Navbar = ({ isMobile }: { isMobile: boolean }) => {
               <Moon />
             </Button>
           )}
-          {status === "unauthenticated" && (
+          {status === "unauthenticated" ? (
             <Button
               onClick={() => router.push("/account/login")}
               className="ms-2"
             >
               Login
             </Button>
+          ) : (
+            status === "authenticated" && (
+              <img
+                src={session?.user?.avatar}
+                className="rounded-full cursor-pointer ms-2"
+                height={50}
+                width={50}
+                onClick={() => router.push("/profile")}
+              />
+            )
           )}
         </div>
       </div>

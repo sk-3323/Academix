@@ -25,9 +25,10 @@ export function ResponsiveSidebarWithAutoOpen() {
         router.push("/admin/dashboard");
       } else if (role === "TEACHER") {
         router.push("/teacher/dashboard");
-      } else {
-        router.push("/student/dashboard");
       }
+      //  else {
+      //   router.push("/student/dashboard");
+      // }
     } else if (data.status === "unauthenticated") {
       router.push("/");
     }
@@ -40,8 +41,12 @@ export function ResponsiveSidebarWithAutoOpen() {
       ) : role === "ADMIN" ? (
         <AdminSidebar />
       ) : (
-        <StudentSidebar />
+        ""
       )}
+
+      {/* : (
+         <StudentSidebar />
+       )} */}
     </>
   );
 }

@@ -113,6 +113,7 @@ import { useSelector } from "react-redux";
 
 export default function UserDashboard() {
   const { singleData } = useSelector((state: any) => state.UserStore);
+  console.log(singleData);
 
   const enrollments = singleData?.enrollments || [];
 

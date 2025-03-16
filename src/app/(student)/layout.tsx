@@ -13,9 +13,9 @@ const StudentLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <LayoutContent
-      Navbar={<StudentNavbar isMobile={isMobile} />}
-      Sidebar={<StudentSidebar collapsible="icon" />}
-      MobileSidebar={<StudentMobileMenu />}
+    Navbar={<StudentNavbar isMobile={isMobile} />}
+    Sidebar={<StudentSidebar collapsible="icon" />}
+    MobileSidebar={<StudentMobileMenu />}
     >
       {" "}
       {children}{" "}

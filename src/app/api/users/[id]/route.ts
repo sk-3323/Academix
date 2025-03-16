@@ -49,6 +49,7 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
         enrollments: {
           include: {
             user: true,
+            course: true,
           },
         },
         subscriptionStatus: {

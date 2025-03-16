@@ -8,10 +8,11 @@ import { Button } from "@/components/ui/button";
 import Courses from "@/components/CourseList/Courses";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import { CourseMarquee } from "@/components/Marquee/course-marquee";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const quotes = ["Learn Smarter", "Not Harder"];
-
+  const router = useRouter();
   return (
     <div className="w-full min-h-screen overflow-x-hidden">
       {/* Hero Section */}
@@ -22,7 +23,10 @@ export default function Home() {
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tighter break-words"
           />
         </div>
-        <Button className="mt-6 bg-[#27E0B3] text-zinc-950 hover:bg-[#20c9a0] px-4 py-2 sm:px-6 sm:py-3 rounded-md font-semibold text-sm sm:text-base">
+        <Button
+          className="mt-6 bg-[#27E0B3] text-zinc-950 hover:bg-[#20c9a0] px-4 py-2 sm:px-6 sm:py-3 rounded-md font-semibold text-sm sm:text-base"
+          onClick={() => router.push("/course")}
+        >
           Check Courses - Make an Impact
         </Button>
         <div className="grid grid-cols-3 gap-4 sm:gap-6 p-6 mt-6 w-full max-w-md sm:max-w-lg md:max-w-xl">

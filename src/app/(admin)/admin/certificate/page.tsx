@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Award, Check, Download, FileText } from "lucide-react";
+import { Award, Check, Download, FileText, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {

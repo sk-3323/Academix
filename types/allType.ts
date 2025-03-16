@@ -169,7 +169,7 @@ export interface Resource {
   id: string;
   title: string;
   url?: string;
-
+  type?: string;
   // Relations
   chapterId: string;
   chapter: Chapter;

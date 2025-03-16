@@ -17,18 +17,19 @@ import { utapi } from "@/lib/utAPI";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let course_id = content?.params?.id;
+
   if (!course_id) {
     throw new ErrorHandler("Not found", 400);
   }
 
-  let token: any = request.headers.get("x-user-token");
-  let { id: instructorId, ...session } = await decryptToken(token);
+  // let token: any = request.headers.get("x-user-token");
+  // let { id: instructorId, ...session } = await decryptToken(token);
 
   let result = await prisma.$transaction(async (tx) => {
     return await tx.course.findFirst({
       where: {
         id: course_id,
-        instructorId: instructorId,
+        // instructorId: instructorId,
       },
       orderBy: {
         id: "desc",

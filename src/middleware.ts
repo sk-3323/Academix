@@ -48,8 +48,6 @@ export const middleware = apiHandler(async (request: NextRequest) => {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
-  console.log(payload, "payload");
-
   if (isApiRoute)
     return NextResponse.next({
       request: request,

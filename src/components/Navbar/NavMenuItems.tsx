@@ -13,6 +13,11 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { useDispatch, useSelector } from "react-redux";
+import { Course } from "../../../types/allType";
+import { AppDispatch } from "@/store/store";
+import { GetCourseApi } from "@/store/course/slice";
+import Preview from "../preview";
 
 const components: { title: string; href: string; description: string }[] = [
   {
@@ -53,6 +58,11 @@ const components: { title: string; href: string; description: string }[] = [
 ];
 
 export function NavigationMenuDemo() {
+  const { data: CourseData } = useSelector((state: any) => state.CourseStore);
+  const dispatch = useDispatch<AppDispatch>();
+  React.useEffect(() => {
+    dispatch(GetCourseApi({ searchParams: {} }));
+  }, [dispatch]);
   return (
     <NavigationMenu>
       <NavigationMenuList>
@@ -67,14 +77,12 @@ export function NavigationMenuDemo() {
           <NavigationMenuTrigger>Courses</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-              {components.map((component) => (
+              {CourseData.map((component: Course) => (
                 <ListItem
                   key={component.title}
                   title={component.title}
-                  href={component.href}
-                >
-                  {component.description}
-                </ListItem>
+                  href={`/course/${component.id}`}
+                ></ListItem>
               ))}
             </ul>
           </NavigationMenuContent>

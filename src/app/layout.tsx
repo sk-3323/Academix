@@ -20,6 +20,9 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "Academix | Welcome",
   description: "Welcome to academix.",
+  verification: {
+    google: "4x5OVPfZzNrwaWklvtifrqKABapEe4SvZc22OiNEJWk",
+  },
   icons: {
     icon: [{ url: "/assets/logos/fevicon.svg", type: "image/svg+xml" }],
     shortcut: "/assets/logos/fevicon.svg",

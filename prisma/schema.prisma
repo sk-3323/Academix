@@ -42,7 +42,7 @@ model Course {
   title        String
   description  String?
   thumbnail    String?
-  thumbnailKey String?
+  publicKey    String?
   price        Float?
   isFree       Boolean     @default(false)
   status       BlogStatus  @default(DRAFT)
@@ -127,6 +127,7 @@ model Topic {
   description String?
   order       Int?
   video       String?
+  publicKey   String?
   duration    Float?     @db.Double
   status      BlogStatus @default(DRAFT)
   isFree      Boolean    @default(false)
@@ -350,7 +351,7 @@ model QuizProgress {
 }
 
 model QuizAnswer {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   isCorrect Boolean?
 
   answerId String? @db.ObjectId

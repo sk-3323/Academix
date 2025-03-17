@@ -337,6 +337,7 @@ body {
 }
 
 @import "~@uploadthing/react/styles.css";
+@import "next-cloudinary/dist/cld-video-player.css";
 
 @layer base {
   * {

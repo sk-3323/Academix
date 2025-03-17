@@ -13,7 +13,8 @@ export const createTopicSchema = z
     title: z.string().min(1, "Title is required"),
     order: z.number().int().positive(),
     description: z.string().min(1, "Description is required"),
-    video: z.string().min(1, "Description is required"),
+    video: z.string().min(1, "video url is required"),
+    publicKey: z.string().min(1, "public key is required"),
     duration: z.number().positive(),
     status: z.enum(VALID_STATUS),
     isFree: z

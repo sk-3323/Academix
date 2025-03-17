@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { apiHandler, ErrorHandler } from "./lib/errorHandler";
-import jwt from "jsonwebtoken";
-import { decryptToken } from "./lib/jwtGenerator";
 export { default } from "next-auth/middleware";
 
-const publicRoutesRegex = /^\/(|about|contact|courses(?:\/.*)?)$/;
+const publicRoutesRegex =
+  /^\/(|about|contact|courses(?:\/.*)?|api\/courses(?:\/.*)?)\$/;
 
 export const middleware = apiHandler(async (request: NextRequest) => {
   const path = request.nextUrl.pathname;

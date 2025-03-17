@@ -7,15 +7,27 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { useRole } from "@/hooks/use-role";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
+import { toast } from "sonner";
 
 const StudentLayout = ({ children }: { children: React.ReactNode }) => {
   const { isMobile } = useSidebar();
 
+  const { role, status } = useRole();
+  const router = useRouter();
+  useEffect(() => {
+    if (role === undefined) {
+      return;
+    } else if (!["STUDENT", "ADMIN"].includes(role)) {
+      router.back();
+      toast.error("Only Student can access this route");
+    }
+  }, [status]);
+
   return (
     <LayoutContent
-    Navbar={<StudentNavbar isMobile={isMobile} />}
-    Sidebar={<StudentSidebar collapsible="icon" />}
-    MobileSidebar={<StudentMobileMenu />}
+      Navbar={<StudentNavbar isMobile={isMobile} />}
+      Sidebar={<StudentSidebar collapsible="icon" />}
+      MobileSidebar={<StudentMobileMenu />}
     >
       {" "}
       {children}{" "}

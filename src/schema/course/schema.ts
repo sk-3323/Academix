@@ -16,7 +16,7 @@ export const createCourseSchema = z
       .transform((val) => val == "true"),
     description: z.string().min(1, "Description is required"),
     thumbnail: z.string(),
-    thumbnailKey: z.string(),
+    publicKey: z.string(),
     categoryId: z
       .string()
       .min(1, "category is required")

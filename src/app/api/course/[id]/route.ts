@@ -208,7 +208,7 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
     if (!data?.thumbnail && thumbnail) {
       const uploadedFile = await utapi.uploadFiles(thumbnail);
       data.thumbnail = uploadedFile?.data?.url;
-      data.thumbnailKey = uploadedFile?.data?.key;
+      data.publicKey = uploadedFile?.data?.key;
       uploadedFileKey = uploadedFile?.data?.key || null;
     }
     let result = await prisma.$transaction(async (tx) => {
@@ -227,8 +227,8 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
         },
       });
 
-      if (updatedCourse && courseFound?.thumbnailKey) {
-        await utapi.deleteFiles(courseFound?.thumbnailKey); // Cleanup if an error
+      if (updatedCourse && courseFound?.publicKey) {
+        await utapi.deleteFiles(courseFound?.publicKey); // Cleanup if an error
       }
 
       return updatedCourse;
@@ -293,12 +293,12 @@ export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
       },
       select: {
         id: true,
-        thumbnailKey: true,
+        publicKey: true,
       },
     });
 
-    if (deletedCourse?.thumbnailKey) {
-      await utapi.deleteFiles(deletedCourse?.thumbnailKey); // Cleanup if an error
+    if (deletedCourse?.publicKey) {
+      await utapi.deleteFiles(deletedCourse?.publicKey); // Cleanup if an error
     }
 
     return deletedCourse;

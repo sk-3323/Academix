@@ -714,13 +714,14 @@ const TopicIdPage = ({
           <VideoPlayer
             topicId={params?.topicId}
             nextTopicId={topic?.nextTopic?.id}
-            playbackId={topic?.muxData?.playbackId!}
+            publicKey={topic?.publicKey!}
             isLocked={isLocked}
             isCompleteOnEnd={isCompleteOnEnd}
             courseId={params?.courseId}
             title={topic?.title}
             setActions={setUserProgressActions}
             startConfetti={startConfetti}
+            nextType="TOPIC"
           />
         </div>
         <div>
@@ -734,6 +735,7 @@ const TopicIdPage = ({
                 isCompleted={!!topic?.userProgress?.[0]?.isCompleted}
                 setActions={setUserProgressActions}
                 startConfetti={startConfetti}
+                nextType="TOPIC"
               />
             )}
             {topic?.chapter?.course?.enrollments?.length === 0 && (

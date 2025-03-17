@@ -28,6 +28,11 @@ const nextConfig = {
         protocol: "https",
         hostname: "api.dicebear.com",
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/dlh3tav1v/image/upload/**", // ✅ Allow specific path pattern
+      },
     ],
   },
   eslint: {

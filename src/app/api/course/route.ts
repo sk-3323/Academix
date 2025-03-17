@@ -113,7 +113,7 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
     if (thumbnail) {
       const uploadedFile = await utapi.uploadFiles(thumbnail);
       data.thumbnail = uploadedFile?.data?.url;
-      data.thumbnailKey = uploadedFile?.data?.key;
+      data.publicKey = uploadedFile?.data?.key;
       uploadedFileKey = uploadedFile?.data?.key || null;
     }
 

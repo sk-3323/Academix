@@ -5,6 +5,7 @@ import { AppDispatch } from "@/store/store";
 import { AddUserProgressApi } from "@/store/user-progress/slice";
 import MuxPlayer from "@mux/mux-player-react";
 import { DownloadIcon, Loader2, Lock } from "lucide-react";
+import { CldVideoPlayer } from "next-cloudinary";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -13,7 +14,7 @@ import { toast } from "sonner";
 interface VideoPlayerProps {
   topicId: string;
   nextTopicId: string;
-  playbackId: string;
+  publicKey: string;
   courseId: string;
   title: string;
   isLocked: boolean;
@@ -26,7 +27,7 @@ interface VideoPlayerProps {
 const VideoPlayer = ({
   topicId,
   nextTopicId,
-  playbackId,
+  publicKey,
   courseId,
   title,
   isLocked,
@@ -101,14 +102,29 @@ const VideoPlayer = ({
       )}
       {!isLocked && (
         <>
-          <MuxPlayer
-            title={title}
+          <CldVideoPlayer
+            id="default"
+            width="920"
+            height="570"
+            src={publicKey}
+            autoPlay
+            controls
+            pictureInPictureToggle
+            logo={{
+              imageUrl: "/assets/logos/fevicon.svg",
+              onClickUrl: "/",
+            }}
+            onEnded={onEnd}
+            onDataLoad={() => setIsReady(true)}
             className={cn(!isReady && "hidden")}
+          />
+          {/* <MuxPlayer
+            title={title}
             onCanPlay={() => setIsReady(true)}
             onEnded={onEnd}
             autoPlay
             playbackId={playbackId}
-          />
+          /> */}
         </>
       )}
     </div>

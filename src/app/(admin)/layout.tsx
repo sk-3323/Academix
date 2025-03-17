@@ -23,7 +23,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       return;
     } else if (role !== "ADMIN") {
       router.back();
-      toast.error("You can not access Teacher Route");
+      toast.error("You can not access Admin Route");
     }
   }, [status]);
   const { data: userData } = useSelector((state: any) => state["UserStore"]);

@@ -14,15 +14,15 @@ import { toast } from "sonner";
 
 const TeacherLayout = ({ children }: { children: React.ReactNode }) => {
   const { isMobile } = useSidebar();
-  // const pathname = usePathname();
+
   const { role, status } = useRole();
   const router = useRouter();
   useEffect(() => {
     if (role === undefined) {
       return;
-    } else if (role !== "TEACHER") {
+    } else if (!["TEACHER", "ADMIN"].includes(role)) {
       router.back();
-      toast.error("You can not access Teacher Route")
+      toast.error("Only Teacher can access this route");
     }
   }, [status]);
   return (

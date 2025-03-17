@@ -23,10 +23,10 @@ import Editor from "../editor";
 import Preview from "../preview";
 import { APIClient } from "@/helpers/apiHelper";
 
-type CourseFormValues = Pick<Course, "description">;
+type CourseFormValues = Pick<Course, "description" | "title">;
 
 interface DescriptionFormProps {
-  initialData: CourseFormValues & { title: string }; // Added title for AI request
+  initialData: CourseFormValues;
   courseId: string;
   setActions: any;
 }

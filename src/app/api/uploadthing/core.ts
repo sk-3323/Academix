@@ -41,6 +41,10 @@ export const ourFileRouter = {
     },
   })
     .middleware(async ({ req }) => await handleAuth({ req }))
+    .onUploadError(({ error, fileKey }) => {
+      console.log("error while Uploading ", error);
+      console.log("fileKey", fileKey);
+    })
     .onUploadComplete(async ({ metadata, file }) => {
       console.log("Upload complete for userId:", metadata.userId);
       console.log("file url", file.url);

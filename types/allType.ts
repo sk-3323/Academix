@@ -72,7 +72,7 @@ export interface Course {
   title: string;
   description?: string;
   thumbnail?: string;
-  thumbnailKey?: string;
+  publicKey?: string;
   price?: number;
   isFree: boolean;
   status: BlogStatus;

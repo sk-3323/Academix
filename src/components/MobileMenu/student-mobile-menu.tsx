@@ -27,9 +27,9 @@ const StudentMobileMenu = () => {
         <SheetHeader>
           <SheetTitle>{!open && <MenuIcon />}</SheetTitle>
         </SheetHeader>
-        {/* <div className="mt-10">
+        <div className="mt-10">
           <StudentSidebar collapsible="none" />
-        </div> */}
+        </div>
       </SheetContent>
     </Sheet>
   );

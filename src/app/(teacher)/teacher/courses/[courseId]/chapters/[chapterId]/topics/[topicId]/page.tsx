@@ -110,7 +110,6 @@ const page = ({
             <TopicAccessForm
               initialData={{ isFree: singleData?.isFree }}
               topicId={params?.topicId}
-              chapterId={params?.chapterId}
               setActions={setTopicActions}
             />
           </div>
@@ -124,6 +123,7 @@ const page = ({
               <VideoForm
                 initialData={{
                   video: singleData?.video,
+                  publicKey: singleData?.publicKey,
                   muxData: singleData?.muxData,
                 }}
                 topicId={params?.topicId}

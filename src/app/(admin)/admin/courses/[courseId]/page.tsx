@@ -119,7 +119,7 @@ const CourseIdPage = ({ params }: { params: { courseId: string } }) => {
             <ThumbnailForm
               initialData={{
                 thumbnail: singleData?.thumbnail,
-                thumbnailKey: singleData?.thumbnailKey,
+                publicKey: singleData?.publicKey,
               }}
               courseId={params?.courseId}
               setActions={setCourseActions}

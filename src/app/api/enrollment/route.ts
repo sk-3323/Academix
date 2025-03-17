@@ -36,7 +36,13 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
     return await tx.enrollment.findUnique({
       where: conditions,
       include: {
-        course: true,
+        course: {
+          include: {
+            chapters: true,
+            category: true,
+            instructor: true,
+          },
+        },
         user: true,
       },
     });

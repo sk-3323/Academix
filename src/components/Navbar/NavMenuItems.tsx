@@ -18,48 +18,12 @@ import { Course } from "../../../types/allType";
 import { AppDispatch } from "@/store/store";
 import { GetCourseApi } from "@/store/course/slice";
 import Preview from "../preview";
-
-const components: { title: string; href: string; description: string }[] = [
-  {
-    title: "Java",
-    href: "/docs/primitives/alert-dialog",
-    description:
-      "A modal dialog that interrupts the user with important content and expects a response.",
-  },
-  {
-    title: "C",
-    href: "/docs/primitives/hover-card",
-    description:
-      "For sighted users to preview content available behind a link.",
-  },
-  {
-    title: "C++",
-    href: "/docs/primitives/progress",
-    description:
-      "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-  },
-  {
-    title: "DevOps",
-    href: "/docs/primitives/scroll-area",
-    description: "Visually or semantically separates content.",
-  },
-  {
-    title: "MLOps",
-    href: "/docs/primitives/tabs",
-    description:
-      "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-  },
-  {
-    title: "UI/UX",
-    href: "/docs/primitives/tooltip",
-    description:
-      "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  },
-];
+import { useRole } from "@/hooks/use-role";
 
 export function NavigationMenuDemo() {
   const { data: CourseData } = useSelector((state: any) => state.CourseStore);
   const dispatch = useDispatch<AppDispatch>();
+  const { status, role } = useRole();
   React.useEffect(() => {
     dispatch(GetCourseApi({ searchParams: {} }));
   }, [dispatch]);
@@ -94,13 +58,24 @@ export function NavigationMenuDemo() {
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link href="/pricing" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Pricing
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
+        {role === "TEACHER" && (
+          <NavigationMenuItem>
+            <Link href="/pricing" legacyBehavior passHref>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                Pricing
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+        )}
+        {role === "STUDENT" && (
+          <NavigationMenuItem>
+            <Link href="/my-course" legacyBehavior passHref>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                My Course
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+        )}
         <NavigationMenuItem>
           <Link href="/contact" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>

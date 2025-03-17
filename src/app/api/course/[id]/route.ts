@@ -41,6 +41,11 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
           orderBy: {
             order: "asc",
           },
+          include: {
+            topics: true,
+            quiz: true,
+            resources: true,
+          },
         },
         enrollments: {
           include: {

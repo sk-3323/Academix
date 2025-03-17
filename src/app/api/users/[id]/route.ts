@@ -49,7 +49,42 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
         enrollments: {
           include: {
             user: true,
-            course: true,
+            course: {
+              include: {
+                instructor: true,
+                category: true,
+                chapters: {
+                  where: {
+                    status: "PUBLISHED",
+                  },
+                  include: {
+                    resources: true,
+                    topics: {
+                      where: {
+                        status: "PUBLISHED",
+                      },
+                      include: {
+                        muxData: true,
+                        userProgress: true,
+                      },
+                      orderBy: {
+                        order: "asc",
+                      },
+                    },
+                  },
+                  orderBy: {
+                    order: "asc",
+                  },
+                },
+                certificates: true,
+              },
+            },
+          },
+          where: {
+            status: {
+              not: "DROPPED",
+            },
+            payment_status: "PAID",
           },
         },
         subscriptionStatus: {

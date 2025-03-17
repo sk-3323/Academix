@@ -2,7 +2,7 @@ import { pbkdf2Sync, randomBytes } from "crypto";
 import { ErrorHandler } from "./errorHandler";
 import path from "path";
 import Mux from "@mux/mux-node";
-import { existsSync, unlinkSync, writeFileSync } from "fs";
+import { promises as fs } from "fs";
 
 export const { video: videoAsset } = new Mux({
   tokenId: process.env.MUX_TOKEN_ID,
@@ -83,7 +83,7 @@ export const handleFileUpload = async (
   const buffer = await file.arrayBuffer();
   const fileBuffer = Buffer.from(buffer);
   // Write file asynchronously
-  await writeFileSync(uploadPath, fileBuffer);
+  await fs.writeFile(uploadPath, fileBuffer);
 
   return {
     filePath: uploadPath,
@@ -94,10 +94,16 @@ export const handleFileUpload = async (
 // Function to cleanup uploaded file
 export const cleanupUploadedFile = async (filePath: string): Promise<void> => {
   try {
-    if (existsSync(filePath)) {
-      await unlinkSync(filePath);
-    }
+    // Check if the file exists using fs.promises.access
+    await fs.access(filePath);
+    // If access succeeds, the file exists, so delete it
+    await fs.unlink(filePath);
   } catch (error: any) {
+    // If the file doesn't exist, fs.access will throw an ENOENT error, which we can ignore
+    if (error.code === "ENOENT") {
+      return; // File doesn't exist, so no cleanup needed
+    }
+    // Log and re-throw other errors
     console.error("Failed to cleanup uploaded file:", error);
     throw new ErrorHandler(error.message, 500);
   }

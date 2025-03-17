@@ -3,13 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "next dev --turbo -p 3000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "push": "npx prisma db push",
     "pull": "npx prisma db pull",
-    "gen": "npx prisma generate"
+    "gen": "npx prisma generate",
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",

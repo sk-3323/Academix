@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound, usePathname } from "next/navigation";
+import { notFound, redirect, usePathname, useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,6 +15,7 @@ import {
   FileText,
   HelpCircle,
   Folder,
+  Lock,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "@/store/store";
@@ -29,13 +30,22 @@ import {
 } from "@/components/ui/accordion";
 import { motion } from "framer-motion";
 import { Course, Quiz, Resource, Topic } from "../../../../../types/allType";
-import { CourseEnrollButton } from "../../courses/[courseId]/_components/course-enroll-button";
 import { useDynamicToast } from "@/hooks/DynamicToastHook";
 import { clearEnrollmentState } from "@/store/enrollment/slice";
 import Script from "next/script";
+import { EnrollmentModal } from "./_components/enrollment-modal";
+import { CourseEnrollButton } from "./_components/course-enroll-button";
 
 // Sidebar Accordion Component
-const CourseSidebar = ({ course }: { course: Course }) => {
+const CourseSidebar = ({
+  course,
+  isLoggedIn,
+  onResourceClick,
+}: {
+  course: Course;
+  isLoggedIn: boolean;
+  onResourceClick: () => void;
+}) => {
   const publishedChapters =
     course.chapters?.filter((ch) => ch.status === "PUBLISHED") || [];
 
@@ -74,7 +84,12 @@ const CourseSidebar = ({ course }: { course: Course }) => {
                             value={`topic-${topic.id}`}
                           >
                             <AccordionTrigger className="text-sm py-2 hover:no-underline">
-                              {topic.order}. {topic.title}
+                              <div className="flex items-center gap-2">
+                                {topic.order}. {topic.title}
+                                {!isLoggedIn && topic.video && (
+                                  <Lock className="h-3 w-3 text-muted-foreground" />
+                                )}
+                              </div>
                             </AccordionTrigger>
                             <AccordionContent className="text-xs text-muted-foreground pl-4">
                               {topic.description ? (
@@ -88,9 +103,23 @@ const CourseSidebar = ({ course }: { course: Course }) => {
                               )}
                               {topic.video && (
                                 <div className="mt-2">
-                                  <Badge variant="outline" className="text-xs">
-                                    Video Available
-                                  </Badge>
+                                  {isLoggedIn ? (
+                                    <Badge
+                                      variant="outline"
+                                      className="text-xs"
+                                    >
+                                      Video Available
+                                    </Badge>
+                                  ) : (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="text-xs mt-2 flex items-center gap-1"
+                                      onClick={onResourceClick}
+                                    >
+                                      <Lock className="h-3 w-3" /> Watch Video
+                                    </Button>
+                                  )}
                                 </div>
                               )}
                             </AccordionContent>
@@ -110,7 +139,7 @@ const CourseSidebar = ({ course }: { course: Course }) => {
                         {chapter.quizzes.map((quiz: Quiz) => (
                           <li
                             key={quiz.id}
-                            className="text-sm bg-muted/30 p-3 rounded-md hover:bg-muted/50 transition-colors"
+                            className="text-sm bg-muted/30 p-3 rounded-md hover:bg-muted/50 transition-colors relative"
                           >
                             <div className="font-medium">{quiz.title}</div>
                             <div className="text-xs text-muted-foreground mt-1 flex items-center gap-2">
@@ -120,6 +149,16 @@ const CourseSidebar = ({ course }: { course: Course }) => {
                               <span>•</span>
                               <span>{quiz.timeLimit || "No"} time limit</span>
                             </div>
+                            {!isLoggedIn && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-xs mt-2 flex items-center gap-1"
+                                onClick={onResourceClick}
+                              >
+                                <Lock className="h-3 w-3" /> Take Quiz
+                              </Button>
+                            )}
                           </li>
                         ))}
                       </ul>
@@ -139,17 +178,30 @@ const CourseSidebar = ({ course }: { course: Course }) => {
                             className="text-sm flex items-center gap-2 group"
                           >
                             <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground"></div>
-                            <a
-                              href={resource.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="hover:text-primary transition-colors group-hover:underline"
-                            >
-                              {resource.title}
-                              <span className="text-xs text-muted-foreground ml-1">
-                                ({resource.type})
-                              </span>
-                            </a>
+                            {isLoggedIn ? (
+                              <a
+                                href={resource.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-primary transition-colors group-hover:underline"
+                              >
+                                {resource.title}
+                                <span className="text-xs text-muted-foreground ml-1">
+                                  ({resource.type})
+                                </span>
+                              </a>
+                            ) : (
+                              <button
+                                onClick={onResourceClick}
+                                className="hover:text-primary transition-colors group-hover:underline flex items-center gap-1"
+                              >
+                                {resource.title}
+                                <span className="text-xs text-muted-foreground ml-1">
+                                  ({resource.type})
+                                </span>
+                                <Lock className="h-3 w-3 text-muted-foreground ml-1" />
+                              </button>
+                            )}
                           </li>
                         ))}
                       </ul>
@@ -188,11 +240,12 @@ export default function CoursePage({
 }: {
   params: { courseId: string };
 }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const pathname = usePathname();
   const [enrollmentActions, setEnrollmentActions] = useState({
     clearState: clearEnrollmentState,
     callbackFunction: () => {},
   });
-  let pathname = usePathname();
 
   useDynamicToast("EnrollmentStore", enrollmentActions, pathname);
   const dispatch = useDispatch<AppDispatch>();
@@ -202,13 +255,26 @@ export default function CoursePage({
     error,
   } = useSelector((state: any) => state.CourseStore);
   const { singleData: user } = useSelector((state: any) => state.UserStore);
-  console.log(user);
+
+  const isLoggedIn = !!user?.id;
 
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+  useEffect(() => {
+    if (user) {
+      const enrolledCourse = user?.enrollments?.map(
+        (enroll: any) => enroll?.course?.id === params?.courseId
+      );
+      if (enrolledCourse) {
+        return redirect(
+          `/courses/${params?.courseId}/topics/${course?.chapters?.[0]?.topics?.[0]?.id}`
+        );
+      }
+    }
+  }, [user]);
 
   useEffect(() => {
     if (params?.courseId) {
@@ -216,6 +282,10 @@ export default function CoursePage({
       console.log(resp, "Res", params.courseId);
     }
   }, [dispatch, params?.courseId]);
+
+  const handleResourceClick = () => {
+    setIsModalOpen(true);
+  };
 
   if (!isMounted || loading) {
     return (
@@ -394,8 +464,11 @@ export default function CoursePage({
                                         key={topic.id}
                                         className="border-l-2 border-muted pl-3 py-1"
                                       >
-                                        <div className="font-medium text-sm">
+                                        <div className="font-medium text-sm flex items-center gap-2">
                                           {topic.order}. {topic.title}
+                                          {!isLoggedIn && topic.video && (
+                                            <Lock className="h-3 w-3 text-muted-foreground" />
+                                          )}
                                         </div>
                                         {topic.description && (
                                           <div className="text-xs text-muted-foreground mt-1">
@@ -406,6 +479,17 @@ export default function CoursePage({
                                               ? "..."
                                               : ""}
                                           </div>
+                                        )}
+                                        {!isLoggedIn && topic.video && (
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="text-xs mt-2 flex items-center gap-1"
+                                            onClick={handleResourceClick}
+                                          >
+                                            <Lock className="h-3 w-3" /> Watch
+                                            Video
+                                          </Button>
                                         )}
                                       </li>
                                     ))}
@@ -431,6 +515,17 @@ export default function CoursePage({
                                         <span className="text-xs text-muted-foreground">
                                           ({quiz.questions} questions)
                                         </span>
+                                        {!isLoggedIn && (
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="text-xs ml-2 flex items-center gap-1"
+                                            onClick={handleResourceClick}
+                                          >
+                                            <Lock className="h-3 w-3" /> Take
+                                            Quiz
+                                          </Button>
+                                        )}
                                       </li>
                                     ))}
                                   </ul>
@@ -451,22 +546,40 @@ export default function CoursePage({
                                           key={resource.id}
                                           className="text-sm"
                                         >
-                                          <a
-                                            href={resource.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center gap-2 p-2 rounded-md hover:bg-muted transition-colors"
-                                          >
-                                            <Folder className="h-4 w-4 text-primary" />
-                                            <div>
-                                              <div className="font-medium">
-                                                {resource.title}
+                                          {isLoggedIn ? (
+                                            <a
+                                              href={resource.url}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="flex items-center gap-2 p-2 rounded-md hover:bg-muted transition-colors"
+                                            >
+                                              <Folder className="h-4 w-4 text-primary" />
+                                              <div>
+                                                <div className="font-medium">
+                                                  {resource.title}
+                                                </div>
+                                                <div className="text-xs text-muted-foreground">
+                                                  {resource.type}
+                                                </div>
                                               </div>
-                                              <div className="text-xs text-muted-foreground">
-                                                {resource.type}
+                                            </a>
+                                          ) : (
+                                            <button
+                                              onClick={handleResourceClick}
+                                              className="flex items-center gap-2 p-2 rounded-md hover:bg-muted transition-colors w-full text-left"
+                                            >
+                                              <Folder className="h-4 w-4 text-primary" />
+                                              <div className="flex-1">
+                                                <div className="font-medium">
+                                                  {resource.title}
+                                                </div>
+                                                <div className="text-xs text-muted-foreground">
+                                                  {resource.type}
+                                                </div>
                                               </div>
-                                            </div>
-                                          </a>
+                                              <Lock className="h-4 w-4 text-muted-foreground" />
+                                            </button>
+                                          )}
                                         </li>
                                       )
                                     )}
@@ -523,15 +636,11 @@ export default function CoursePage({
 
                 <div className="space-y-4">
                   <CourseEnrollButton
-                    courseId={params?.courseId}
-                    isFree={course?.isFree}
-                    price={course?.price}
+                    courseId={course.id}
+                    isFree={course.isFree}
+                    price={course.price}
                     setActions={setEnrollmentActions}
                   />
-                  {/* <Button className="w-full" size="lg">
-                  {course.isFree ? "Enroll Now" : "Purchase Course"}
-                </Button> */}
-
                   <div className="text-sm text-muted-foreground">
                     <p>This course includes:</p>
                     <ul className="mt-2 space-y-1">
@@ -556,10 +665,24 @@ export default function CoursePage({
 
           {/* Sidebar with Course Content */}
           <div className="lg:col-span-1">
-            <CourseSidebar course={course} />
+            <CourseSidebar
+              course={course}
+              isLoggedIn={isLoggedIn}
+              onResourceClick={handleResourceClick}
+            />
           </div>
         </div>
       </div>
+
+      {/* Enrollment Modal */}
+      <EnrollmentModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        course={course}
+        courseId={params.courseId}
+        setActions={setEnrollmentActions}
+      />
+
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
     </>
   );

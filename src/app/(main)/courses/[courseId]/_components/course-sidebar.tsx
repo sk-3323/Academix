@@ -86,6 +86,7 @@ const CourseSidebar = ({
           {data?.length !== 0 && !isNaN(course?.progressCount) && (
             <div className="mt-1">
               <CourseProgress
+              
                 variant={course?.progressCount === 100 ? "success" : "default"}
                 value={course?.progressCount}
               />

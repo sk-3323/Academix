@@ -17,10 +17,7 @@ const sizeByVariant = {
   success: "text-xs",
 };
 
-export const CourseProgress = ({
-  value,
-  variant,
-}: CourseProgressProps) => {
+export const CourseProgress = ({ value, variant }: CourseProgressProps) => {
   return (
     <div>
       <Progress className="h-2" value={value} variant={variant} />

@@ -66,7 +66,13 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
       include: {
         instructor: true,
         category: true,
-        chapters: true,
+        chapters: {
+          include: {
+            topics: true,
+            quiz: true,
+            resources: true,
+          },
+        },
         certificates: true,
         enrollments: {
           include: {

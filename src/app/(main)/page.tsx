@@ -76,7 +76,7 @@ export default function Home() {
             src="https://www.youtube.com/embed/WhLLzITPu8Q?si=WxR_6rfm82fEXVAH&autoplay=1&loop=1&playlist=WhLLzITPu8Q"
             title="YouTube video player"
             frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allow="accelerometer;  clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
             className="rounded-xl w-full aspect-video"

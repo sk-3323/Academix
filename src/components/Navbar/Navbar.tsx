@@ -22,7 +22,7 @@ const Navbar = ({ isMobile }: { isMobile: boolean }) => {
   const pathname = usePathname();
   const isSearchPage = pathname === "/search";
   const router = useRouter();
-  const { status } = useRole();
+  const { status, role } = useRole();
   const { data: session } = useSession();
   console.log(session);
 
@@ -107,7 +107,8 @@ const Navbar = ({ isMobile }: { isMobile: boolean }) => {
               Login
             </Button>
           ) : (
-            status === "authenticated" && (
+            status === "authenticated" &&
+            role === "STUDENT" && (
               <img
                 src={session?.user?.avatar}
                 className="rounded-full cursor-pointer ms-2"

@@ -5,9 +5,16 @@ import Image from "next/image";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { BookOpen, CalendarIcon, Users } from "lucide-react";
+import {
+  BookOpen,
+  CalendarIcon,
+  ListCollapse,
+  SquareArrowOutUpRight,
+  Users,
+} from "lucide-react";
 import { Course } from "../../../types/allType";
 import { format } from "date-fns";
+import { usePathname } from "next/navigation";
 
 export const HoverEffect = ({
   items,
@@ -17,7 +24,7 @@ export const HoverEffect = ({
   className?: string;
 }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-
+  const pathname = usePathname();
   // Get initials for avatar fallback
   const getInitials = (name: string) => {
     return name
@@ -34,10 +41,9 @@ export const HoverEffect = ({
         className
       )}
     >
-      {items.map((item: Course, idx: number) => (
-        <Link
+      {items?.map((item: Course, idx: number) => (
+        <div
           key={idx}
-          href={`/courses/${item?.id}`}
           className="relative group block p-2 h-full w-full"
           onMouseEnter={() => setHoveredIndex(idx)}
           onMouseLeave={() => setHoveredIndex(null)}
@@ -126,22 +132,33 @@ export const HoverEffect = ({
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1 text-sm">
                   <BookOpen className="h-4 w-4 text-muted-foreground" />
-                  <span>{item.chapters.length} chapters</span>
+                  <span>{item?.chapters?.length} chapters</span>
                 </div>
-                <div className="flex items-center gap-1 text-sm">
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                  <span>{item.enrollments.length} enrolled</span>
-                </div>
+                {item.enrollments && (
+                  <div className="flex items-center gap-1 text-sm">
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <span>{item?.enrollments?.length} enrolled</span>
+                  </div>
+                )}
               </div>
-              <Link
-                href={`/courses/${item.id}`}
-                className="text-sm font-medium text-primary hover:underline"
-              >
-                View Course
-              </Link>
+              {pathname.startsWith("/my-course") ? (
+                <Link
+                  href={`/courses/${item.id}`}
+                  className="px-4 text-sm py-1 bg-[#27e0b3] hover:scale-105 transition-all ease-in rounded-3xl flex gap-2 items-center"
+                >
+                  Go to Course <SquareArrowOutUpRight className="h-4" />
+                </Link>
+              ) : (
+                <Link
+                  href={`/course/${item.id}`}
+                  className="px-4 text-sm py-1 bg-[#27e0b3] hover:scale-105 transition-all ease-in rounded-3xl flex gap-2 items-center"
+                >
+                  View Course <ListCollapse className="h-4" />
+                </Link>
+              )}
             </CardFooter>
           </Card>
-        </Link>
+        </div>
       ))}
     </div>
   );

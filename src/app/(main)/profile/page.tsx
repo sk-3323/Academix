@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Mail, Phone, Camera } from "lucide-react";
 import PageHeader from "@/components/LayoutContent/PageHeader";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { EditUserApi, GetSingleUserApi } from "@/store/user/slice";
@@ -108,7 +108,16 @@ const ProfileManagement = () => {
 
   return (
     <div className="min-h-screen">
-      <PageHeader headerTitle="Profile" />
+      <PageHeader
+        headerTitle="Profile"
+        renderRight={() => {
+          return (
+            <Button onClick={async () => await signOut({ callbackUrl: "/" })}>
+              Logout
+            </Button>
+          );
+        }}
+      />
       <div className="grid grid-cols-12 gap-6">
         {/* Left Sidebar */}
         <Card className="col-span-12 lg:col-span-3">

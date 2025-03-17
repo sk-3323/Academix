@@ -230,7 +230,7 @@ export interface Option {
   createdAt: Date;
   updatedAt: Date;
 
-  correctForQuestions?: Question[];
+  correctForQuestion?: Question[];
   choosedByUsers?: QuizAnswer[];
 }
 

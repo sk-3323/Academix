@@ -13,20 +13,12 @@ NEXTAUTH_SECRET="[your-nextauth-secret]"
 NEXTAUTH_URL="http://localhost:3000"
 
 # Google Authentication
-GOOGLE_API_KEY="[your-google-api-key]"
 GOOGLE_CLIENT_ID="[your-google-client-id]"
 GOOGLE_CLIENT_SECRET_KEY="[your-google-client-secret]"
-GOOGLE_URI="[your-google-oauth-uri]"
 
 # GitHub Authentication
 GITHUB_CLIENT_ID="[your-github-client-id]"
 GITHUB_SECRET_KEY="[your-github-secret]"
-
-# Maps & Location Services
-GOOGLE_MAP_API_KEY="[your-google-maps-api-key]"
-
-# Uber Integration
-UBER_CLIENT_SECRET_KEY="[your-uber-client-secret]"
 
 # Email Configuration
 RESEND_API_KEY="[your-resend-api-key]"

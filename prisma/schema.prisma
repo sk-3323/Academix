@@ -152,7 +152,7 @@ model Resource {
 
   // Relations
   chapterId String  @db.ObjectId
-  chapter   Chapter @relation(fields: [chapterId], references: [id])
+  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -170,7 +170,7 @@ model Quiz {
 
   // Relations
   chapterId String  @db.ObjectId
-  chapter   Chapter @relation(fields: [chapterId], references: [id])
+  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -192,7 +192,7 @@ model Question {
   answerId String? @db.ObjectId
   answer   Option? @relation("CorrectAnswer", fields: [answerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   quizId   String  @db.ObjectId
-  quiz     Quiz    @relation(fields: [quizId], references: [id])
+  quiz     Quiz    @relation(fields: [quizId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -214,8 +214,8 @@ model Option {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  correctForQuestions Question[]   @relation("CorrectAnswer")
-  choosedByUsers      QuizAnswer[]
+  correctForQuestion Question[]   @relation("CorrectAnswer")
+  choosedByUsers     QuizAnswer[]
 }
 
 model LiveClass {
@@ -231,7 +231,7 @@ model LiveClass {
   enrolledParticipants String[]  @db.ObjectId // References to User
 
   // Relations
-  course     Course @relation(fields: [courseId], references: [id])
+  course     Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
   instructor User   @relation(fields: [instructorId], references: [id])
 
   createdAt DateTime @default(now())
@@ -265,7 +265,7 @@ model Certificate {
   userId   String @db.ObjectId
   user     User   @relation(fields: [userId], references: [id])
   courseId String @db.ObjectId
-  course   Course @relation(fields: [courseId], references: [id])
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -309,7 +309,7 @@ model MuxData {
   playbackId String?
 
   topicId String @unique @db.ObjectId
-  topic   Topic  @relation(fields: [topicId], references: [id])
+  topic   Topic  @relation(fields: [topicId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -320,7 +320,7 @@ model UserProgress {
   isCompleted Boolean @default(false)
 
   topicId String @db.ObjectId
-  topic   Topic  @relation(fields: [topicId], references: [id])
+  topic   Topic  @relation(fields: [topicId], references: [id], onDelete: Cascade)
   userId  String @db.ObjectId
   user    User   @relation(fields: [userId], references: [id])
 
@@ -338,7 +338,7 @@ model QuizProgress {
   wrong       Int?
 
   quizId String @db.ObjectId
-  quiz   Quiz   @relation(fields: [quizId], references: [id])
+  quiz   Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
   userId String @db.ObjectId
   user   User   @relation(fields: [userId], references: [id])
 
@@ -355,7 +355,7 @@ model QuizAnswer {
   isCorrect Boolean?
 
   answerId String? @db.ObjectId
-  answer   Option? @relation(fields: [answerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  answer   Option? @relation(fields: [answerId], references: [id], onDelete: Cascade)
 
   questionId String   @db.ObjectId
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
@@ -374,7 +374,7 @@ model TeacherPaymentRequest {
   userId    String        @db.ObjectId
   user      User          @relation(fields: [userId], references: [id])
   courseId  String        @db.ObjectId
-  course    Course        @relation(fields: [courseId], references: [id])
+  course    Course        @relation(fields: [courseId], references: [id], onDelete: NoAction)
   amount    Float
   status    RequestStatus @default(PENDING)
   createdAt DateTime      @default(now())

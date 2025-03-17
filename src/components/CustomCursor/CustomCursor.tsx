@@ -59,37 +59,30 @@ export const CustomCursor = () => {
   const onMouseDown = useCallback(() => setIsActive(true), []);
   const onMouseUp = useCallback(() => setIsActive(false), []);
 
-  const getScaleAmount = (orignalSize: number, scaleAmount: number) => {
-    return `${parseInt(String(orignalSize * scaleAmount))}px`;
+  const getScaleAmount = (originalSize: number, scaleAmount: number) => {
+    return `${parseInt(String(originalSize * scaleAmount))}px`;
   };
 
   const scaleBySize = useCallback(
     (
       cursorRef: HTMLDivElement | null,
-      orignalSize: number,
+      originalSize: number,
       scaleAmount: number
     ) => {
       if (cursorRef) {
-        cursorRef.style.height = getScaleAmount(orignalSize, scaleAmount);
-        cursorRef.style.width = getScaleAmount(orignalSize, scaleAmount);
+        cursorRef.style.height = getScaleAmount(originalSize, scaleAmount);
+        cursorRef.style.width = getScaleAmount(originalSize, scaleAmount);
       }
     },
     []
   );
 
   useEffect(() => {
-    // if (isActive) {
-    //   scaleBySize(cursorInnerRef.current, 20, 0.6);
-    //   scaleBySize(cursorOuterRef.current, 20, 6);
-    // } else {
-    //   scaleBySize(cursorInnerRef.current, 20, 1);
-    //   scaleBySize(cursorOuterRef.current, 25, 1);
-    // }
     if (isActive) {
       scaleBySize(cursorInnerRef.current, 20, 0.6);
       scaleBySize(cursorOuterRef.current, 20, 6);
     } else {
-      scaleBySize(cursorInnerRef.current, 2, 0.8);
+      scaleBySize(cursorInnerRef.current, 8, 0.8);
       scaleBySize(cursorOuterRef.current, 10, 1);
     }
   }, [scaleBySize, isActive]);
@@ -115,8 +108,8 @@ export const CustomCursor = () => {
 
   const styles = {
     cursorInner: {
-      width: 15,
-      height: 15,
+      width: 20,
+      height: 20,
       backgroundColor:
         theme === "dark" ? `rgba(255, 255, 255)` : `rgba(0, 0, 0)`,
       ...coreStyles,
@@ -129,7 +122,6 @@ export const CustomCursor = () => {
     },
   };
 
-  // Some hack to detect is a device is touch or not
   if (typeof window !== "undefined" && matchMedia("(hover: none)").matches)
     return null;
 

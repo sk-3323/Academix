@@ -58,7 +58,6 @@ export default function TeacherDashboard() {
   const [payoutNote, setPayoutNote] = useState("");
   const { singleData } = useSelector((state: any) => state.UserStore);
   const { data: session } = useSession();
-  console.log(singleData);
 
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
@@ -77,7 +76,6 @@ export default function TeacherDashboard() {
   const { data: enrollments } = useSelector(
     (state: any) => state.EnrollmentStore
   );
-  console.log(enrollments);
 
   // Calculate total statistics
   const totalStudents = useMemo(() => {
@@ -93,7 +91,6 @@ export default function TeacherDashboard() {
     }
     return totalUser;
   }, []);
-  console.log(totalStudents);
 
   const totalCourses = authoredCourses.length;
 
@@ -120,7 +117,6 @@ export default function TeacherDashboard() {
     }
     return total;
   }, [authoredCourses]);
-  console.log(totalRevenue * 0.5);
 
   // Prepare data for charts
   const courseData = useMemo(() => {
@@ -151,9 +147,7 @@ export default function TeacherDashboard() {
   }, [enrollments]);
 
   const handlePayoutRequest = () => {
-    console.log(
-      `Requesting payout of ₹${payoutAmount} with note: ${payoutNote}`
-    );
+   
     setIsRequestDialogOpen(false);
     setPayoutAmount("");
     setPayoutNote("");

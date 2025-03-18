@@ -157,7 +157,6 @@ export default function PaymentManagement() {
   );
 
   const handleApproveRequest = (requestId: string) => {
-    console.log(`Approving request ${requestId}`);
     // Simulate payout completion (update status in real app via API)
     const updatedRequests = payoutRequests.map((req: any) =>
       req.id === requestId ? { ...req, status: "Completed" } : req
@@ -167,7 +166,6 @@ export default function PaymentManagement() {
   };
 
   const handleRejectRequest = (requestId: string) => {
-    console.log(`Rejecting request ${requestId}`);
     // Simulate rejection (update status in real app via API)
     const updatedRequests = payoutRequests.map((req: any) =>
       req.id === requestId ? { ...req, status: "Rejected" } : req

@@ -42,10 +42,9 @@ export default function ForgotPassword() {
     try {
       setIsLoading(true);
       const api = new APIClient();
-      const result = await api.create("/auth/forgot-password", email, {
+      const result: any = await api.create("/auth/forgot-password", email, {
         "Content-Type": "application/json",
       });
-      console.log(result);
 
       if (result.success) {
         toast.success(result.message);

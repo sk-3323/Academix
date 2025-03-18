@@ -161,7 +161,6 @@ export default function DynamicCertificateGenerator() {
         id: "67cc166404592fe5d573d1ce",
       })
     );
-    console.log(userprogres, "prororor");
 
     return course?.enrollments?.map((enroll) => enroll.user);
   }

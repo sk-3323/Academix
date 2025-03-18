@@ -40,7 +40,6 @@ const VerifyOTPPage = () => {
     }
   }, [searchParams]);
 
-  console.log(email);
 
   const handleResendOtp = async () => {
     const res: any = await api.update("/auth/verify-otp", { id: email });

@@ -10,7 +10,6 @@ import PageHeader from "@/components/LayoutContent/PageHeader";
 const page = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { singleData: userData } = useSelector((state: any) => state.UserStore);
-  console.log(userData);
   const [courseData, setCourseData] = useState<Course[]>([]);
 
   useEffect(() => {
@@ -25,7 +24,6 @@ const page = () => {
       })
     );
   };
-  console.log(courseData);
 
   return (
     <div className="w-full p-10 min-h-screen my-10">

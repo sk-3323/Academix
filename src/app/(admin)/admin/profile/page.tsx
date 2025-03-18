@@ -77,7 +77,6 @@ const ProfileManagement = () => {
           requiredFields: ["username", "email", "phone"], // Avatar is optional
         })
       ).unwrap(); // Use unwrap to handle promise resolution
-      console.log("Edit Response:", response);
 
       // Reset editing state on success
       setIsEditing(false);

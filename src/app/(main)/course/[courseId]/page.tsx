@@ -270,7 +270,7 @@ export default function CoursePage({
       );
       if (enrolledCourse) {
         return redirect(
-          `/courses/${params?.courseId}/topics/${course?.chapters?.[0]?.topics?.[0]?.id}`
+          `/courses/${params?.courseId}/topics/${course?.chapters[0]?.topics?.[0]?.id}`
         );
       }
     }
@@ -279,7 +279,6 @@ export default function CoursePage({
   useEffect(() => {
     if (params?.courseId) {
       const resp = dispatch(GetSingleCourseApi({ id: params.courseId }));
-      console.log(resp, "Res", params.courseId);
     }
   }, [dispatch, params?.courseId]);
 

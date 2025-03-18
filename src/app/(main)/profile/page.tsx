@@ -98,7 +98,6 @@ const ProfileManagement = () => {
           requiredFields: ["username", "email", "phone"],
         })
       ).unwrap();
-      console.log("Edit Response:", response);
       setIsEditing(false);
       setAvatarFile(null);
     } catch (error) {

@@ -84,7 +84,6 @@ export const authOption: NextAuthOptions = {
           if (!user) {
             throw new ErrorHandler("User does not exist. Please sign up.", 401);
           }
-          console.log(user?.isBlocked, "blocled");
 
           if (user?.isBlocked) {
             throw new ErrorHandler("You are not allowed to access this", 401);

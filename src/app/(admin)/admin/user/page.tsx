@@ -138,19 +138,16 @@ export default function UserManagement() {
           formData.set(key, String(val));
         }
       });
-      console.log(formData.get("username"));
 
       // // Log formData contents for debugging
       // for (let [key, val] of formData.entries()) {
       //   console.log(`FormData: ${key} = ${val}`);
       // }
-      console.log("Values:", formData, values);
 
       // Send to API
       const response = await api.create("/users", formData, {
         "Content-Type": "multipart/form-data",
       });
-      console.log(response, "response");
 
       if (!response.status) {
         // Adjust based on your API response

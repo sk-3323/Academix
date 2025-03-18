@@ -1,13 +1,13 @@
-"use client"
-import { useState, useEffect } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { GetCategoryApi } from "@/store/category/slice"
-import type { AppDispatch } from "@/store/store"
-import Link from "next/link"
-import Image from "next/image"
-import { Badge } from "@/components/ui/badge"
-import type { Course } from "../../../../types/allType"
-import { motion, AnimatePresence } from "framer-motion"
+"use client";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { GetCategoryApi } from "@/store/category/slice";
+import type { AppDispatch } from "@/store/store";
+import Link from "next/link";
+import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
+import type { Course } from "../../../../types/allType";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Custom Tab Button Component
 const TabButton = ({
@@ -16,10 +16,10 @@ const TabButton = ({
   onClick,
   availableCourseCount,
 }: {
-  category: any
-  isActive: boolean
-  onClick: () => void
-  availableCourseCount: number
+  category: any;
+  isActive: boolean;
+  onClick: () => void;
+  availableCourseCount: number;
 }) => (
   <motion.button
     onClick={onClick}
@@ -28,7 +28,9 @@ const TabButton = ({
     whileTap={{ scale: 0.95 }}
   >
     {category.name}
-    <span className="ml-2 text-xs bg-primary/10 px-2 py-1 rounded-full">{availableCourseCount}</span>
+    <span className="ml-2 text-xs bg-primary/10 px-2 py-1 rounded-full">
+      {availableCourseCount}
+    </span>
     {isActive && (
       <motion.div
         className="absolute bottom-0 left-0 right-0 h-1 bg-primary"
@@ -38,7 +40,7 @@ const TabButton = ({
       />
     )}
   </motion.button>
-)
+);
 
 // Custom Course Card Component
 const CourseCard = ({ course }: { course: Course }) => (
@@ -66,9 +68,13 @@ const CourseCard = ({ course }: { course: Course }) => (
           transition={{ duration: 0.3 }}
         />
         {course.isFree ? (
-          <Badge className="absolute top-2 right-2 bg-green-500 hover:bg-green-600">Free</Badge>
+          <Badge className="absolute top-2 right-2 bg-green-500 hover:bg-green-600">
+            Free
+          </Badge>
         ) : (
-          <Badge className="absolute top-2 right-2 bg-primary hover:bg-primary/80">₹ {course.price}</Badge>
+          <Badge className="absolute top-2 right-2 bg-primary hover:bg-primary/80">
+            ₹ {course.price}
+          </Badge>
         )}
       </div>
 
@@ -80,42 +86,48 @@ const CourseCard = ({ course }: { course: Course }) => (
           <Badge variant="outline" className="text-xs">
             {course.level}
           </Badge>
-          <span className="text-xs text-muted-foreground">{new Date(course.createdAt).toLocaleDateString()}</span>
+          <span className="text-xs text-muted-foreground">
+            {new Date(course.createdAt).toLocaleDateString()}
+          </span>
         </div>
       </div>
     </Link>
   </motion.div>
-)
+);
 
 const ExploreCourses = () => {
-  const dispatch = useDispatch<AppDispatch>()
-  const { singleData: userData } = useSelector((state: any) => state.UserStore)
-  const { data: categories } = useSelector((state: any) => state.CategoryStore)
+  const dispatch = useDispatch<AppDispatch>();
+  const { singleData: userData } = useSelector((state: any) => state.UserStore);
+  const { data: categories } = useSelector((state: any) => state.CategoryStore);
 
-  const [activeCategory, setActiveCategory] = useState<string | null>(null)
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   // Get user's enrolled course IDs
-  const enrolledCourseIds = userData?.enrollments?.map((enrollment: any) => enrollment.courseId) || []
+  const enrolledCourseIds =
+    userData?.enrollments?.map((enrollment: any) => enrollment.courseId) || [];
 
   useEffect(() => {
-    dispatch(GetCategoryApi())
-  }, [dispatch])
+    dispatch(GetCategoryApi());
+  }, [dispatch]);
 
   useEffect(() => {
     if (categories.length > 0 && !activeCategory) {
-      setActiveCategory(categories[0].id)
+      setActiveCategory(categories[0].id);
     }
-  }, [categories, activeCategory])
+  }, [categories, activeCategory]);
 
   // Filter function to exclude enrolled courses
   const getAvailableCourses = (courses: Course[]) => {
-    return courses.filter((course: Course) => course.status === "PUBLISHED" && !enrolledCourseIds.includes(course.id))
-  }
+    return courses.filter(
+      (course: Course) =>
+        course.status === "PUBLISHED" && !enrolledCourseIds.includes(course.id)
+    );
+  };
 
   // Get count of available courses for a category
   const getAvailableCourseCount = (category: any) => {
-    return getAvailableCourses(category.course).length
-  }
+    return getAvailableCourses(category.course).length;
+  };
 
   return (
     <div className="container mx-auto py-12 px-4 min-h-screen">
@@ -158,32 +170,40 @@ const ExploreCourses = () => {
                 className="mt-8"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {getAvailableCourses(category.course).map((course: Course) => (
-                    <CourseCard key={course.id} course={course} />
-                  ))}
+                  {getAvailableCourses(category.course).map(
+                    (course: Course) => (
+                      <CourseCard key={course.id} course={course} />
+                    )
+                  )}
                 </div>
 
                 {getAvailableCourses(category.course).length === 0 && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12 space-y-4">
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-center py-12 space-y-4"
+                  >
                     <p className="text-muted-foreground">
                       {enrolledCourseIds.length > 0
                         ? "You've enrolled in all available courses in this category!"
                         : "No published courses in this category."}
                     </p>
                     {enrolledCourseIds.length > 0 && (
-                      <Link href="/dashboard/my-courses" className="text-primary hover:underline inline-block">
+                      <Link
+                        href="/classroom"
+                        className="text-primary hover:underline inline-block"
+                      >
                         View your enrolled courses
                       </Link>
                     )}
                   </motion.div>
                 )}
               </motion.div>
-            ),
+            )
         )}
       </AnimatePresence>
     </div>
-  )
-}
+  );
+};
 
-export default ExploreCourses
-
+export default ExploreCourses;

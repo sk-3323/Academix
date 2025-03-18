@@ -22,6 +22,8 @@ import { useRole } from "@/hooks/use-role";
 
 export function NavigationMenuDemo() {
   const { data: CourseData } = useSelector((state: any) => state.CourseStore);
+  const { singleData: user } = useSelector((state: any) => state.UserStore);
+
   const dispatch = useDispatch<AppDispatch>();
   const { status, role } = useRole();
   React.useEffect(() => {
@@ -67,14 +69,23 @@ export function NavigationMenuDemo() {
             </Link>
           </NavigationMenuItem>
         )}
-        {role === "STUDENT" && (
-          <NavigationMenuItem>
-            <Link href="/my-course" legacyBehavior passHref>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                My Course
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
+        {role === "STUDENT" && user?.enrollments?.length > 0 && (
+          <>
+            <NavigationMenuItem>
+              <Link href="/classroom" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Classroom
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link href="/code-editor" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Code Editor
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          </>
         )}
         <NavigationMenuItem>
           <Link href="/contact" legacyBehavior passHref>

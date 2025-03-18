@@ -144,11 +144,18 @@ const page = () => {
             <Button
               variant="outline"
               onClick={async () => {
-                const result = await signIn("google", {
+                const result: any = await signIn("google", {
                   callbackUrl: "/",
                   redirect: false,
                 });
-                console.log(result);
+                if (result.ok) {
+                  const res = await fetch("/api/google-data", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                  });
+                  const data = await res.json();
+                  console.log(data);
+                }
               }}
               className="w-full rounded-full"
             >

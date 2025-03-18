@@ -32,7 +32,6 @@ const page = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { singleData } = useSelector((state: any) => state["ChapterStore"]);
-  console.log(singleData);
 
   useEffect(() => {
     dispatch(GetSingleChapterApi({ id: params?.chapterId }));

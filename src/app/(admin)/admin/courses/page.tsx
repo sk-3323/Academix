@@ -145,7 +145,6 @@ export default function CourseManagement() {
   );
 
   const handleSubmit = async (values: z.infer<typeof courseFormSchema>) => {
-    console.log("Form Values:", values);
     form.reset();
   };
 

@@ -33,8 +33,6 @@ const ChapterManagement = ({ courseId }: { courseId: string }) => {
   chapterData.forEach((fullChapter: any) => {
     chapterMap[fullChapter.id] = fullChapter;
   });
-  console.log(course);
-  console.log(chapterData);
 
   return (
     <div className="w-full">

@@ -21,7 +21,6 @@ import { APIClient } from "@/helpers/apiHelper";
 
 export default function ResetPassword() {
   const id = useParams();
-  console.log(id, "iddd");
 
   const [password, setPassword] = useState("");
 

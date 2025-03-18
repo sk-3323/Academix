@@ -24,7 +24,6 @@ const Navbar = ({ isMobile }: { isMobile: boolean }) => {
   const router = useRouter();
   const { status, role } = useRole();
   const { data: session } = useSession();
-  console.log(session);
 
   // Only render theme toggle after component is mounted
   useEffect(() => {

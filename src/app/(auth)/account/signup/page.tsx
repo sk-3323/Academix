@@ -67,7 +67,6 @@ const page = () => {
       let api = new APIClient();
       let data: any = await api.create("/auth/signup", values);
       let id = data.data;
-      console.log(id);
 
       if (data.status) {
         toast.success(data.message);
@@ -239,7 +238,6 @@ const page = () => {
                   callbackUrl: "/",
                   redirect: false,
                 });
-                console.log(result);
               }}
               className="w-full rounded-full"
             >

@@ -87,9 +87,11 @@ const VideoPlayer = ({
     }
   };
 
+  console.log(publicKey);
+
   return (
     <div className="relative aspect-video">
-      {!isReady && !isLocked && (
+      {!isReady && !isLocked && !publicKey && (
         <div className="absolute inset-0 flex items-center justify-center bg-slate-200 dark:bg-slate-700">
           <Loader2 className="animate-spin h-8 w-8" />
         </div>
@@ -100,7 +102,7 @@ const VideoPlayer = ({
           <p className="text-sm">This Topic is Locked</p>
         </div>
       )}
-      {!isLocked && (
+      {!isLocked && !!publicKey && (
         <>
           <CldVideoPlayer
             id="default"

@@ -714,7 +714,7 @@ const TopicIdPage = ({
           <VideoPlayer
             topicId={params?.topicId}
             nextTopicId={topic?.nextTopic?.id}
-            publicKey={topic?.publicKey!}
+            publicKey={topic?.publicKey}
             isLocked={isLocked}
             isCompleteOnEnd={isCompleteOnEnd}
             courseId={params?.courseId}

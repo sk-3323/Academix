@@ -1,7 +1,10 @@
+@import "@uploadthing/react/styles.css";
+@import "next-cloudinary/dist/cld-video-player.css";
+@import url("https://fonts.googleapis.com/css2?family=Chewy&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* @import url("https://fonts.googleapis.com/css2?family=Chewy&display=swap"); */
 
 body {
   font-family: Arial, Helvetica, sans-serif;
@@ -335,9 +338,6 @@ body {
     transform: rotateY(0deg);
   }
 }
-
-@import "~@uploadthing/react/styles.css";
-@import "next-cloudinary/dist/cld-video-player.css";
 
 @layer base {
   * {

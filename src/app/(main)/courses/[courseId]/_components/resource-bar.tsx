@@ -27,7 +27,7 @@ export const ResourceBar = ({
           ))}
         </>
       )}
-      {isLocked && (
+      {!!isLocked && (
         <>
           <div className="flex items-center p-3 w-full bg-sky-200 border text-sky-700 rounded-md">
             <p className="text-sm italic">

@@ -22,10 +22,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Github } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const formSchema = z.object({
   username: z.string(),
@@ -34,6 +34,7 @@ const formSchema = z.object({
 
 const page = () => {
   const router = useRouter();
+  const { data: session } = useSession();
   const [showPassword, setShowPassword] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,8 +51,7 @@ const page = () => {
     const result = await signIn("credentials", {
       username,
       password,
-      redirect: true,
-      callbackUrl: "/",
+      redirect: false, // Prevents auto-redirect
     });
 
     if (result?.error) {
@@ -60,6 +60,20 @@ const page = () => {
       toast.success("Login successful");
     }
   }
+
+  useEffect(() => {
+    if (!session) return;
+    if (session?.user?.role === "ADMIN") {
+      router.push("/admin/dashboard");
+    } else if (session?.user?.role === "TEACHER") {
+      router.push("/teacher/dashboard");
+    } else if (session?.user?.role === "STUDENT") {
+      router.push("/dashboard");
+    } else {
+      router.push("/");
+    }
+  }, [session]);
+
   return (
     <div className="h-[95vh] grid place-items-center">
       <Card className="w-[80vw] md:w-[55vw] lg:w-[30vw]">

@@ -68,7 +68,7 @@ export const HoverEffect = ({
           <Card className="overflow-hidden transition-all hover:shadow-lg">
             <div className="relative aspect-video w-full overflow-hidden">
               <Image
-                src={item.thumbnail || "/placeholder.svg"}
+                src={item?.thumbnail || "/placeholder.svg"}
                 alt={item.title}
                 fill
                 className="object-cover ease-in-out transition-transform hover:scale-105"
@@ -98,7 +98,14 @@ export const HoverEffect = ({
                   {format(new Date(item.createdAt), "dd-MM-yyyy")}
                 </div>
               </div>
-              <Link href={`/courses/${item.id}`} className="group">
+              <Link
+                href={
+                  pathname.startsWith("/my-course")
+                    ? `/courses/${item.id}`
+                    : `/course/${item.id}`
+                }
+                className="group"
+              >
                 <h3 className="line-clamp-1 text-xl font-bold tracking-tight group-hover:text-primary">
                   {item.title}
                 </h3>
@@ -106,7 +113,7 @@ export const HoverEffect = ({
               <div
                 className="line-clamp-2 text-sm text-muted-foreground"
                 dangerouslySetInnerHTML={{
-                  __html: item.description,
+                  __html: item.description!,
                 }}
               />
             </CardHeader>

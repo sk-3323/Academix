@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import HomeSlice from "@/store/home/slice";
 import CourseSlice from "@/store/course/slice";
 import CategorySlice from "@/store/category/slice";
 import ChapterSlice from "@/store/chapter/slice";
@@ -16,6 +17,7 @@ import PaymentRequestSlice from "@/store/payment-request/slice";
 
 const store = configureStore({
   reducer: {
+    HomeStore: HomeSlice,
     UserStore: UserSlice,
     CourseStore: CourseSlice,
     CategoryStore: CategorySlice,

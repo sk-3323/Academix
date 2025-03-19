@@ -13,22 +13,16 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Course } from "../../../types/allType";
-import { AppDispatch } from "@/store/store";
-import { GetCourseApi } from "@/store/course/slice";
-import Preview from "../preview";
 import { useRole } from "@/hooks/use-role";
 
 export function NavigationMenuDemo() {
-  const { data: CourseData } = useSelector((state: any) => state.CourseStore);
+  const { data } = useSelector((state: any) => state.HomeStore);
   const { singleData: user } = useSelector((state: any) => state.UserStore);
 
-  const dispatch = useDispatch<AppDispatch>();
   const { status, role } = useRole();
-  React.useEffect(() => {
-    dispatch(GetCourseApi({ searchParams: {} }));
-  }, [dispatch]);
+
   return (
     <NavigationMenu>
       <NavigationMenuList>
@@ -43,13 +37,14 @@ export function NavigationMenuDemo() {
           <NavigationMenuTrigger>Courses</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-              {CourseData.map((component: Course) => (
-                <ListItem
-                  key={component.title}
-                  title={component.title}
-                  href={`/course/${component.id}`}
-                ></ListItem>
-              ))}
+              {data?.topCourses?.length > 0 &&
+                data?.topCourses?.map((component: Course) => (
+                  <ListItem
+                    key={component.title}
+                    title={component.title}
+                    href={`/course/${component.id}`}
+                  ></ListItem>
+                ))}
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>

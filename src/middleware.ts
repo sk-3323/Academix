@@ -4,14 +4,10 @@ import { apiHandler, ErrorHandler } from "./lib/errorHandler";
 export { default } from "next-auth/middleware";
 
 const publicRoutesRegex =
-  /^\/(|about|contact|courses(?:\/.*)?|api\/courses(?:\/.*)?)\$/;
+  /^\/$|^\/(about|contact|api\/home|courses(?:\/.*)?|api\/course(?:\/.*)?)$/;
 
 export const middleware = apiHandler(async (request: NextRequest) => {
   const path = request.nextUrl.pathname;
-
-  if (publicRoutesRegex.test(path)) {
-    return NextResponse.next();
-  }
 
   const isApiRoute = path.startsWith("/api/");
   const isAuthRoute = path.startsWith("/api/auth/");
@@ -25,6 +21,10 @@ export const middleware = apiHandler(async (request: NextRequest) => {
 
   if (token) {
     request.headers.set("x-user-token", token);
+  }
+
+  if (publicRoutesRegex.test(path)) {
+    return NextResponse.next({ request: request });
   }
 
   if (!token) {
@@ -41,11 +41,6 @@ export const middleware = apiHandler(async (request: NextRequest) => {
       });
     return NextResponse.redirect(new URL("/account/login", request.nextUrl));
   }
-
-  const payload = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
 
   if (isApiRoute)
     return NextResponse.next({

@@ -1,18 +1,18 @@
 "use client";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
+
 import { Button } from "@/components/ui/button";
 import Courses from "@/components/CourseList/Courses";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import { CourseMarquee } from "@/components/Marquee/course-marquee";
 import { useRouter } from "next/navigation";
+import CountUp from "@/components/ui/count-up";
+import { useSelector } from "react-redux";
 
 export default function Home() {
+  const { data } = useSelector((state: any) => state.HomeStore);
   const quotes = ["Learn Smarter", "Not Harder"];
   const router = useRouter();
+
   return (
     <div className="w-full min-h-screen overflow-x-hidden">
       {/* Hero Section */}
@@ -30,20 +30,60 @@ export default function Home() {
           Check Courses - Make an Impact
         </Button>
         <div className="grid grid-cols-3 gap-4 sm:gap-6 p-6 mt-6 w-full max-w-md sm:max-w-lg md:max-w-xl">
-          {[
-            { stat: "25+", label: "Courses" },
-            { stat: "25+", label: "Students" },
-            { stat: "25+", label: "Teachers" },
-          ].map((item, idx) => (
-            <div key={idx} className="flex flex-col items-center">
-              <h1 className="font-bold text-lg sm:text-xl md:text-2xl tracking-tight mb-1">
-                {item.stat}
-              </h1>
-              <span className="text-xs sm:text-sm text-gray-600">
-                {item.label}
-              </span>
-            </div>
-          ))}
+          <div className="flex flex-col items-center">
+            <h1 className="font-bold text-xl sm:text-3xl md:text-3xl tracking-tight mb-1">
+              {!!data?.courses && (
+                <>
+                  <CountUp
+                    from={0}
+                    to={data?.courses}
+                    separator=","
+                    direction="up"
+                    duration={1}
+                    className="count-up-text"
+                  />
+                  +
+                </>
+              )}
+            </h1>
+            <span className="text-xs sm:text-sm text-gray-600">Courses</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <h1 className="font-bold text-xl sm:text-3xl md:text-3xl tracking-tight mb-1">
+              {!!data?.students && (
+                <>
+                  <CountUp
+                    from={0}
+                    to={data?.students}
+                    separator=","
+                    direction="up"
+                    duration={1}
+                    className="count-up-text"
+                  />
+                  +
+                </>
+              )}
+            </h1>
+            <span className="text-xs sm:text-sm text-gray-600">Students</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <h1 className="font-bold text-xl sm:text-3xl md:text-3xl tracking-tight mb-1">
+              {!!data?.teachers && (
+                <>
+                  <CountUp
+                    from={0}
+                    to={data?.teachers}
+                    separator=","
+                    direction="up"
+                    duration={1}
+                    className="count-up-text"
+                  />
+                  +
+                </>
+              )}
+            </h1>
+            <span className="text-xs sm:text-sm text-gray-600">Teachers</span>
+          </div>
         </div>
       </section>
 

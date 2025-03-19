@@ -81,7 +81,6 @@ const CategoryForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log("values", values);
       const formdata = new FormData();
       Object.entries(values).forEach(([key, val]) => {
         formdata.append(key, val);

@@ -20,7 +20,6 @@ export const FileUpload = ({
       disabled={disabled}
       onClientUploadComplete={(res) => {
         // Do something with the response
-        console.log("Files: ", res);
         onChange(res?.[0]?.url, res?.[0]?.key);
       }}
       onUploadError={(error: Error) => {

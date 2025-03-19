@@ -423,7 +423,7 @@ export default function UserManagement() {
                     <Ban className="h-4 w-4" />
                   )}
                 </Button>
-                <Button
+                {/* <Button
                   variant="outline"
                   size="icon"
                   onClick={() => handleSendPasswordReset(user.id)}
@@ -439,7 +439,7 @@ export default function UserManagement() {
                   }}
                 >
                   <Shield className="h-4 w-4" />
-                </Button>
+                </Button> */}
               </TableCell>
             </TableRow>
           ))}

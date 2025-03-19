@@ -1,3 +1,4 @@
+import { NODE_APP_URL } from "@/constants/config";
 import { sendResetPasswordLink } from "@/helpers/resetPasswordMail";
 import { sendEmailVerification } from "@/helpers/sendVerificationMail";
 import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
@@ -16,7 +17,7 @@ export const POST = apiHandler(async (req: NextRequest, content: any) => {
   if (!result) {
     throw new ErrorHandler("User not found", 404);
   }
-  const link = `${process.env.BASE_URL}/account/reset-password/${result.id}`;
+  const link = `${NODE_APP_URL}/account/reset-password/${result.id}`;
   const emailRes = await sendResetPasswordLink(email, result.username, link);
   console.log(emailRes, "result");
 

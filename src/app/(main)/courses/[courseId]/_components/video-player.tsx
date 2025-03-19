@@ -87,7 +87,6 @@ const VideoPlayer = ({
     }
   };
 
-  console.log(publicKey);
 
   return (
     <div className="relative aspect-video">

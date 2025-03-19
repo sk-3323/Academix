@@ -22,11 +22,10 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     if (role === undefined) {
       return;
     } else if (role !== "ADMIN") {
-      router.back();
+      router.push("/");
       toast.error("You can not access Admin Route");
     }
   }, [status]);
-  const { data: userData } = useSelector((state: any) => state["UserStore"]);
 
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {

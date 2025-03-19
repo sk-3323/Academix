@@ -87,7 +87,7 @@ const page = ({
       )}
       <div className="w-full p-6">
         <Link
-          href={`/teacher/courses/${params?.courseId}/chapters/${params?.chapterId}/quiz/${params?.quizId}`}
+          href={`/admin/courses/${params?.courseId}/chapters/${params?.chapterId}/quiz/${params?.quizId}`}
           className="flex items-center text-sm hover:opacity-75 transition mb-6"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />

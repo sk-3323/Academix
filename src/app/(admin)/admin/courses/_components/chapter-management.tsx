@@ -14,6 +14,7 @@ import { AppDispatch } from "@/store/store";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { DeleteTopicApi } from "@/store/topic/slice";
+import { useDynamicToast } from "@/hooks/DynamicToastHook";
 
 const ChapterManagement = ({ courseId }: { courseId: string }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -28,8 +29,22 @@ const ChapterManagement = ({ courseId }: { courseId: string }) => {
     }
   }, [courseId, dispatch]);
 
+  const deleteTopic = async (topic: any) => {
+    await dispatch(
+      DeleteTopicApi({
+        id: topic.id,
+      })
+    ).unwrap();
+    dispatch(GetSingleCourseApi({ id: courseId }));
+    dispatch(
+      GetChapterApi({
+        searchParams: { courseId: courseId },
+      })
+    );
+  };
+
   // Create a map from chapter ID to full chapter object
-  const chapterMap = {};
+  const chapterMap: any = {};
   chapterData.forEach((fullChapter: any) => {
     chapterMap[fullChapter.id] = fullChapter;
   });
@@ -42,7 +57,9 @@ const ChapterManagement = ({ courseId }: { courseId: string }) => {
             const fullChapter = chapterMap[chapter.id];
             return (
               <AccordionItem key={chapter.id} value={chapter.id}>
-                <AccordionTrigger>{chapter.title}</AccordionTrigger>
+                <AccordionTrigger className="font-bold">
+                  {chapter.title}
+                </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-2">
                     {fullChapter?.topics?.length > 0 ? (
@@ -69,13 +86,7 @@ const ChapterManagement = ({ courseId }: { courseId: string }) => {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => {
-                                dispatch(
-                                  DeleteTopicApi({
-                                    id: topic.id,
-                                  })
-                                );
-                              }}
+                              onClick={() => deleteTopic(topic)}
                             >
                               <Trash className="h-4 w-4" />
                             </Button>

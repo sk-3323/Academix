@@ -86,7 +86,6 @@ const DescriptionForm = ({
       if (!response.success) {
         throw new Error("Failed to fetch AI description");
       }
-      console.log(response, "response form ai");
 
       result = response?.result;
     }
@@ -131,7 +130,6 @@ const DescriptionForm = ({
 
   const handleAIGenerate = async () => {
     setIsFetchingAI(true);
-    console.log(initialData.title);
 
     try {
       const aiDescription: any = await fetchAIDescription(initialData.title);

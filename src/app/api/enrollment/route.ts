@@ -33,7 +33,7 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
   }
 
   let result = await prisma.$transaction(async (tx) => {
-    return await tx.enrollment.findUnique({
+    return await tx.enrollment.findMany({
       where: conditions,
       include: {
         course: {

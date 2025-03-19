@@ -57,9 +57,10 @@ export default function DynamicCertificateGenerator() {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [eligibleUsers, setEligibleUsers] = useState([]);
+
   const [certificateSettings, setCertificateSettings] = useState({
     template: "standard",
-    title: "Certificate of Completion",
+    title: `Certificate of ${selectedCourse?.title}`,
     subtitle: "has successfully completed the course",
     signature: singleData?.username || "Course Instructor",
     signaturePosition: "right",
@@ -168,6 +169,9 @@ export default function DynamicCertificateGenerator() {
   const handleCourseChange = (courseId: string) => {
     const course: Course = courses.find((c: Course) => c.id === courseId);
     setSelectedCourse(course);
+    setCertificateSettings((prev: any) => {
+      return { ...certificateSettings, title: course.title };
+    });
   };
 
   const handleUserSelect = (userId: string) => {
@@ -192,6 +196,12 @@ export default function DynamicCertificateGenerator() {
   };
 
   const handleSettingChange = (key, value) => {
+    if (key === "signature") {
+      setCertificateSettings({
+        ...certificateSettings,
+        signature: singleData?.username,
+      });
+    }
     setCertificateSettings({
       ...certificateSettings,
       [key]: value,
@@ -244,7 +254,7 @@ export default function DynamicCertificateGenerator() {
 
     ctx.font = `bold ${certificateSettings.fontSize * 1.2}px ${certificateSettings.fontFamily}`;
     ctx.fillStyle = certificateSettings.secondaryColor;
-    ctx.fillText(user.name, width / 2, 300);
+    ctx.fillText(user.username, width / 2, 300);
 
     ctx.font = `${certificateSettings.fontSize * 0.6}px ${certificateSettings.fontFamily}`;
     ctx.fillStyle = "#64748b";
@@ -257,7 +267,11 @@ export default function DynamicCertificateGenerator() {
     if (certificateSettings.showDate) {
       ctx.font = `${certificateSettings.fontSize * 0.6}px ${certificateSettings.fontFamily}`;
       ctx.fillStyle = "#64748b";
-      ctx.fillText(`Issued on ${user.completionDate}`, width / 2, 430);
+      ctx.fillText(
+        `Issued on ${new Date().toLocaleDateString()}`,
+        width / 2,
+        430
+      );
     }
 
     if (signatureRef.current) {
@@ -311,7 +325,7 @@ export default function DynamicCertificateGenerator() {
           userEmail: user.email,
           courseId: selectedCourse.id,
           courseName: selectedCourse.title,
-          issueDate: new Date().toISOString().split("T")[0],
+          issueDate: new Date().toDateString(),
           template: certificateSettings.template,
           createdBy: singleData?.username || "Admin",
         };
@@ -777,7 +791,7 @@ export default function DynamicCertificateGenerator() {
               <CardTitle>Live Certificate Preview</CardTitle>
               <CardDescription>
                 {previewUser
-                  ? `Preview for ${previewUser.name}`
+                  ? `Preview for ${previewUser.username}`
                   : "Select a course and student to preview"}
               </CardDescription>
             </CardHeader>
@@ -813,16 +827,18 @@ export default function DynamicCertificateGenerator() {
                       {previewUser.avatar ? (
                         <AvatarImage
                           src={previewUser.avatar}
-                          alt={previewUser.name}
+                          alt={previewUser.username}
                         />
                       ) : (
                         <AvatarFallback>
-                          {previewUser.name.charAt(0)}
+                          {previewUser.username.charAt(0)}
                         </AvatarFallback>
                       )}
                     </Avatar>
                     <div>
-                      <p className="text-sm font-medium">{previewUser.name}</p>
+                      <p className="text-sm font-medium">
+                        {previewUser.username}
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         {previewUser.email}
                       </p>
@@ -839,7 +855,7 @@ export default function DynamicCertificateGenerator() {
                     <SelectContent>
                       {eligibleUsers.map((user: any) => (
                         <SelectItem key={user.id} value={user.id}>
-                          {user.name}
+                          {user.username}
                         </SelectItem>
                       ))}
                     </SelectContent>

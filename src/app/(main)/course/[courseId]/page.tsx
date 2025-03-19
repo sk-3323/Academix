@@ -270,7 +270,7 @@ export default function CoursePage({
       );
       if (enrolledCourse) {
         return redirect(
-          `/courses/${params?.courseId}/topics/${course?.chapters[0]?.topics?.[0]?.id}`
+          `/courses/${params?.courseId}/topics/${course?.chapters?.[0]?.topics?.[0]?.id}`
         );
       }
     }

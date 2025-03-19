@@ -11,22 +11,7 @@ import { columns } from "./_components/columns";
 import { useSession } from "next-auth/react";
 
 const CoursesPage = () => {
-  const dispatch = useDispatch<AppDispatch>();
   const { data } = useSelector((state: any) => state["CourseStore"]);
-
-  const { data: session } = useSession();
-
-  useEffect(() => {
-    if (session?.user?.id) {
-      dispatch(
-        GetCourseApi({
-          searchParams: {
-            instructorId: session?.user?.id,
-          },
-        })
-      );
-    }
-  }, [session?.user?.id]);
 
   return (
     <div className="p-6">

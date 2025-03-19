@@ -154,7 +154,6 @@ const page = () => {
                     headers: { "Content-Type": "application/json" },
                   });
                   const data = await res.json();
-                  console.log(data);
                 }
               }}
               className="w-full rounded-full"

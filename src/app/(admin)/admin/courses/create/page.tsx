@@ -121,7 +121,7 @@ const CreateCoursePage = () => {
                     />
                   </div>
                   <div className="flex items-center gap-x-2">
-                    <Link href="/teacher/courses">
+                    <Link href="/admin/courses">
                       <Button
                         type="button"
                         variant="ghost"

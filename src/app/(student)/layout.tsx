@@ -18,7 +18,7 @@ const StudentLayout = ({ children }: { children: React.ReactNode }) => {
     if (role === undefined) {
       return;
     } else if (!["STUDENT", "ADMIN"].includes(role)) {
-      router.back();
+      router.push("/");
       toast.error("Only Student can access this route");
     }
   }, [status]);

@@ -61,9 +61,9 @@ const CourseSideBarItem = ({
   };
 
   return (
-    <AccordionItem value={id}>
+    <AccordionItem key={id} value={id}>
       <AccordionTrigger
-        className={cn("px-2", activeChapter === id && "font-semibold")}
+        className={cn("px-2 text-wrap", activeChapter === id && "font-semibold")}
       >
         {`${index}. ${label}`}
       </AccordionTrigger>
@@ -79,42 +79,40 @@ const CourseSideBarItem = ({
         let isActive = pathname?.includes(topic?.id);
 
         return (
-          <>
-            <AccordionContent className="p-0 pb-1">
-              <button
-                onClick={() => onClick(topic?.id)}
-                type="button"
-                className={cn(
-                  "flex items-center gap-x-2 text-sm font-[500] pl-2 transition-all w-full",
-                  isActive &&
-                    !isCompleted &&
-                    " dark:bg-slate-200/20 border-r-4 bg-slate-600/20 dark:hover:bg-slate-200/20 dark:border-slate-300 border-slate-700",
-                  isCompleted &&
-                    !isActive &&
-                    "text-emerald-500 bg-emerald-500/20 hover:bg-emerald-500/40",
-                  isActive &&
-                    isCompleted &&
-                    "text-emerald-500 bg-emerald-400/10 border-r-4 border-emerald-700",
+          <AccordionContent key={topic?.id} className="p-0 pb-1">
+            <button
+              onClick={() => onClick(topic?.id)}
+              type="button"
+              className={cn(
+                "flex items-center gap-x-2 text-sm font-[500] pl-2 transition-all w-full",
+                isActive &&
+                  !isCompleted &&
+                  " dark:bg-slate-200/20 border-r-4 bg-slate-600/20 dark:hover:bg-slate-200/20 dark:border-slate-300 border-slate-700",
+                isCompleted &&
                   !isActive &&
-                    !isCompleted &&
-                    "hover:bg-slate-600/20 dark:hover:bg-slate-300/20"
-                )}
-              >
-                <div className="flex items-center gap-x-2 py-2 pl-4">
-                  {`${index}.${i}`}
-                  <Icon
-                    size={22}
-                    className={cn(
-                      "ml-2",
-                      !!topic?.userProgress?.[0]?.isCompleted &&
-                        "text-emerald-500"
-                    )}
-                  />
-                  {topic?.title}
-                </div>
-              </button>
-            </AccordionContent>
-          </>
+                  "text-emerald-500 bg-emerald-500/20 hover:bg-emerald-500/40",
+                isActive &&
+                  isCompleted &&
+                  "text-emerald-500 bg-emerald-400/10 border-r-4 border-emerald-700",
+                !isActive &&
+                  !isCompleted &&
+                  "hover:bg-slate-600/20 dark:hover:bg-slate-300/20"
+              )}
+            >
+              <div className="flex items-center gap-x-2 py-2 pl-4 text-wrap">
+                {`${index}.${i}`}
+                <Icon
+                  size={22}
+                  className={cn(
+                    "ml-2",
+                    !!topic?.userProgress?.[0]?.isCompleted &&
+                      "text-emerald-500"
+                  )}
+                />
+                {topic?.title}
+              </div>
+            </button>
+          </AccordionContent>
         );
       })}
       {quiz?.map((qz, i) => {
@@ -129,41 +127,39 @@ const CourseSideBarItem = ({
         let isActive = pathname?.includes(qz?.id);
 
         return (
-          <>
-            <AccordionContent className="p-0 pb-1">
-              <button
-                onClick={() => onQuizClick(qz?.id)}
-                type="button"
-                className={cn(
-                  "flex items-center gap-x-2 text-sm font-[500] pl-2 transition-all w-full",
-                  isActive &&
-                    !isCompleted &&
-                    " dark:bg-slate-200/20 border-r-4 bg-slate-600/20 dark:hover:bg-slate-200/20 dark:border-slate-300 border-slate-700",
-                  isCompleted &&
-                    !isActive &&
-                    "text-emerald-500 bg-emerald-500/20 hover:bg-emerald-500/40",
-                  isActive &&
-                    isCompleted &&
-                    "text-emerald-500 bg-emerald-400/10 border-r-4 border-emerald-700",
+          <AccordionContent key={qz?.id} className="p-0 pb-1">
+            <button
+              onClick={() => onQuizClick(qz?.id)}
+              type="button"
+              className={cn(
+                "flex items-center gap-x-2 text-sm font-[500] pl-2 transition-all w-full",
+                isActive &&
+                  !isCompleted &&
+                  " dark:bg-slate-200/20 border-r-4 bg-slate-600/20 dark:hover:bg-slate-200/20 dark:border-slate-300 border-slate-700",
+                isCompleted &&
                   !isActive &&
-                    !isCompleted &&
-                    "hover:bg-slate-600/20 dark:hover:bg-slate-300/20"
-                )}
-              >
-                <div className="flex items-center gap-x-2 py-2 pl-4">
-                  {`Q${index}.`}
-                  <Icon
-                    size={22}
-                    className={cn(
-                      "ml-2",
-                      !!qz?.completedBy?.[0]?.isCompleted && "text-emerald-500"
-                    )}
-                  />
-                  {qz?.title}
-                </div>
-              </button>
-            </AccordionContent>
-          </>
+                  "text-emerald-500 bg-emerald-500/20 hover:bg-emerald-500/40",
+                isActive &&
+                  isCompleted &&
+                  "text-emerald-500 bg-emerald-400/10 border-r-4 border-emerald-700",
+                !isActive &&
+                  !isCompleted &&
+                  "hover:bg-slate-600/20 dark:hover:bg-slate-300/20"
+              )}
+            >
+              <div className="flex items-center gap-x-2 py-2 pl-4 text-wrap">
+                {`Q.${index}`}
+                <Icon
+                  size={22}
+                  className={cn(
+                    "ml-2",
+                    !!qz?.completedBy?.[0]?.isCompleted && "text-emerald-500"
+                  )}
+                />
+                {qz?.title}
+              </div>
+            </button>
+          </AccordionContent>
         );
       })}
     </AccordionItem>

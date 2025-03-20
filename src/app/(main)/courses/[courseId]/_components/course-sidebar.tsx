@@ -45,12 +45,10 @@ interface CourseSidebarProps {
       })[];
     })[];
   };
-  collapsible?: "icon" | "none";
 }
 
 const CourseSidebar = ({
   course,
-  collapsible = "icon",
 }: CourseSidebarProps) => {
   const pathname = usePathname();
   const dispatch = useDispatch<AppDispatch>();
@@ -75,10 +73,9 @@ const CourseSidebar = ({
   return (
     <TooltipProvider delayDuration={0}>
       <Sidebar
-        collapsible={collapsible}
+        collapsible={"none"}
         className={cn(
           "transition-all duration-300 ease-in w-100 min-w-[20rem]",
-          collapsible && "h-100"
         )}
       >
         <SidebarHeader className="p-5 w-full">
@@ -86,7 +83,6 @@ const CourseSidebar = ({
           {data?.length !== 0 && !isNaN(course?.progressCount) && (
             <div className="mt-1">
               <CourseProgress
-              
                 variant={course?.progressCount === 100 ? "success" : "default"}
                 value={course?.progressCount}
               />
@@ -116,7 +112,6 @@ const CourseSidebar = ({
                   >
                     <CourseSideBarItem
                       index={index + 1}
-                      key={chapter?.id}
                       id={chapter?.id}
                       activeChapter={activeChapter}
                       label={chapter?.title}

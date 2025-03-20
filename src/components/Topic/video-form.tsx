@@ -166,9 +166,6 @@ const VideoForm = ({ initialData, topicId, setActions }: VideoFormProps) => {
               width="920"
               height="570"
               src={initialData?.publicKey}
-              autoPlay
-              controls
-              pictureInPictureToggle
               logo={{
                 imageUrl: "/assets/logos/fevicon.svg",
                 onClickUrl: "/",

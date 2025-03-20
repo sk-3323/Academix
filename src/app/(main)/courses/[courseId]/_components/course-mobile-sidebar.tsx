@@ -6,7 +6,16 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Chapter, Course, Topic, UserProgress } from "@prisma/client";
+import {
+  Chapter,
+  Course,
+  Option,
+  Question,
+  Quiz,
+  QuizProgress,
+  Topic,
+  UserProgress,
+} from "@prisma/client";
 import { Menu } from "lucide-react";
 import CourseSidebar from "./course-sidebar";
 
@@ -15,6 +24,13 @@ interface CourseSidebarProps {
     chapters: (Chapter & {
       topics: (Topic & {
         userProgress: UserProgress[] | null;
+      })[];
+      quiz: (Quiz & {
+        completedBy: QuizProgress[] | null;
+        questions: (Question & {
+          answer: Option;
+          options: Option[];
+        })[];
       })[];
     })[];
   };
@@ -29,7 +45,7 @@ const CourseMobileSidebar = ({ course }: CourseSidebarProps) => {
       <SheetContent side="left" className="p-0 w-full">
         <SheetTitle className="sr-only">Course Sidebar </SheetTitle>
         <div className="mt-10">
-          <CourseSidebar course={course} collapsible="none" />
+          <CourseSidebar course={course} />
         </div>
       </SheetContent>
     </Sheet>

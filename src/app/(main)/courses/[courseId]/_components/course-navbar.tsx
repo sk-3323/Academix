@@ -4,14 +4,34 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { NavigationMenuDemo } from "@/components/Navbar/NavMenuItems";
 import { Button } from "@/components/ui/button";
-import { Chapter, Course, Topic, UserProgress } from "@prisma/client";
+import {
+  Chapter,
+  Course,
+  Option,
+  Question,
+  Quiz,
+  QuizProgress,
+  Topic,
+  UserProgress,
+} from "@prisma/client";
+import Link from "next/link";
+import Image from "next/image";
 import CourseMobileSidebar from "./course-mobile-sidebar";
+import DarkHLogoName from "../../../../../../public/assets/logos/dark-h-logo-with-name.svg";
+import LightHLogoName from "../../../../../../public/assets/logos/light-h-logo-with-name.svg";
 
 interface CourseSidebarProps {
   course: Course & { progressCount: number } & {
     chapters: (Chapter & {
       topics: (Topic & {
         userProgress: UserProgress[] | null;
+      })[];
+      quiz: (Quiz & {
+        completedBy: QuizProgress[] | null;
+        questions: (Question & {
+          answer: Option;
+          options: Option[];
+        })[];
       })[];
     })[];
   };
@@ -33,8 +53,16 @@ const CourseNavbar = ({ course, isMobile }: CourseSidebarProps) => {
   return (
     <>
       <div className="flex justify-start items-center gap-x-4">
-        <CourseMobileSidebar course={course}/>
-        <h1 className="font-extrabold">Acedemix </h1>
+        <CourseMobileSidebar course={course} />
+        {!isMobile && (
+          <Link href="/" legacyBehavior passHref>
+            {theme === "dark" ? (
+              <Image alt="logo" src={DarkHLogoName} height={50} />
+            ) : (
+              <Image alt="logo" src={LightHLogoName} height={50} />
+            )}
+          </Link>
+        )}
       </div>
       {!isMobile && <div>Course Detail </div>}
       <div className="flex justify-center">

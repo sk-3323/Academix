@@ -69,7 +69,7 @@ const VideoPlayer = ({
       setActions((current: any) => {
         return { ...current, callbackFunction: handleSuccess };
       });
-      if (isCompleteOnEnd) {
+      if (isCompleteOnEnd && !isLocked) {
         await dispatch(
           AddUserProgressApi({
             values: {
@@ -86,7 +86,6 @@ const VideoPlayer = ({
       throw error;
     }
   };
-
 
   return (
     <div className="relative aspect-video">
@@ -108,24 +107,13 @@ const VideoPlayer = ({
             width="920"
             height="570"
             src={publicKey}
-            autoPlay
-            controls
-            pictureInPictureToggle
             logo={{
               imageUrl: "/assets/logos/fevicon.svg",
               onClickUrl: "/",
             }}
             onEnded={onEnd}
             onDataLoad={() => setIsReady(true)}
-            className={cn(!isReady && "hidden")}
           />
-          {/* <MuxPlayer
-            title={title}
-            onCanPlay={() => setIsReady(true)}
-            onEnded={onEnd}
-            autoPlay
-            playbackId={playbackId}
-          /> */}
         </>
       )}
     </div>

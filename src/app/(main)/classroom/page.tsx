@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Course } from "../../../../types/allType";
 import PageHeader from "@/components/LayoutContent/PageHeader";
+import UserDashboard from "./dashboard";
 
 const page = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -26,12 +27,15 @@ const page = () => {
   };
 
   return (
-    <div className="w-full p-10 min-h-screen my-10">
-      <h1 className="font-bold text-2xl">
-        Your <span className="text-[#27E0B3]">Courses</span>
-      </h1>
-      <div className="courses flex justify-center items-center">
-        <HoverEffect items={courseData} />
+    <div className="w-full min-h-screen my-10">
+      <UserDashboard />
+      <div className="flex-1 space-y-6 p-6 md:p-8">
+        <h1 className="text-3xl  font-bold tracking-tight">
+          My <span className="text-[#27e0b3]">Enrolled Course</span>
+        </h1>
+        <div className="courses flex justify-center items-center">
+          <HoverEffect items={courseData} />
+        </div>
       </div>
     </div>
   );

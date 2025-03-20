@@ -343,13 +343,13 @@ export default function TeacherDashboard() {
             </TableHeader>
             <TableBody>
               {authoredCourses.map((course: any) => (
-                <TableRow key={course.id}>
+                <TableRow key={course?.id}>
                   <TableCell className="font-medium">{course.title}</TableCell>
                   <TableCell>{getStatusBadge(course.status)}</TableCell>
-                  <TableCell>₹{course.price.toFixed(2)}</TableCell>
+                  <TableCell>₹{course?.price?.toFixed(2)}</TableCell>
                   <TableCell>{course.enrollments.length}</TableCell>
                   <TableCell>
-                    ₹{(course.price * course.enrollments.length).toFixed(2)}
+                    ₹{(course?.price * course.enrollments.length).toFixed(2)}
                   </TableCell>
                 </TableRow>
               ))}

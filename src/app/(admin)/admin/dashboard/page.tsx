@@ -232,7 +232,7 @@ export default function AdminDashboard() {
                       </TableCell>
                       <TableCell>{instructor?.username || "Unknown"}</TableCell>
                       <TableCell>{getStatusBadge(course.status)}</TableCell>
-                      <TableCell>₹{course.price.toFixed(2)}</TableCell>
+                      <TableCell>₹{course?.price?.toFixed(2)}</TableCell>
                       <TableCell>{course.enrollments.length}</TableCell>
                       <TableCell>
                         ₹{(course.price * course.enrollments.length).toFixed(2)}

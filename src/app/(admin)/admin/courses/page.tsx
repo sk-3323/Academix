@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -45,17 +47,20 @@ import {
   Edit,
   GraduationCap,
   FileText,
+  PlusSquare,
 } from "lucide-react";
 import { z } from "zod";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/store/store";
-import { GetCategoryApi } from "@/store/category/slice";
+import { AddCategoryApi, GetCategoryApi } from "@/store/category/slice";
 import { GetCourseApi } from "@/store/course/slice";
 import { useSession } from "next-auth/react";
 import ChapterManagement from "./_components/chapter-management";
 import { useRouter } from "next/navigation";
 import { EnrollmentManagement } from "./_components/EnrollManagement";
 import { GetUserApi } from "@/store/user/slice";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 const courseFormSchema = z.object({
   title: z.string().min(3, "Title is required"),
@@ -78,6 +83,7 @@ export default function CourseManagement() {
   const { data: categoryData } = useSelector(
     (state: any) => state["CategoryStore"]
   );
+  const [category, setCategory] = useState("");
   const { data: courseData } = useSelector(
     (state: any) => state["CourseStore"]
   );
@@ -147,15 +153,67 @@ export default function CourseManagement() {
   const handleSubmit = async (values: z.infer<typeof courseFormSchema>) => {
     form.reset();
   };
+  const handleAddCategory = async () => {
+    if (category == "") {
+      toast.error("Please enter a category");
+    }
+    const formData = new FormData();
+    formData.append("name", category);
+    await dispatch(
+      AddCategoryApi({
+        values: formData,
+        requiredFields: ["name"],
+      })
+    );
+  };
 
   return (
     <div className="space-y-6">
       <PageHeader
         headerTitle="Course Management"
         renderRight={() => (
-          <Button onClick={() => router.push("/admin/courses/create")}>
-            <Plus className="h-4 w-4 mr-1" /> Add Course
-          </Button>
+          <>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline">
+                  <PlusSquare className="h-4 w-4 mr-1" /> Add Catgeory
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[525px] px-4">
+                <DialogHeader>
+                  <DialogTitle>Add Category</DialogTitle>
+                  <DialogDescription>
+                    Make changes to your profile here. Click save when you're
+                    done.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="category" className="text-right">
+                      Category Name
+                    </Label>
+                    <Input
+                      id="category"
+                      name="category"
+                      onChange={(e: any) => setCategory(e.target.value)}
+                      className="col-span-3"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button type="submit" onClick={handleAddCategory}>
+                    Add
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            <Button
+              onClick={() => router.push("/admin/courses/create")}
+              className="ms-3"
+            >
+              <Plus className="h-4 w-4 mr-1" /> Add Course
+            </Button>
+          </>
         )}
       />
 

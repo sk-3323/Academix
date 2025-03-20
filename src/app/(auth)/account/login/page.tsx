@@ -68,7 +68,7 @@ const page = () => {
     } else if (session?.user?.role === "TEACHER") {
       router.push("/teacher/dashboard");
     } else if (session?.user?.role === "STUDENT") {
-      router.push("/dashboard");
+      router.push("/classroom");
     } else {
       router.push("/");
     }

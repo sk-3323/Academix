@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { toast } from "sonner";
-import { File, Loader2, PlusCircle, X } from "lucide-react";
+import { File, Loader2, PlusCircle, Upload, X } from "lucide-react";
 import { memo, useEffect, useState } from "react";
-import {  Resource } from "@prisma/client";
+import { Resource } from "@prisma/client";
 import { FileUpload } from "../file-upload";
 import { GetSingleChapterApi } from "@/store/chapter/slice";
 import { AddResourceApi, DeleteResourceApi } from "@/store/resource/slice";
@@ -21,6 +21,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
+import { CldUploadWidget } from "next-cloudinary";
 
 interface ResourceFormProps {
   initialData: { resources: Resource[] };
@@ -33,6 +34,7 @@ const formSchema = z.object({
     message: "title is required",
   }),
   url: z.string(),
+  publicKey: z.string(),
   chapterId: z.string().min(1, {
     message: "Chapter is required",
   }),
@@ -54,6 +56,7 @@ const ResourceForm = ({
     mode: "onChange",
     defaultValues: {
       url: "",
+      publicKey: "",
       title: "",
       chapterId: chapterId || "",
     },
@@ -169,7 +172,11 @@ const ResourceForm = ({
                     key={res?.id}
                     className="flex item-center p-3 w-full bg-sky-100 border-sky-200 border text-sky-700 rounded-md"
                   >
-                    <a href={res.url!} target="_blank" className="flex item-center w-full">
+                    <a
+                      href={res.url!}
+                      target="_blank"
+                      className="flex item-center w-full"
+                    >
                       <File className="h-4 w-4 mr-2" />
                       <p className="text-xs line-clamp-1">{res?.title}</p>
                     </a>
@@ -222,7 +229,47 @@ const ResourceForm = ({
                   )}
                 />
               </div>
-              <FileUpload
+              <CldUploadWidget
+                uploadPreset="academix-cloudinary-mongodb" // Create this preset in your Cloudinary dashboard
+                onSuccess={(result: any): void => {
+                  onSubmit({
+                    url: result?.info?.secure_url,
+                    publicKey: result?.info?.public_id,
+                    chapterId: chapterId,
+                    title: form.getValues("title"),
+                  });
+                }}
+                signatureEndpoint={"/api/sign-cloudinary-params"}
+                options={{
+                  sources: [
+                    "local",
+                    "url",
+                    "camera",
+                    "google_drive",
+                    "dropbox",
+                  ],
+                  multiple: false,
+                  maxFiles: 1,
+                  resourceType: "auto",
+                  folder: "academix-cloudinary-mongodb",
+                }}
+              >
+                {({ open }) => (
+                  <Button
+                    variant={"ghost"}
+                    onClick={() => {
+                      open();
+                    }}
+                    className="hover:bg-[#a1a1aa]"
+                  >
+                    <>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload file
+                    </>
+                  </Button>
+                )}
+              </CldUploadWidget>
+              {/* <FileUpload
                 disabled={!isValid || isSubmitting}
                 endpoint="chapterResources"
                 onChange={(url) => {
@@ -234,7 +281,7 @@ const ResourceForm = ({
                     });
                   }
                 }}
-              />
+              /> */}
             </form>
           </Form>
 

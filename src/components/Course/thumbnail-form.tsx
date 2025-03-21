@@ -113,7 +113,6 @@ const ThumbnailForm = ({
             multiple: false,
             maxFiles: 1,
             folder: "academix-cloudinary-mongodb",
-            // autoMinimize: true,
           }}
         >
           {({ open }) => (

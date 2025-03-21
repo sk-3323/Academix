@@ -35,6 +35,7 @@ import { clearEnrollmentState } from "@/store/enrollment/slice";
 import Script from "next/script";
 import { EnrollmentModal } from "./_components/enrollment-modal";
 import { CourseEnrollButton } from "./_components/course-enroll-button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // Sidebar Accordion Component
 const CourseSidebar = ({
@@ -268,7 +269,7 @@ export default function CoursePage({
       const enrolledCourse = user?.enrollments?.map(
         (enroll: any) => enroll?.course?.id === params?.courseId
       );
-      if (enrolledCourse) {
+      if (enrolledCourse?.length > 0) {
         return redirect(
           `/courses/${params?.courseId}/topics/${course?.chapters?.[0]?.topics?.[0]?.id}`
         );
@@ -337,6 +338,14 @@ export default function CoursePage({
     course.chapters?.filter((ch: any) => ch.status === "PUBLISHED") || [];
   const totalChapters = course.chapters?.length || 0;
   const publishedChaptersCount = publishedChapters.length;
+
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
+  };
 
   return (
     <>
@@ -596,12 +605,17 @@ export default function CoursePage({
                 <TabsContent value="instructor" className="mt-4">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="relative h-16 w-16 rounded-full overflow-hidden">
-                      <Image
-                        src={course.instructor?.avatar || "/placeholder.svg"}
-                        alt={course.instructor?.username || "Instructor"}
-                        fill
-                        className="object-cover"
-                      />
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage
+                          src={course.instructor?.avatar}
+                          alt={course.instructor?.username || "Instructor"}
+                        />
+                        <AvatarFallback>
+                          {getInitials(
+                            course.instructor?.username || "Instructor"
+                          )}
+                        </AvatarFallback>
+                      </Avatar>
                     </div>
                     <div>
                       <h3 className="font-semibold text-lg">

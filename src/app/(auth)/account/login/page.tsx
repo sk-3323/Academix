@@ -28,8 +28,8 @@ import { Eye, EyeOff, Github } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const formSchema = z.object({
-  username: z.string(),
-  password: z.string(),
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(1, "Password is required"),
 });
 
 const page = () => {

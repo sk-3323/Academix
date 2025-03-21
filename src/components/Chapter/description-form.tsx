@@ -24,15 +24,16 @@ import Preview from "../preview";
 import { APIClient } from "@/helpers/apiHelper";
 import { EditChapterApi, GetSingleChapterApi } from "@/store/chapter/slice";
 
-type CourseFormValues = Pick<Course, "description">;
+type CourseFormValues = Pick<Course, "description" | "title">;
 
 interface DescriptionFormProps {
-  initialData: CourseFormValues & { title: string };
+  initialData: CourseFormValues;
   chapterId: string;
   setActions: any;
 }
 
 const formSchema = z.object({
+  title: z.string(),
   description: z.string().min(1, {
     message: "Description is required",
   }),
@@ -52,6 +53,7 @@ const DescriptionForm = ({
     reValidateMode: "onChange",
     mode: "onChange",
     defaultValues: {
+      title: initialData?.title || "",
       description: initialData?.description || "",
     },
   });
@@ -60,9 +62,10 @@ const DescriptionForm = ({
     if (initialData) {
       form.reset({
         description: initialData?.description || "",
+        title: initialData?.title || "",
       });
     }
-  }, [initialData?.description, form]);
+  }, [initialData?.description, initialData?.description, form]);
 
   const { isSubmitting, isValid } = form.formState;
 

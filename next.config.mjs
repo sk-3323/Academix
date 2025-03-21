@@ -31,7 +31,17 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
-        pathname: "/dlh3tav1v/image/upload/**", // ✅ Allow specific path pattern
+        pathname: "/dlh3tav1v/image/upload/**",
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/dlh3tav1v/video/upload/**",
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/dlh3tav1v/raw/upload/**",
       },
     ],
   },

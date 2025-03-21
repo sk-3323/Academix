@@ -6,11 +6,10 @@ import { hashPassword } from "@/lib/fileHandler";
 import { User } from "../../../../../types/User";
 
 export const POST = apiHandler(async (request: NextRequest) => {
-  // Parse and validate the request body
-  console.log(request.body, "reerer");
+  
+  
 
   const body: User = await request.json();
-  console.log(body, "body");
 
   const { username, email, password, confirmPassword, phone } = body;
 

@@ -146,9 +146,10 @@ model Topic {
 }
 
 model Resource {
-  id    String  @id @default(auto()) @map("_id") @db.ObjectId
-  title String
-  url   String?
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  url       String?
+  publicKey String?
 
   // Relations
   chapterId String  @db.ObjectId

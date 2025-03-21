@@ -10,7 +10,8 @@ export const createResourceSchema = z
         message: "Invalid chapter id provided",
       }),
     title: z.string().min(1, "Title is required"),
-    url: z.string().min(1, "Description is required"),
+    url: z.string().min(1, "URL is required"),
+    publicKey: z.string().min(1, "public key is required"),
   })
   .strict()
   .partial();

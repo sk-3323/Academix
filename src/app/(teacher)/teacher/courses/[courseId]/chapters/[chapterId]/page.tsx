@@ -120,7 +120,10 @@ const page = ({
               setActions={setChapterActions}
             />
             <DescriptionForm
-              initialData={{ description: singleData?.description }}
+              initialData={{
+                title: singleData?.title,
+                description: singleData?.description,
+              }}
               chapterId={params?.chapterId}
               setActions={setChapterActions}
             />

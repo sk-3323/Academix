@@ -28,12 +28,3 @@ export const POST = apiHandler(async (req: NextRequest, content: any) => {
   });
 });
 
-export const PUT = apiHandler(async (req: NextRequest, content: any) => {
-  let data = await req.json();
-  console.log(req, "dataaaa");
-  return NextResponse.json({
-    status: true,
-    message: "User Updated...",
-    result: data,
-  });
-});

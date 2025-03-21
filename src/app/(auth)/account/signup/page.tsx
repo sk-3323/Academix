@@ -39,7 +39,10 @@ const formSchema = z
       .regex(/[0-9]/, "Password must contain at least one number"),
     confirmPassword: z.string(),
     email: z.string().email({ message: "Email must be proper format" }),
-    phone: z.string().optional(),
+    phone: z
+      .string()
+      .regex(/^\d{10}$/, "Invalid phone number")
+      .optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords and confirm password doesn't match",

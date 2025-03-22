@@ -49,7 +49,7 @@ export interface User {
   avatarKey?: string;
   verifyCode?: string;
   verifyCodeExpiry?: Date;
-  gamificationPoints: number;
+  // gamificationPoints: number;
   isVerified: boolean;
   isBlocked: boolean;
   createdAt: Date;

@@ -158,10 +158,10 @@ const ProfileManagement = () => {
                   {user?.phone || "Not provided"}
                 </div>
                 {/* Gamification Points */}
-                <div className="flex items-center text-sm">
+                {/* <div className="flex items-center text-sm">
                   <span className="font-medium mr-2">Points:</span>
                   {user?.gamificationPoints || 0}
-                </div>
+                </div> */}
               </div>
             </div>
           </CardContent>

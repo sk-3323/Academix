@@ -9,21 +9,21 @@ generator client {
 }
 
 model User {
-  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
-  email              String    @unique
-  password           String
-  username           String
-  role               Role      @default(STUDENT)
-  phone              String?   @unique
-  avatar             String?
-  avatarKey          String?
-  verifyCode         String?
-  verifyCodeExpiry   DateTime?
-  gamificationPoints Int       @default(0)
-  isVerified         Boolean   @default(false)
-  isBlocked          Boolean   @default(false)
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  email            String    @unique
+  password         String
+  username         String
+  role             Role      @default(STUDENT)
+  phone            String?   @unique
+  avatar           String?
+  avatarKey        String?
+  verifyCode       String?
+  verifyCodeExpiry DateTime?
+  wallet_balance   Int       @default(0)
+  isVerified       Boolean   @default(false)
+  isBlocked        Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   // Relations
   subscriptionStatus SubscriptionStatus?
@@ -35,6 +35,7 @@ model User {
   UserProgress       UserProgress[]
   QuizProgress       QuizProgress[]
   teacherPaymentReq  TeacherPaymentRequest[]
+  Transaction        Transaction[]
 }
 
 model Course {
@@ -61,6 +62,7 @@ model Course {
   liveClasses       LiveClass[]
   certificates      Certificate[]
   teacherPaymentReq TeacherPaymentRequest[]
+  Transaction       Transaction[]
 
   @@index([instructorId, categoryId])
 }
@@ -371,14 +373,56 @@ model QuizAnswer {
 }
 
 model TeacherPaymentRequest {
-  id        String        @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String        @db.ObjectId
-  user      User          @relation(fields: [userId], references: [id])
-  courseId  String        @db.ObjectId
-  course    Course        @relation(fields: [courseId], references: [id], onDelete: NoAction)
-  amount    Float
-  status    RequestStatus @default(PENDING)
-  createdAt DateTime      @default(now())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  paymentMethod PaymentMethod?
+  amount        Float
+  status        RequestStatus  @default(PENDING)
+
+  userId   String  @db.ObjectId
+  user     User    @relation(fields: [userId], references: [id])
+  courseId String? @db.ObjectId
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: NoAction)
+
+  createdAt DateTime @default(now())
+}
+
+model Transaction {
+  id            String            @id @default(auto()) @map("_id") @db.ObjectId
+  type          TransactionType?
+  amount        Float?
+  status        TransactionStatus @default(PENDING)
+  description   String?
+  paymentMethod PaymentMethod?
+
+  userId   String  @db.ObjectId
+  user     User    @relation(fields: [userId], references: [id])
+  courseId String?  @db.ObjectId
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([courseId])
+}
+
+enum TransactionType {
+  CREDIT // When money is added to the wallet
+  DEBIT // When money is deducted from the wallet (for purchases, withdrawals, etc.)
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum PaymentMethod {
+  RAZORPAY
+  UPI
+  CREDIT_CARD
+  DEBIT_CARD
 }
 
 enum RequestStatus {

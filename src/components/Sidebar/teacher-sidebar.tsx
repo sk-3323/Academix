@@ -11,6 +11,7 @@ import {
   Users2Icon,
   TvMinimalPlay,
   MessageCircleQuestion,
+  FileText,
 } from "lucide-react";
 
 import {
@@ -43,9 +44,14 @@ const items = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/teacher/dashboard" },
   { icon: BookOpen, label: "Courses", href: "/teacher/courses" },
   { icon: ShieldCheck, label: "Certificates", href: "/teacher/certificate" },
-  { icon: Users2Icon, label: "Students", href: "/teacher/student" },
+  { icon: Users2Icon, label: "Students", href: "/teacher/user" },
   { icon: CreditCard, label: "Wallet", href: "/teacher/wallet" },
-  { icon: TvMinimalPlay, label: "Live Class", href: "/teacher/live-class" },
+  {
+    icon: FileText,
+    label: "Reports",
+    href: "/teacher/report",
+  },
+  // { icon: TvMinimalPlay, label: "Live Class", href: "/teacher/live-class" },
   { icon: MessageCircleQuestion, label: "Quiz", href: "/teacher/quiz" },
   { icon: User, label: "Profile", href: "/teacher/profile" },
 ];

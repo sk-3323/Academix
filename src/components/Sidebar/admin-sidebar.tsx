@@ -10,6 +10,7 @@ import {
   User,
   BookAudioIcon,
   UsersIcon,
+  FileText,
 } from "lucide-react";
 
 import {
@@ -44,6 +45,11 @@ const items = [
   { icon: BookOpen, label: "Payment", href: "/admin/payment" },
   { icon: ShieldCheck, label: "Certificates", href: "/admin/certificate" },
   { icon: UsersIcon, label: "Users", href: "/admin/user" },
+  {
+    icon: FileText,
+    label: "Reports",
+    href: "/admin/report",
+  },
   // { icon: CreditCard, label: "Payment", href: "/admin/payment" },
   { icon: User, label: "Profile", href: "/admin/profile" },
 ];

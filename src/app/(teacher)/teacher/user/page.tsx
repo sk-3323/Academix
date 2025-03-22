@@ -36,6 +36,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { GetCourseApi } from "@/store/course/slice";
 import { useSession } from "next-auth/react";
+import PageHeader from "@/components/LayoutContent/PageHeader";
 
 // Types for our data
 interface User {
@@ -290,7 +291,24 @@ export default function TeacherStudentPage() {
   return (
     <div className="container mx-auto py-6">
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <PageHeader
+          headerTitle="Student Management"
+          renderRight={() => {
+            return (
+              <div className="flex items-center gap-2">
+                <Button variant="outline">
+                  <Download className="mr-2 h-4 w-4" />
+                  Export Data
+                </Button>
+                <Button>
+                  <FileText className="mr-2 h-4 w-4" />
+                  Generate Report
+                </Button>
+              </div>
+            );
+          }}
+        />
+        {/* <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
               Student Management
@@ -309,7 +327,7 @@ export default function TeacherStudentPage() {
               Generate Report
             </Button>
           </div>
-        </div>
+        </div> */}
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
           <Card>
@@ -443,9 +461,9 @@ export default function TeacherStudentPage() {
                                 <TableHead>Status</TableHead>
                                 <TableHead>Enrolled On</TableHead>
                                 <TableHead>Payment</TableHead>
-                                <TableHead className="text-right">
+                                {/* <TableHead className="text-right">
                                   Actions
-                                </TableHead>
+                                </TableHead> */}
                               </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -502,7 +520,7 @@ export default function TeacherStudentPage() {
                                       {enrollment.payment_status}
                                     </Badge>
                                   </TableCell>
-                                  <TableCell className="text-right">
+                                  {/* <TableCell className="text-right">
                                     <Button variant="ghost" size="sm" asChild>
                                       <Link
                                         href={`/teacher/user/${enrollment.user.id}`}
@@ -510,7 +528,7 @@ export default function TeacherStudentPage() {
                                         View Details
                                       </Link>
                                     </Button>
-                                  </TableCell>
+                                  </TableCell> */}
                                 </TableRow>
                               ))}
                             </TableBody>
@@ -597,7 +615,7 @@ export default function TeacherStudentPage() {
                       <TableHead>Student</TableHead>
                       <TableHead>Courses Enrolled</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      {/* <TableHead className="text-right">Actions</TableHead> */}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -662,13 +680,13 @@ export default function TeacherStudentPage() {
                                 : "Unverified"}
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-right">
+                          {/* <TableCell className="text-right">
                             <Button variant="ghost" size="sm" asChild>
                               <Link href={`/teacher/user/${userId}`}>
                                 View Details
                               </Link>
                             </Button>
-                          </TableCell>
+                          </TableCell> */}
                         </TableRow>
                       );
                     })}

@@ -42,7 +42,7 @@ import { useTheme } from "next-themes";
 const items = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin/dashboard" },
   { icon: BookAudioIcon, label: "Courses", href: "/admin/courses" },
-  { icon: BookOpen, label: "Payment", href: "/admin/payment" },
+  { icon: BookOpen, label: "Wallet", href: "/admin/wallet" },
   { icon: ShieldCheck, label: "Certificates", href: "/admin/certificate" },
   { icon: UsersIcon, label: "Users", href: "/admin/user" },
   {

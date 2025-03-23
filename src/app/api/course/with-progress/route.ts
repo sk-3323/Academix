@@ -90,6 +90,26 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
   );
 });
 
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const userId = searchParams.get("userId");
+  const courseId = searchParams.get("courseId");
+  try {
+    if (!userId || !courseId) {
+      return NextResponse.json(
+        { error: "Missing userId or courseId" },
+        { status: 400 }
+      );
+    }
+
+    const progress = await getProgress(userId, courseId);
+
+    return NextResponse.json({ progress });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export const getProgress = async (
   userId: string,
   courseId: string

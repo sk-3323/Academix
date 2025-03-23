@@ -1,44 +1,40 @@
 "use client";
 
+import type React from "react";
+
+import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { Input } from "../ui/input";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useDebounce } from "@/hooks/use-debounce";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import qs from "query-string";
+import { cn } from "@/lib/utils";
 
-export const SearchInput = () => {
-  const [value, setValue] = useState("");
-  const debouncedValue = useDebounce(value);
-
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
+export const SearchInput = ({ className }: { className?: string }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [value, setValue] = useState("");
 
-  const currentCategoryId = searchParams.get("categoryId");
-
+  // Initialize search input with URL query parameter
   useEffect(() => {
-    const url = qs.stringifyUrl(
-      {
-        url: pathname,
-        query: {
-          title: debouncedValue,
-          categoryId: currentCategoryId,
-        },
-      },
-      { skipNull: true, skipEmptyString: true }
-    );
-    router.replace(url);
-  }, [debouncedValue, currentCategoryId, router, pathname]);
+    setValue(searchParams?.get("query") || "");
+  }, [searchParams]);
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!value) return;
+
+    router.push(`/search?query=${encodeURIComponent(value)}`);
+  };
 
   return (
-    <div className="relative">
-      <Search className="h-4 w-4 mr-2 absolute top-3 left-3 text-slate-600 dark:text-slate-100" />
+    <form onSubmit={onSubmit} className={cn("relative w-full", className)}>
+      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <Input
+        value={value}
         onChange={(e) => setValue(e.target.value)}
-        className="w-full md:w-[300px] pl-9 rounded-full bg-slate-100 dark:bg-slate-600 dark:focus-visible:ring-slate-700 focus-visible:ring-slate-200 text-slate-600 dark:text-slate-100"
-        placeholder="Search for a course"
+        className="w-full pl-9 pr-4 py-2 bg-background"
+        placeholder="Search courses..."
       />
-    </div>
+    </form>
   );
 };

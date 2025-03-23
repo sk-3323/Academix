@@ -85,7 +85,6 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
       },
     });
   });
-  console.log(result, "retulr");
 
   if (result?.length == 0 || result === null) {
     throw new ErrorHandler("No data found", 404);

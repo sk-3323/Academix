@@ -250,7 +250,7 @@ const ResourceForm = ({
                   ],
                   multiple: false,
                   maxFiles: 1,
-                  resourceType: "auto",
+                  resourceType: "image",
                   folder: "academix-cloudinary-mongodb",
                 }}
               >

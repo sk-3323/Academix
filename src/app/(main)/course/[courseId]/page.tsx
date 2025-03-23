@@ -271,7 +271,7 @@ export default function CoursePage({
       );
       console.log(enrolledCourse, "eno");
 
-      if (enrolledCourse[0] === true) {
+      if (enrolledCourse && enrolledCourse[0] === true) {
         return redirect(
           `/courses/${params?.courseId}/topics/${course?.chapters?.[0]?.topics?.[0]?.id}`
         );

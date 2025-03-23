@@ -23,8 +23,7 @@ export const POST = apiHandler(async (req: NextRequest, content: any) => {
 
   return NextResponse.json({
     status: true,
-    message: "User Fetched...",
+    message: "Reset Password Link Send to Your Email",
     result,
   });
 });
-

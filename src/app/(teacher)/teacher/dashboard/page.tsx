@@ -385,7 +385,7 @@ export default function TeacherDashboard() {
 
   return (
     <div className="flex-1 space-y-6 p-6 md:p-8">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
             Teacher Dashboard
@@ -713,7 +713,7 @@ export default function TeacherDashboard() {
       </Card> */}
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+        <Card className="xs:w-full">
           <CardHeader>
             <CardTitle>Category Distribution</CardTitle>
             <CardDescription>
@@ -721,7 +721,7 @@ export default function TeacherDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
+            <div className="h-[50vh] sm:h-[300px] w-full">
               <ChartContainer
                 config={{
                   count: {
@@ -734,31 +734,43 @@ export default function TeacherDashboard() {
                   },
                 }}
               >
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer
+                  className="w-[100%] md:w-[70%] sm:w-[40%]"
+                  height="100%"
+                >
                   <BarChart
                     data={categoryData}
                     margin={{
                       top: 20,
-                      right: 30,
-                      left: 20,
-                      bottom: 70,
+                      right: 10, // Reduced for mobile
+                      left: 0, // Reduced for mobile
+                      bottom: 50, // Adjusted for label rotation
                     }}
                     layout="vertical"
+                    className="w-[40%]"
                   >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis type="number" />
-                    <YAxis dataKey="name" type="category" width={100} />
+                    <YAxis
+                      dataKey="name"
+                      type="category"
+                      width={80} // Reduced width for mobile
+                      tick={{ fontSize: 12 }} // Smaller font for mobile
+                    />
                     <Tooltip content={<ChartTooltipContent />} />
-                    <Legend />
+                    <Legend wrapperStyle={{ fontSize: 12 }} />
                     <Bar
                       dataKey="count"
                       fill="var(--color-count)"
                       name="Course Count"
+                      // width={40}
+                      className="w-[100%] md:w-[60%] sm:w-[40%]"
                     />
                     <Bar
                       dataKey="enrollments"
                       fill="var(--color-enrollments)"
                       name="Enrollments"
+                      className="w-[100%] md:w-[60%] sm:w-[40%]"
                     />
                   </BarChart>
                 </ResponsiveContainer>
@@ -767,7 +779,7 @@ export default function TeacherDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="md:grid-cols-2">
+        <Card className="xs:w-full">
           <CardHeader>
             <CardTitle>Course Distribution</CardTitle>
             <CardDescription>Students enrolled in each course</CardDescription>

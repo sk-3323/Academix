@@ -47,9 +47,7 @@ interface CourseSidebarProps {
   };
 }
 
-const CourseSidebar = ({
-  course,
-}: CourseSidebarProps) => {
+const CourseSidebar = ({ course }: CourseSidebarProps) => {
   const pathname = usePathname();
   const dispatch = useDispatch<AppDispatch>();
   const { data: session } = useSession();
@@ -75,7 +73,7 @@ const CourseSidebar = ({
       <Sidebar
         collapsible={"none"}
         className={cn(
-          "transition-all duration-300 ease-in w-100 min-w-[20rem]",
+          "transition-all duration-300 ease-in w-100 min-w-[20rem] fixed top-0 left-0"
         )}
       >
         <SidebarHeader className="p-5 w-full">

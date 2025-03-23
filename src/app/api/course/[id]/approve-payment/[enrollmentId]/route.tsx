@@ -1,7 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { prisma } from "@/lib/prisma";
+import { sendReceiptEmail } from "@/helpers/receiptSendMail";
 
+export interface paymentDataType {
+  receipt_number: string | null;
+  user_name: string;
+  user_email: string;
+  course_title: string;
+  amount: number | null;
+  payment_id: string | null;
+  order_id: string | null;
+  date: any;
+}
 function splitAmount(amount: number) {
   let TeacherAmt = amount * 0.8;
   let adminAmt = amount * 0.2;
@@ -15,7 +26,7 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
   if (!enrollment_id) {
     throw new ErrorHandler("Not found", 400);
   }
-
+ 
   let result = await prisma.$transaction(async (tx) => {
     let enrollmentFound = await tx.enrollment.findUnique({
       where: {
@@ -58,59 +69,62 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
 
     if (!enrollemnt?.course?.isFree) {
       const { adminAmt, TeacherAmt } = splitAmount(enrollemnt?.price!);
-      await tx.transaction.createMany({
-        data: [
-          {
-            type: "CREDIT",
-            amount: adminAmt,
-            status: "COMPLETED",
-            description: `₹${adminAmt.toFixed(2)} paid for the purchase of the course "${enrollemnt?.course?.title}" by ${enrollemnt?.user?.username}.`,
-            paymentMethod: "RAZORPAY",
-            userId: adminData?.id!,
-            courseId: enrollemnt?.courseId,
-          },
-          {
-            type: "CREDIT",
-            amount: TeacherAmt,
-            status: "COMPLETED",
-            description: `₹${TeacherAmt.toFixed(2)} paid for the purchase of the course "${enrollemnt?.course?.title}" by ${enrollemnt?.user?.username}.`,
-            paymentMethod: "RAZORPAY",
-            userId: enrollemnt?.course?.instructorId!,
-            courseId: enrollemnt?.course?.id,
-          },
-        ],
-      });
 
-      await tx.user.update({
+      // Replace createMany with individual create calls
+      await tx.transaction.create({
         data: {
-          wallet_balance: {
-            increment: adminAmt,
-          },
-        },
-        where: {
-          id: adminData?.id,
-        },
-      });
-      
-      await tx.user.update({
-        data: {
-          wallet_balance: {
-            increment: TeacherAmt,
-          },
-        },
-        where: {
-          id: enrollemnt?.course?.instructorId,
+          type: "CREDIT",
+          amount: adminAmt,
+          status: "COMPLETED",
+          description: `₹${adminAmt.toFixed(2)} paid for the purchase of the course "${enrollemnt?.course?.title}" by ${enrollemnt?.user?.username}.`,
+          paymentMethod: "RAZORPAY",
+          userId: adminData?.id!,
+          courseId: enrollemnt?.courseId,
         },
       });
 
-      return enrollemnt;
+      await tx.transaction.create({
+        data: {
+          type: "CREDIT",
+          amount: TeacherAmt,
+          status: "COMPLETED",
+          description: `₹${TeacherAmt.toFixed(2)} paid for the purchase of the course "${enrollemnt?.course?.title}" by ${enrollemnt?.user?.username}.`,
+          paymentMethod: "RAZORPAY",
+          userId: enrollemnt?.course?.instructorId!,
+          courseId: enrollemnt?.course?.id,
+        },
+      });
+
+      await tx.user.update({
+        data: { wallet_balance: { increment: adminAmt } },
+        where: { id: adminData?.id },
+      });
+
+      await tx.user.update({
+        data: { wallet_balance: { increment: TeacherAmt } },
+        where: { id: enrollemnt?.course?.instructorId },
+      });
     }
+    const receiptData: paymentDataType = {
+      receipt_number: enrollemnt.receipt,
+      user_name: enrollemnt.user.username,
+      user_email: enrollemnt.user.email,
+      course_title: enrollemnt.course.title,
+      amount: enrollemnt.price,
+      payment_id: enrollemnt.razorpay_payment_id,
+      order_id: enrollemnt.razorpay_order_id,
+      date: new Date().toLocaleString(),
+    };
+    if (!enrollemnt.user.email) {
+      console.log("Email not found");
+    }
+    await sendReceiptEmail(receiptData);
+    return enrollemnt;
   });
-
   return NextResponse.json(
     {
       status: true,
-      message: "Enrollment successful.",
+      message: "Enrollment successful. Please check your email",
       result,
     },
     { status: 200 }

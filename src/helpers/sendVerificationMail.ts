@@ -48,13 +48,11 @@ export async function sendEmailVerification(
             padding: 24px;
         }
 
-        .header {
-            color: #27e0b3;
-            font-size: 32px;
-            font-weight: bold;
-            text-align: center;
-            margin: 16px 0;
-        }
+       .logo{
+       display: flex;
+       justify-content:center;
+       align-items: center;
+       }
 
         .subheader {
             color: #333;
@@ -99,7 +97,9 @@ export async function sendEmailVerification(
 </head>
 <body>
     <div class="container">
-        <h1 class="header">Acedemix</h1>
+       <div class="logo">
+        <img src="https://utfs.io/f/5de60556-de08-43ed-ae96-1248d5892fe8-al67x0.svg"/>
+       </div>
         
         <div class="content-section">
             <h2 class="subheader">One-Time Password (OTP)</h2>
@@ -119,7 +119,7 @@ export async function sendEmailVerification(
             </p>
         </div>
         
-        <p class="footer">© ${new Date().getFullYear()} Acedemix. All rights reserved.</p>
+        <p class="footer">© ${new Date().getFullYear()} <a href="https://academix-learning.netlify.app/">Academix</a>. All rights reserved.</p>
     </div>
 </body>
 </html>`;

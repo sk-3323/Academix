@@ -6,9 +6,6 @@ import { hashPassword } from "@/lib/fileHandler";
 import { User } from "../../../../../types/User";
 
 export const POST = apiHandler(async (request: NextRequest) => {
-  
-  
-
   const body: User = await request.json();
 
   const { username, email, password, confirmPassword, phone } = body;
@@ -63,7 +60,7 @@ export const POST = apiHandler(async (request: NextRequest) => {
         isVerified: false,
         verifyCode,
         verifyCodeExpiry: verifyExpiryDate,
-        avatar: `https://api.dicebear.com/9.x/avataaars/svg?seed=${username}`,
+        avatar: `https://api.dicebear.com/9.x/avataaars/svg?seed=${username.trim()}`,
       },
     });
   }

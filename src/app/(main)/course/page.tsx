@@ -141,7 +141,7 @@ const ExploreCourses = () => {
 
       {/* Tab Navigation */}
       <div className="sticky top-0 z-10 bg-background pb-2">
-        <div className="flex gap-2 border-b overflow-x-auto">
+        <div className="flex gap-2 border-b">
           <AnimatePresence>
             {categories.map((category: any) => (
               <TabButton

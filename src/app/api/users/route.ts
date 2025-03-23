@@ -2,7 +2,6 @@ import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import {
-  
   formDataToJsonWithoutFiles,
   hashPassword,
   validateData,
@@ -86,8 +85,9 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
       },
     });
   });
+  console.log(result, "retulr");
 
-  if (result?.length === 0) {
+  if (result?.length == 0 || result === null) {
     throw new ErrorHandler("No data found", 404);
   }
 

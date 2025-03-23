@@ -1,7 +1,8 @@
 import { ApiResponse } from "../../types/ApiResponse";
 import nodemailer from "nodemailer";
 import { transporter } from "./sendVerificationMail";
-
+import logo from "../../public/assets/logos/light-h-logo-with-name.svg";
+import { NODE_APP_URL } from "@/constants/config";
 export async function sendResetPasswordLink(
   email: string,
   username: string,
@@ -25,7 +26,11 @@ export async function sendResetPasswordLink(
             align-items: center;
             min-height: 100vh;
         }
-
+ .logo{
+       display: flex;
+       justify-content:center;
+       align-items: center;
+       }
         .container {
             margin: 0 auto;
             padding: 20px 0 48px;
@@ -84,9 +89,11 @@ export async function sendResetPasswordLink(
 </head>
 <body>
     <div class="container">
-        <h1 class="header">Acedemix</h1>
-        
-        <div class="content-section">
+    
+    <div class="content-section">
+            <div class="logo">
+                <img src="https://utfs.io/f/5de60556-de08-43ed-ae96-1248d5892fe8-al67x0.svg" alt="Academix Logo"/>
+            </div>
             <h2 class="subheader">Reset Password Link</h2>
             
             <p class="text">Hello ${username}</p>
@@ -102,7 +109,7 @@ export async function sendResetPasswordLink(
             </p>
         </div>
         
-        <p class="footer">© ${new Date().getFullYear()} Acedemix. All rights reserved.</p>
+        <p class="footer">© ${new Date().getFullYear()} <a href="https://academix-learning.netlify.app/">Academix</a>. All rights reserved.</p>
     </div>
 </body>
 </html>`;
@@ -113,8 +120,6 @@ export async function sendResetPasswordLink(
       subject: "Password Reset Link | Acedemix",
       html: content,
     });
-
-    console.log("Email sent: %s", emailResponse);
 
     return {
       status: true,

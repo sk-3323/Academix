@@ -100,7 +100,7 @@ export const HoverEffect = ({
               </div>
               <Link
                 href={
-                  pathname.startsWith("/my-course")
+                  pathname.startsWith("/classroom")
                     ? `/courses/${item.id}`
                     : `/course/${item.id}`
                 }

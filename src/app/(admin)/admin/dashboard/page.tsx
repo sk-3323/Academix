@@ -43,13 +43,22 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function AdminDashboard() {
   const { data: allUserData, singleData } = useSelector(
     (state: any) => state.UserStore
   );
   const [selectedTimeRange, setSelectedTimeRange] = useState("all");
+  const [selectedCourse, setSelectedCourse] = useState(null); // Add this new state
   const router = useRouter();
+  const [isViewModal, setIsViewModal] = useState(false);
   // Aggregate data from all users
   const allAuthoredCourses = useMemo(
     () => allUserData?.flatMap((user: any) => user.authoredCourses || []) || [],
@@ -106,6 +115,113 @@ export default function AdminDashboard() {
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
+  };
+  const CourseDetailsModal = ({ course }) => {
+    if (!course) return null;
+
+    return (
+      <Dialog open={isViewModal} onOpenChange={setIsViewModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{course.title}</DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="max-h-[70vh]">
+            <div className="space-y-4 p-4">
+              <div>
+                <h3 className="font-semibold">Basic Information</h3>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Status</p>
+                    <p>{getStatusBadge(course.status)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Price</p>
+                    <p>{course.isFree ? "Free" : `₹${course.price}`}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Level</p>
+                    <p>{course.level}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Category</p>
+                    <p>{course.category?.name || "N/A"}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-semibold">Description</h3>
+                <div
+                  className="text-sm mt-2"
+                  dangerouslySetInnerHTML={{
+                    __html: course.description || "No description available",
+                  }}
+                />
+              </div>
+
+              <div>
+                <h3 className="font-semibold">Chapters</h3>
+                {course.chapters?.length > 0 ? (
+                  <div className="mt-2 space-y-2">
+                    {course.chapters.map((chapter) => (
+                      <div key={chapter.id} className="border p-3 rounded-md">
+                        <div className="flex justify-between">
+                          <p className="font-medium">{chapter.title}</p>
+                          {getStatusBadge(chapter.status)}
+                        </div>
+                        {chapter.description && (
+                          <div
+                            className="text-sm text-muted-foreground mt-1"
+                            dangerouslySetInnerHTML={{
+                              __html: chapter.description,
+                            }}
+                          />
+                        )}
+                        {chapter.topics?.length > 0 && (
+                          <div className="mt-2">
+                            <p className="text-sm font-medium">Topics:</p>
+                            <ul className="list-disc pl-5 text-sm">
+                              {chapter.topics.map((topic) => (
+                                <li key={topic.id}>
+                                  {topic.title} ({topic.status})
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    No chapters available
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <h3 className="font-semibold">Statistics</h3>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Enrollments</p>
+                    <p>{course.enrollments?.length || 0}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Revenue</p>
+                    <p>
+                      ₹
+                      {(
+                        course.price * (course.enrollments?.length || 0)
+                      ).toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+    );
   };
 
   return (
@@ -168,7 +284,7 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
-
+      <CourseDetailsModal course={selectedCourse} />
       {/* Revenue Chart */}
       <Card>
         <CardHeader>
@@ -247,14 +363,21 @@ export default function AdminDashboard() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedCourse(course);
+                                setIsViewModal(true);
+                              }}
+                            >
+                              View Details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
                               onClick={() =>
                                 router.push(`/admin/courses/${course.id}`)
                               }
                             >
-                              View Details
+                              Edit Course
                             </DropdownMenuItem>
-                            <DropdownMenuItem>Edit Course</DropdownMenuItem>
-                            {course.status === "DRAFT" && (
+                            {/* {course.status === "DRAFT" && (
                               <DropdownMenuItem>
                                 Publish Course
                               </DropdownMenuItem>
@@ -263,7 +386,7 @@ export default function AdminDashboard() {
                               <DropdownMenuItem>
                                 Unpublish Course
                               </DropdownMenuItem>
-                            )}
+                            )} */}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>

@@ -59,6 +59,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { APIClient } from "@/helpers/apiHelper";
 import ReportGenerator from "@/components/Report/user-report";
 import { User } from "../../../../../types/allType";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -78,6 +79,8 @@ const formSchema = z.object({
   }),
 });
 export default function UserManagement() {
+  const api = new APIClient();
+
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -96,16 +99,13 @@ export default function UserManagement() {
     setError(null);
 
     try {
-      const response = await fetch("/api/users", {
-        method: "GET",
-      });
+      const response: any = api.get("/api/users");
 
-      if (!response.ok) {
+      if (response?.data?.status === false) {
         throw new Error("Failed to fetch users");
       }
 
-      const jsonRes: ApiResponse = await response.json();
-      const { result } = jsonRes;
+      const { result } = response?.data;
       const exceptAdmin = result?.filter((res: User) => res.role !== "ADMIN");
       setUsers(exceptAdmin as User[]);
     } catch (err) {
@@ -129,7 +129,6 @@ export default function UserManagement() {
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const api = new APIClient();
       const formData = new FormData();
 
       // Populate formData with values, ensuring strings
@@ -139,24 +138,21 @@ export default function UserManagement() {
         }
       });
 
-      // // Log formData contents for debugging
-      // for (let [key, val] of formData.entries()) {
-      //   console.log(`FormData: ${key} = ${val}`);
-      // }
-
       // Send to API
-      const response = await api.create("/users", formData, {
+      const response: any = await api.create("/users", formData, {
         "Content-Type": "multipart/form-data",
       });
 
-      if (!response.status) {
-        // Adjust based on your API response
-        throw new Error("Failed to create user");
+      if (response.status === true) {
+        toast.success(response?.message);
+      } else {
+        toast.error(response?.message);
       }
 
       await getUsers();
       form.reset();
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(error?.message);
       console.error(error);
     }
   };
@@ -166,7 +162,6 @@ export default function UserManagement() {
     formData.append("role", updatedUser.newRole);
 
     try {
-      const api = new APIClient();
       const response = await api.update(
         `/users/${updatedUser.userId}`,
         formData,
@@ -175,9 +170,14 @@ export default function UserManagement() {
         }
       );
 
-      if (!response) {
+      if (!response?.data) {
         throw new Error("Failed to update user role");
       }
+
+      if (response?.data?.status === true) {
+        toast.success(response?.data?.message);
+      }
+
       await getUsers();
     } catch (error) {
       console.error(error);
@@ -189,12 +189,15 @@ export default function UserManagement() {
       const formData = new FormData();
       const value = !selectedUser?.isBlocked;
       formData.append("isBlocked", String(value));
-      const api = new APIClient();
       const response = await api.update(`/users/${userId}`, formData, {
         "Content-Type": "multipart/form-data",
       });
-      if (!response) {
+      if (!response?.data) {
         throw new Error("Failed to block user");
+      }
+
+      if (response?.data?.status === true) {
+        toast.success(response?.data?.message);
       }
       await getUsers();
     } catch (error) {

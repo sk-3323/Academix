@@ -108,6 +108,7 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
     let data = formDataToJsonWithoutFiles(formdata);
     let avatar = formdata?.get("avatar") as File;
     data.password = await hashPassword(data?.password);
+    data.isBlocked = data.isBlocked === "true" || data.isBlocked === true;
 
     // Validate data BEFORE transaction
     data = await validateData(createUserSchema, data);

@@ -1,8 +1,9 @@
 import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { formDataToJsonWithoutFiles } from "../../../../lib/fileHandler";
+import { formDataToJsonWithoutFiles, validateData } from "../../../../lib/fileHandler";
 import { utapi } from "@/lib/utAPI";
+import createUserSchema from "@/schema/user/schema";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   const user_id = content?.params?.id;
@@ -137,7 +138,8 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
     let data = formDataToJsonWithoutFiles(formdata);
     const avatar = formdata?.get("avatar") as File;
 
-    // data = await validateData(createUserSchema, data);
+    // data.isBlocked = data.isBlocked === "true" || data.isBlocked === true;
+    data = await validateData(createUserSchema, data);
 
     if (avatar) {
       const uploadedFile = await utapi.uploadFiles(avatar);

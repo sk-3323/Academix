@@ -4,7 +4,22 @@ import { z } from "zod";
 const createUserSchema = z
   .object({
     username: z.string().min(2, "Name must be at least 2 characters"),
-    // .regex(/^[A-Za-z0-9_]$/, "name should not contain special characters"),
+    avatar: z.string().min(1, "Name must be at least 2 characters").nullable(),
+    avatarKey: z
+      .string()
+      .min(1, "Name must be at least 2 characters")
+      .nullable(),
+    verifyCode: z
+      .string()
+      .min(1, "Name must be at least 2 characters")
+      .nullable(),
+    verifyCodeExpiry: z.date().nullable(),
+    wallet_balance: z
+      .union([z.string(), z.number()])
+      .transform((val) => Number(val))
+      .refine((num) => !isNaN(num) && num >= 0, {
+        message: "Wallet balance must be a positive number",
+      }),
     email: z.string().email("Invalid email address"),
     password: z
       .string()
@@ -17,8 +32,15 @@ const createUserSchema = z
       .regex(/^\d{10}$/, "Invalid phone number")
       .optional()
       .nullable(),
-    role: z.enum(VALID_ROLES).optional(),
+    isVerified: z
+      .union([z.string(), z.boolean()])
+      .transform((val) => val === true || val === "true"),
+    isBlocked: z
+      .union([z.string(), z.boolean()])
+      .transform((val) => val === true || val === "true"),
+    role: z.enum(VALID_ROLES),
   })
-  .strict();
+  .strict()
+  .partial();
 
 export default createUserSchema;

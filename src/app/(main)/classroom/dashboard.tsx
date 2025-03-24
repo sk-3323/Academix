@@ -110,6 +110,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Progress } from "@/components/ui/progress";
 import { useSelector } from "react-redux";
+import GetProgress from "./_components/get-progress";
 
 export default function UserDashboard() {
   const { singleData } = useSelector((state: any) => state.UserStore);
@@ -214,7 +215,7 @@ export default function UserDashboard() {
                 <TableHead>Instructor</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Progress</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                {/* <TableHead className="text-right">Actions</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -229,7 +230,7 @@ export default function UserDashboard() {
                   <TableCell>{getStatusBadge(enrollment.status)}</TableCell>
                   <TableCell>
                     <div className="flex items-center">
-                      <Progress
+                      {/* <Progress
                         value={
                           enrollment.UserProgress?.reduce(
                             (total, progress) => total + progress.progress,
@@ -246,10 +247,11 @@ export default function UserDashboard() {
                           ) || 0
                         )}
                         %
-                      </span>
-                    </div>
+                      </span> */}
+                      <GetProgress enrollment={enrollment} />
+                    </div>  
                   </TableCell>
-                  <TableCell className="text-right">
+                  {/* <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
@@ -266,7 +268,7 @@ export default function UserDashboard() {
                         <DropdownMenuItem>View Certificate</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  </TableCell>
+                  </TableCell> */}
                 </TableRow>
               ))}
             </TableBody>

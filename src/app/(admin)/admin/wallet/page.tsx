@@ -1,3 +1,31 @@
+// "use client";
+// import { APIClient } from "@/helpers/apiHelper";
+// import { AppDispatch } from "@/store/store";
+// import React, { useEffect, useState } from "react";
+// import { useDispatch } from "react-redux";
+// import { toast } from "sonner";
+
+// const page = () => {
+//   const dispatch = useDispatch<AppDispatch>();
+//   const [transactions, setTransactions] = useState();
+//   const getTransactions = async () => {
+//     try {
+//       const api = new APIClient();
+//       const res: any = await api.get("/transaction");
+//       console.log(res.result);
+//       setTransactions(res.result);
+//     } catch (error: any) {
+//       console.log(error);
+//       toast.error(error.message);
+//     }
+//   };
+//   useEffect(() => {
+//     getTransactions();
+//   }, []);
+//   return <div> wallet page</div>;
+// };
+
+// export default page;
 "use client";
 
 import { useState, useEffect } from "react";
@@ -26,10 +54,9 @@ export default function WalletPage() {
   );
   // Fetch transactions - replace with your API call
   const getTransactions = async () => {
-    const { id } = currentUser;
     try {
       const api = new APIClient();
-      const res: any = await api.get(`/transaction?userId=${id}`);
+      const res: any = await api.get("/transaction");
       setTransactions(res.result);
       const balance = res?.result?.reduce((total, transaction) => {
         console.log(total, transaction);
@@ -56,7 +83,7 @@ export default function WalletPage() {
       setWalletBalance(balance);
     } catch (error: any) {
       console.log(error);
-      // toast.error(error.message);
+      toast.error(error.message);
     }
   };
   useEffect(() => {

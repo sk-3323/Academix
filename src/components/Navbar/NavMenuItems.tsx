@@ -55,7 +55,7 @@ export function NavigationMenuDemo() {
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
-        {role === "TEACHER" && (
+        {/* {role === "TEACHER" && (
           <NavigationMenuItem>
             <Link href="/pricing" legacyBehavior passHref>
               <NavigationMenuLink className={navigationMenuTriggerStyle()}>
@@ -63,7 +63,7 @@ export function NavigationMenuDemo() {
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
-        )}
+        )} */}
         {role === "STUDENT" && user?.enrollments?.length > 0 && (
           <>
             <NavigationMenuItem>

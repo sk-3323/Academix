@@ -1,18 +1,10 @@
 import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import {
-  cleanupUploadedFile,
-  createVideoAsset,
-  formDataToJsonWithoutFiles,
-  handleFileUpload,
-  validateData,
-  videoAsset,
-} from "@/lib/fileHandler";
-import { ObjectId } from "mongodb";
+import { formDataToJsonWithoutFiles, validateData } from "@/lib/fileHandler";
+
 import { createResourceSchema } from "@/schema/resource/schema";
-import { COURSE_UPLOAD_PATH } from "@/constants/config";
-import path from "path";
+import { utapi } from "@/lib/utAPI";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let resource_id = content?.params?.id;
@@ -57,34 +49,31 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
   }
 
   let formdata = await request.formData();
-  // let uploadedFilePath: string | null = null;
+  let uploadedFileKey: string | null = null;
 
   try {
+    const resourceFound = await prisma.resource.findUnique({
+      where: {
+        id: resource_id,
+      },
+    });
+
+    if (!resourceFound) {
+      throw new ErrorHandler("Resource not found", 404);
+    }
+
+    let data = formDataToJsonWithoutFiles(formdata);
+    let url = formdata?.get("url") as File;
+
+    if (url) {
+      const uploadedFile = await utapi.uploadFiles(url);
+      data.url = uploadedFile?.data?.url;
+      data.publicKey = uploadedFile?.data?.key;
+      uploadedFileKey = uploadedFile?.data?.key || null;
+    }
+
+    data = await validateData(createResourceSchema, data);
     let result = await prisma.$transaction(async (tx) => {
-      const resourceFound = await tx.resource.findUnique({
-        where: {
-          id: resource_id,
-        },
-      });
-
-      if (!resourceFound) {
-        throw new ErrorHandler("Resource not found", 404);
-      }
-
-      let data = formDataToJsonWithoutFiles(formdata);
-      // let url = formdata?.get("url") as File;
-
-      // if (url) {
-      //   const { filePath, fileName } = await handleFileUpload(
-      //     url,
-      //     COURSE_UPLOAD_PATH
-      //   );
-      //   data.url = fileName;
-      //   uploadedFilePath = filePath;
-      // }
-
-      data = await validateData(createResourceSchema, data);
-
       let updatedResource = await tx.resource.update({
         data: data,
         where: {
@@ -95,15 +84,11 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
         },
       });
 
-      return updatedResource;
-      // if (updatedResource && resourceFound?.video) {
-      //   let oldFilePath = path.join(
-      //     path.resolve(process.cwd(), COURSE_UPLOAD_PATH),
-      //     resourceFound?.video
-      //   );
+      if (updatedResource && resourceFound?.publicKey) {
+        await utapi.deleteFiles(resourceFound?.publicKey); // Cleanup if an error
+      }
 
-      //   cleanupUploadedFile(oldFilePath);
-      // }
+      return updatedResource;
     });
 
     return NextResponse.json(
@@ -115,9 +100,9 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
       { status: 200 }
     );
   } catch (error) {
-    // if (uploadedFilePath) {
-    //   cleanupUploadedFile(uploadedFilePath);
-    // }
+    if (uploadedFileKey) {
+      await utapi.deleteFiles(uploadedFileKey); // Cleanup if an error
+    }
     throw error;
   }
 });
@@ -150,8 +135,13 @@ export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
       select: {
         id: true,
         chapterId: true,
+        publicKey: true,
       },
     });
+
+    if (deletedResource?.publicKey) {
+      await utapi.deleteFiles(deletedResource?.publicKey); // Cleanup if an error
+    }
 
     return deletedResource;
   });

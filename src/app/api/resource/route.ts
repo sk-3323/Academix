@@ -9,6 +9,7 @@ import {
 } from "../../../lib/fileHandler";
 import { createResourceSchema } from "@/schema/resource/schema";
 import { COURSE_UPLOAD_PATH } from "@/constants/config";
+import { utapi } from "@/lib/utAPI";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
   let result = await prisma.$transaction(async (tx) => {
@@ -38,38 +39,36 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
 
 export const POST = apiHandler(async (request: NextRequest, content: any) => {
   let formdata = await request.formData();
-  // let uploadedFilePath: string | null = null;
+  let uploadedFileKey: string | null = null;
   try {
+    let data = formDataToJsonWithoutFiles(formdata);
+
+    const chapterFound = await prisma.chapter.findFirst({
+      where: {
+        id: data?.chapterId,
+      },
+      include: {
+        resources: true,
+        course: true,
+      },
+    });
+
+    if (!chapterFound) {
+      throw new ErrorHandler("Chapter not found", 404);
+    }
+
+    data = await validateData(createResourceSchema, data);
+
+    let url = formdata?.get("url") as File;
+    if (url) {
+      const uploadedFile = await utapi.uploadFiles(url);
+      data.url = uploadedFile?.data?.url;
+      data.publicKey = uploadedFile?.data?.key;
+      uploadedFileKey = uploadedFile?.data?.key || null;
+    }
+
     let result = await prisma.$transaction(async (tx) => {
-      let data = formDataToJsonWithoutFiles(formdata);
-      // let url = formdata?.get("url") as File;
-      // if (url) {
-      //   const { filePath, fileName } = await handleFileUpload(
-      //     url,
-      //     COURSE_UPLOAD_PATH
-      //   );
-      //   data.url = fileName;
-      //   data.title = fileName;
-      //   uploadedFilePath = filePath;
-      // }
-
-      const chapterFound = await tx.chapter.findFirst({
-        where: {
-          id: data?.chapterId,
-        },
-        include: {
-          resources: true,
-          course: true,
-        },
-      });
-
-      if (!chapterFound) {
-        throw new ErrorHandler("Chapter not found", 404);
-      }
-
-      data = await validateData(createResourceSchema, data);
-
-      return await prisma.resource.create({
+      return await tx.resource.create({
         data: data,
         include: {
           chapter: true,
@@ -86,9 +85,9 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
       { status: 201 }
     );
   } catch (error) {
-    // if (uploadedFilePath) {
-    //   cleanupUploadedFile(uploadedFilePath);
-    // }
+    if (uploadedFileKey) {
+      await utapi.deleteFiles(uploadedFileKey); // Cleanup if an error occurs
+    }
     throw error;
   }
 });

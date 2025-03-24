@@ -1,13 +1,7 @@
 import { apiHandler, ErrorHandler } from "@/lib/errorHandler";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import {
-  formDataToJsonWithoutFiles,
-  handleFileUpload,
-  validateData,
-} from "../../../../lib/fileHandler";
-import createUserSchema from "@/schema/user/schema";
-import { USER_UPLOAD_PATH } from "@/constants/config";
+import { formDataToJsonWithoutFiles } from "../../../../lib/fileHandler";
 import { utapi } from "@/lib/utAPI";
 
 export const GET = apiHandler(async (request: NextRequest, content: any) => {
@@ -153,18 +147,6 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
     }
 
     const result = await prisma.$transaction(async (tx) => {
-      const userFound = await tx.user.findUnique({
-        where: {
-          id: user_id,
-        },
-      });
-
-      if (!userFound) {
-        throw new ErrorHandler("User not found", 404);
-      }
-
-      console.log("userFound ::>", userFound);
-
       const updatedUser = await tx.user.update({
         data: data,
         where: {

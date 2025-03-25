@@ -45,6 +45,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Enrollment } from "../../../../../types/allType";
+import PageHeader from "@/components/LayoutContent/PageHeader";
 
 export default function DynamicCertificateGenerator({ isAdmin = false }) {
   const { singleData } = useSelector((state: any) => state.UserStore);
@@ -56,7 +58,7 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
     title: "Certificate of Completion",
     subtitle: "has successfully completed the course",
     signature: singleData?.username || "Course Instructor",
-    signaturePosition: "right",
+    signaturePosition: "center",
     showLogo: true,
     showDate: true,
     showBorder: true,
@@ -65,7 +67,7 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
     fontFamily: "serif",
     fontSize: 24,
     borderWidth: 5,
-    includeQR: true,
+    includeQR: false,
   });
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUser, setPreviewUser] = useState(null);
@@ -134,48 +136,9 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
   function getEligibleUsersForCourse(course) {
     // In a real app, this would query your API for students who have completed the course
     // For now, we'll create mock data
-    return [
-      {
-        id: "user-001",
-        name: "Rishi Gaiwala",
-        email: "rishi@example.com",
-        avatar: null,
-        completionDate: "2025-02-15",
-        progress: 100,
-      },
-      {
-        id: "user-002",
-        name: "Priya Sharma",
-        email: "priya@example.com",
-        avatar: null,
-        completionDate: "2025-03-01",
-        progress: 100,
-      },
-      {
-        id: "user-003",
-        name: "Amit Patel",
-        email: "amit@example.com",
-        avatar: null,
-        completionDate: "2025-02-20",
-        progress: 95,
-      },
-      {
-        id: "user-004",
-        name: "Neha Gupta",
-        email: "neha@example.com",
-        avatar: null,
-        completionDate: "2025-01-30",
-        progress: 100,
-      },
-      {
-        id: "user-005",
-        name: "Vikram Singh",
-        email: "vikram@example.com",
-        avatar: null,
-        completionDate: "2025-02-10",
-        progress: 98,
-      },
-    ];
+    const users = [];
+    course.enrollments?.map((enroll: Enrollment) => users.push(enroll.user));
+    return users;
   }
 
   const handleCourseChange = (courseId) => {
@@ -264,7 +227,7 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
     // Student Name
     ctx.font = `bold ${certificateSettings.fontSize * 1.2}px ${certificateSettings.fontFamily}`;
     ctx.fillStyle = certificateSettings.secondaryColor;
-    ctx.fillText(user.name, width / 2, 300);
+    ctx.fillText(user.username, width / 2, 300);
 
     // Course Completion Text
     ctx.font = `${certificateSettings.fontSize * 0.6}px ${certificateSettings.fontFamily}`;
@@ -339,7 +302,7 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
         return {
           id: `CERT-${user.id}-${Date.now().toString().slice(-6)}`,
           userId: user.id,
-          userName: user.name,
+          userName: user.username,
           userEmail: user.email,
           courseId: selectedCourse.id,
           courseName: selectedCourse.title,
@@ -366,7 +329,7 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
 
     // Create a download link
     const link = document.createElement("a");
-    link.download = `certificate-${previewUser.name}-${selectedCourse.title}.png`;
+    link.download = `certificate-${previewUser.username}-${selectedCourse.title}.png`;
     link.href = dataUrl;
     document.body.appendChild(link);
     link.click();
@@ -380,27 +343,31 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-3xl font-bold">Certificate Generator</h1>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            disabled={!selectedCourse || !previewUser}
-            onClick={() => downloadCertificate(liveCanvasRef)}
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Download Preview
-          </Button>
-          <Button
-            disabled={!selectedCourse || selectedUsers.length === 0}
-            onClick={handleGenerateCertificates}
-            isLoading={isGenerating}
-          >
-            <Award className="h-4 w-4 mr-2" />
-            Generate Certificates
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        headerTitle="Certificate Generator"
+        renderRight={() => {
+          return (
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                disabled={!selectedCourse || !previewUser}
+                onClick={() => downloadCertificate(liveCanvasRef)}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download Preview
+              </Button>
+              <Button
+                disabled={!selectedCourse || selectedUsers.length === 0}
+                onClick={handleGenerateCertificates}
+                isLoading={isGenerating}
+              >
+                <Award className="h-4 w-4 mr-2" />
+                Generate Certificates
+              </Button>
+            </div>
+          );
+        }}
+      />
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Left Column - Settings */}
@@ -503,15 +470,20 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
                           />
                           <Avatar className="h-10 w-10">
                             {user.avatar ? (
-                              <AvatarImage src={user.avatar} alt={user.name} />
+                              <AvatarImage
+                                src={user.avatar}
+                                alt={user.username}
+                              />
                             ) : (
                               <AvatarFallback>
-                                {user.name.charAt(0)}
+                                {user.username.charAt(0)}
                               </AvatarFallback>
                             )}
                           </Avatar>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate">{user.name}</p>
+                            <p className="font-medium truncate">
+                              {user.username}
+                            </p>
                             <p className="text-sm text-muted-foreground truncate">
                               {user.email}
                             </p>
@@ -797,7 +769,7 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
               <CardTitle>Live Certificate Preview</CardTitle>
               <CardDescription>
                 {previewUser
-                  ? `Preview for ${previewUser.name}`
+                  ? `Preview for ${previewUser.username}`
                   : "Select a course and student to preview"}
               </CardDescription>
             </CardHeader>
@@ -833,16 +805,18 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
                       {previewUser.avatar ? (
                         <AvatarImage
                           src={previewUser.avatar}
-                          alt={previewUser.name}
+                          alt={previewUser.username}
                         />
                       ) : (
                         <AvatarFallback>
-                          {previewUser.name.charAt(0)}
+                          {previewUser.username.charAt(0)}
                         </AvatarFallback>
                       )}
                     </Avatar>
                     <div>
-                      <p className="text-sm font-medium">{previewUser.name}</p>
+                      <p className="text-sm font-medium">
+                        {previewUser.username}
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         {previewUser.email}
                       </p>
@@ -859,7 +833,7 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
                     <SelectContent>
                       {eligibleUsers.map((user) => (
                         <SelectItem key={user.id} value={user.id}>
-                          {user.name}
+                          {user.username}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -933,16 +907,16 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
                     {previewUser.avatar ? (
                       <AvatarImage
                         src={previewUser.avatar}
-                        alt={previewUser.name}
+                        alt={previewUser.username}
                       />
                     ) : (
                       <AvatarFallback>
-                        {previewUser.name.charAt(0)}
+                        {previewUser.username.charAt(0)}
                       </AvatarFallback>
                     )}
                   </Avatar>
                   <div>
-                    <h3 className="font-medium">{previewUser.name}</h3>
+                    <h3 className="font-medium">{previewUser.username}</h3>
                     <p className="text-sm text-muted-foreground">
                       {previewUser.email}
                     </p>

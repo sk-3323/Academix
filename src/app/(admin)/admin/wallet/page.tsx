@@ -58,28 +58,11 @@ export default function WalletPage() {
       const api = new APIClient();
       const res: any = await api.get("/transaction");
       setTransactions(res.result);
-      const balance = res?.result?.reduce((total, transaction) => {
-        console.log(total, transaction);
 
-        if (transaction.type === "CREDIT") {
-          // If admin is viewing
-          if (currentUser.role === "ADMIN") {
-            // If admin is the course creator, they get 100%
-            if (transaction.course.instructorId === currentUser.id) {
-              return total + transaction.amount;
-            } else {
-              // Admin gets 20% of each transaction
-              return total + transaction.amount * 0.2;
-            }
-          }
-          // If teacher is viewing
-          else if (currentUser.role === "TEACHER") {
-            // Teacher gets 80% of each transaction for their courses
-            return total + transaction.amount * 0.8;
-          }
-        }
-        return total;
-      }, 0);
+      const balance = res?.result?.reduce((total, transaction) => {
+        const isAdmin = transaction.user.role === "ADMIN";
+        return isAdmin ? total + transaction.amount : total; // Add amount only if Admin
+      }, 0); // Initial value is 0
       setWalletBalance(balance);
     } catch (error: any) {
       console.log(error);
@@ -118,7 +101,6 @@ export default function WalletPage() {
     }
     return 0;
   };
-  console.log(walletBalance);
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -152,7 +134,13 @@ export default function WalletPage() {
             <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{transactions.length}</div>
+            <div className="text-2xl font-bold">
+              {
+                transactions.filter(
+                  (transaction) => transaction?.user?.role === "ADMIN"
+                ).length
+              }
+            </div>
             <p className="text-xs text-muted-foreground">
               {currentUser.role === "ADMIN"
                 ? "All platform transactions"
@@ -177,9 +165,9 @@ export default function WalletPage() {
 
       <Tabs defaultValue="all" className="w-full">
         <TabsList className="mb-4">
-          <TabsTrigger value="all">All Transactions</TabsTrigger>
-          <TabsTrigger value="credits">Credits</TabsTrigger>
-          <TabsTrigger value="debits">Debits</TabsTrigger>
+          <TabsTrigger value="all">Transactions</TabsTrigger>
+          {/* <TabsTrigger value="credits">Credits</TabsTrigger> */}
+          {/* <TabsTrigger value="debits">Debits</TabsTrigger> */}
         </TabsList>
 
         <TabsContent value="all">
@@ -195,64 +183,72 @@ export default function WalletPage() {
             <CardContent>
               <div className="space-y-4">
                 {transactions.length > 0 ? (
-                  transactions.map((transaction) => (
-                    <div
-                      key={transaction.id}
-                      className="flex flex-col md:flex-row justify-between p-4 border rounded-lg"
-                    >
-                      <div className="flex items-start gap-4 mb-2 md:mb-0">
-                        <Avatar className="h-9 w-9">
-                          <AvatarImage
-                            src={transaction.user.avatar || "/placeholder.svg"}
-                            alt={transaction.user.username}
-                          />
-                          <AvatarFallback>
-                            {transaction.user.username
-                              .substring(0, 2)
-                              .toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium">
-                            {transaction.description}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge
-                              variant={
-                                transaction.type === "CREDIT"
-                                  ? "default"
-                                  : "destructive"
+                  transactions
+                    .filter((transaction) => transaction.user.role === "ADMIN") // Filter for ADMIN role
+                    .map((transaction) => (
+                      <div
+                        key={transaction.id}
+                        className="flex flex-col md:flex-row justify-between p-4 border rounded-lg"
+                      >
+                        <div className="flex items-start gap-4 mb-2 md:mb-0">
+                          <Avatar className="h-9 w-9">
+                            <AvatarImage
+                              src={
+                                transaction.user.avatar || "/placeholder.svg"
                               }
-                            >
-                              {transaction.type}
-                            </Badge>
-                            <span className="text-sm text-muted-foreground flex items-center gap-1">
-                              <Calendar className="h-3 w-3" />
-                              {formatDate(transaction.createdAt)}
-                            </span>
+                              alt={transaction.user.username}
+                            />
+                            <AvatarFallback>
+                              {transaction.user.username
+                                .substring(0, 2)
+                                .toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">
+                              {transaction.description}
+                            </p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Badge
+                                variant={
+                                  transaction?.user?.role === "ADMIN"
+                                    ? "default"
+                                    : "destructive"
+                                }
+                              >
+                                {transaction?.user.role === "ADMIN"
+                                  ? "CREDIT"
+                                  : "DEBIT"}
+                              </Badge>
+                              <span className="text-sm text-muted-foreground flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
+                                {formatDate(transaction.createdAt)}
+                              </span>
+                            </div>
                           </div>
                         </div>
+                        {/* Uncomment and adjust this section if needed */}
+                        {/* <div className="flex flex-col items-end">
+          <span
+            className={`font-bold ${
+              transaction.type === "CREDIT" ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {transaction.type === "CREDIT" ? "+" : "-"}₹
+            {calculateAmount(transaction).toFixed(2)}
+          </span>
+          <span className="text-xs text-muted-foreground">
+            {transaction.type === "CREDIT"
+              ? currentUser.role === "ADMIN"
+                ? transaction.course.instructorId === currentUser.id
+                  ? "100% (Own Course)"
+                  : "20% Admin Share"
+                : "80% Teacher Share"
+              : "Debit"}
+          </span>
+        </div> */}
                       </div>
-                      <div className="flex flex-col items-end">
-                        <span
-                          className={`font-bold ${transaction.type === "CREDIT" ? "text-green-600" : "text-red-600"}`}
-                        >
-                          {transaction.type === "CREDIT" ? "+" : "-"}₹
-                          {calculateAmount(transaction).toFixed(2)}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {transaction.type === "CREDIT"
-                            ? currentUser.role === "ADMIN"
-                              ? transaction.course.instructorId ===
-                                currentUser.id
-                                ? "100% (Own Course)"
-                                : "20% Admin Share"
-                              : "80% Teacher Share"
-                            : "Debit"}
-                        </span>
-                      </div>
-                    </div>
-                  ))
+                    ))
                 ) : (
                   <p className="text-center py-4 text-muted-foreground">
                     No transactions found
@@ -273,9 +269,10 @@ export default function WalletPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {transactions.filter((t) => t.type === "CREDIT").length > 0 ? (
+                {transactions.filter((t) => t?.user?.role === "ADMIN").length >
+                0 ? (
                   transactions
-                    .filter((t) => t.type === "CREDIT")
+                    .filter((t) => t?.user?.role === "ADMIN")
                     .map((transaction) => (
                       <div
                         key={transaction.id}
@@ -308,7 +305,7 @@ export default function WalletPage() {
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-col items-end">
+                        {/* <div className="flex flex-col items-end">
                           <span className="font-bold text-green-600">
                             +₹{calculateAmount(transaction).toFixed(2)}
                           </span>
@@ -320,7 +317,7 @@ export default function WalletPage() {
                                 : "20% Admin Share"
                               : "80% Teacher Share"}
                           </span>
-                        </div>
+                        </div> */}
                       </div>
                     ))
                 ) : (
@@ -341,9 +338,10 @@ export default function WalletPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {transactions.filter((t) => t.type === "DEBIT").length > 0 ? (
+                {transactions.filter((t) => t?.user?.role !== "ADMIN").length >
+                0 ? (
                   transactions
-                    .filter((t) => t.type === "DEBIT")
+                    .filter((t) => t?.user?.role !== "ADMIN")
                     .map((transaction) => (
                       <div
                         key={transaction.id}
@@ -376,14 +374,14 @@ export default function WalletPage() {
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-col items-end">
+                        {/* <div className="flex flex-col items-end">
                           <span className="font-bold text-red-600">
                             -₹{calculateAmount(transaction).toFixed(2)}
                           </span>
                           <span className="text-xs text-muted-foreground">
                             Withdrawal
                           </span>
-                        </div>
+                        </div> */}
                       </div>
                     ))
                 ) : (

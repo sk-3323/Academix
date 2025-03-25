@@ -101,8 +101,8 @@ export async function GET(req: NextRequest) {
         { status: 400 }
       );
     }
-
-    const progress = await getProgress(userId, courseId);
+    const filteredCourseId = courseId.slice(0, -1);
+    const progress = await getProgress(userId, filteredCourseId);
 
     return NextResponse.json({ progress });
   } catch (error) {

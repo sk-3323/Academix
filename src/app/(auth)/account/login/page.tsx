@@ -158,17 +158,10 @@ const page = () => {
             <Button
               variant="outline"
               onClick={async () => {
-                const result: any = await signIn("google", {
-                  callbackUrl: "/",
-                  redirect: false,
+                const result = await signIn("google", {
+                  callbackUrl: "https://academix-learning.netlify.app",
                 });
-                if (result.ok) {
-                  const res = await fetch("/api/google-data", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                  });
-                  const data = await res.json();
-                }
+                console.log(result, "res from google");
               }}
               className="w-full rounded-full"
             >

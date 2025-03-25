@@ -118,6 +118,9 @@ export const authOption: NextAuthOptions = {
           response_type: "code",
         },
       },
+      async profile(profile: any, token: any) {
+        console.log(profile, token);
+      },
     }),
     GithubProvider({
       clientId: process.env.GITHUB_CLIENT_ID as string,

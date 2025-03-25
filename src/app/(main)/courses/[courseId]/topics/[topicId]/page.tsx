@@ -615,163 +615,307 @@
 // const MessageCircle = ({ className }: { className?: string }) => {
 //   return <div className={className}></div>;
 // };
-
 "use client";
-import { Banner } from "@/components/banner";
+
+import { Button } from "@/components/ui/button";
 import { GetSingleCourseWithProgressApi } from "@/store/course/slice";
 import { AppDispatch } from "@/store/store";
 import { GetPublishedTopicWithProgressApi } from "@/store/topic/slice";
-import { useEffect, useState } from "react";
+import { AddUserProgressApi } from "@/store/user-progress/slice";
+import { CheckCircle, ShieldCheck, XCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import VideoPlayer from "../../_components/video-player";
-import { CourseEnrollButton } from "../../_components/course-enroll-button";
-import { Separator } from "@/components/ui/separator";
-import Preview from "@/components/preview";
-import { File } from "lucide-react";
-import { ResourceBar } from "../../_components/resource-bar";
-import { IconBadge } from "@/components/icon-badge";
-import Script from "next/script";
-import { useDynamicToast } from "@/hooks/DynamicToastHook";
-import { clearEnrollmentState } from "@/store/enrollment/slice";
-import { usePathname } from "next/navigation";
-import CourseProgressButton from "../../_components/course-progress-button";
-import { clearUserProgressState } from "@/store/user-progress/slice";
-import { useConfetti } from "@/hooks/use-confetti";
+import { toast } from "sonner";
+import { jsPDF } from "jspdf";
+import { APIClient } from "@/helpers/apiHelper";
 
-const TopicIdPage = ({
-  params,
-}: {
-  params: { courseId: string; topicId: string };
-}) => {
-  const { startConfetti, ConfettiComponent } = useConfetti();
+interface CourseProgressButtonProps {
+  topicId: string;
+  courseId: string;
+  setActions: any;
+  nextTopicId?: string;
+  isCompleted?: boolean;
+  startConfetti: any;
+  nextType: string;
+}
+
+const CourseProgressButton = ({
+  topicId,
+  courseId,
+  nextTopicId,
+  isCompleted,
+  setActions,
+  startConfetti,
+  nextType,
+}: CourseProgressButtonProps) => {
+  const Icon = isCompleted ? XCircle : CheckCircle;
+  const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const { singleData: topic } = useSelector(
-    (state: any) => state["TopicStore"]
+  const [isLoading, setIsLoading] = useState(false);
+  const { singleData: courseData } = useSelector(
+    (state: any) => state.CourseStore
   );
+  const { singleData: userData } = useSelector((state: any) => state.UserStore); // Assuming user data is available
 
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const logoRef = useRef<HTMLImageElement | null>(null);
+  const signatureRef = useRef<HTMLImageElement | null>(null);
+
+  // Certificate settings (customizable as needed)
+  const certificateSettings = {
+    template: "standard",
+    title: "Certificate of Completion",
+    subtitle: "has successfully completed the course",
+    signature: courseData?.instructor?.username || "Course Instructor",
+    signaturePosition: "center",
+    showLogo: true,
+    showDate: true,
+    showBorder: true,
+    primaryColor: "#0ea5e9",
+    secondaryColor: "#8b5cf6",
+    fontFamily: "serif",
+    fontSize: 24,
+    borderWidth: 5,
+    includeQR: false,
+  };
+
+  // Load logo and signature images
   useEffect(() => {
-    dispatch(
-      GetPublishedTopicWithProgressApi({
-        courseId: params?.courseId,
-        topicId: params?.topicId,
-      })
+    const logo = new Image();
+    logo.src = "/assets/logos/light-h-logo-with-name.svg"; // Adjust path
+    logo.crossOrigin = "anonymous";
+    logoRef.current = logo;
+
+    const signature = new Image();
+    signature.src = "/assets/logos/light-name.svg"; // Adjust path
+    signature.crossOrigin = "anonymous";
+    signatureRef.current = signature;
+  }, []);
+
+  const handleSuccess = async () => {
+    try {
+      dispatch(GetSingleCourseWithProgressApi({ id: courseId }));
+
+      if (!isCompleted && !nextTopicId) {
+        startConfetti();
+      }
+
+      if (!isCompleted && nextTopicId) {
+        if (nextType === "TOPIC") {
+          router.push(`/courses/${courseId}/topics/${nextTopicId}`);
+        } else if (nextType === "QUIZ") {
+          router.push(`/courses/${courseId}/quiz/${nextTopicId}`);
+        }
+      } else {
+        dispatch(GetPublishedTopicWithProgressApi({ courseId, topicId }));
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.message);
+    }
+  };
+
+  const handleClick = async () => {
+    try {
+      setIsLoading(true);
+      setActions((current: any) => ({
+        ...current,
+        callbackFunction: handleSuccess,
+      }));
+      await dispatch(
+        AddUserProgressApi({
+          values: { isCompleted: !isCompleted, topicId },
+          requiredFields: ["isCompleted", "topicId"],
+        })
+      );
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const renderCertificate = (canvas: HTMLCanvasElement) => {
+    if (!canvas || !courseData || !userData) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const width = canvas.width;
+    const height = canvas.height;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, width, height);
+
+    // Background
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, "#ffffff");
+    gradient.addColorStop(1, "#f8fafc");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+
+    // Border
+    if (certificateSettings.showBorder) {
+      ctx.strokeStyle = certificateSettings.primaryColor;
+      ctx.lineWidth = certificateSettings.borderWidth;
+      ctx.strokeRect(
+        certificateSettings.borderWidth / 2,
+        certificateSettings.borderWidth / 2,
+        width - certificateSettings.borderWidth,
+        height - certificateSettings.borderWidth
+      );
+    }
+
+    // Logo
+    if (certificateSettings.showLogo && logoRef.current) {
+      ctx.drawImage(logoRef.current, width / 2 - 75, 50, 200, 150); // Proportional increase
+    }
+
+    // Title
+    ctx.font = `bold ${certificateSettings.fontSize}px ${certificateSettings.fontFamily}`;
+    ctx.fillStyle = certificateSettings.primaryColor;
+    ctx.textAlign = "center";
+    ctx.fillText(certificateSettings.title, width / 2, 200);
+
+    // Subtitle
+    ctx.font = `italic ${certificateSettings.fontSize * 0.6}px ${certificateSettings.fontFamily}`;
+    ctx.fillStyle = "#64748b";
+    ctx.fillText("This is to certify that", width / 2, 250);
+
+    // Student Name
+    ctx.font = `bold ${certificateSettings.fontSize * 1.2}px ${certificateSettings.fontFamily}`;
+    ctx.fillStyle = certificateSettings.secondaryColor;
+    ctx.fillText(userData.username, width / 2, 300);
+
+    // Course Completion Text
+    ctx.font = `${certificateSettings.fontSize * 0.6}px ${certificateSettings.fontFamily}`;
+    ctx.fillStyle = "#64748b";
+    ctx.fillText(certificateSettings.subtitle, width / 2, 340);
+
+    // Course Name
+    ctx.font = `bold ${certificateSettings.fontSize * 0.8}px ${certificateSettings.fontFamily}`;
+    ctx.fillStyle = "#0f172a";
+    ctx.fillText(courseData.title, width / 2, 380);
+
+    // Date
+    if (certificateSettings.showDate) {
+      const completionDate = new Date().toLocaleDateString(); // Use actual completion date if available
+      ctx.font = `${certificateSettings.fontSize * 0.6}px ${certificateSettings.fontFamily}`;
+      ctx.fillStyle = "#64748b";
+      ctx.fillText(`Issued on ${completionDate}`, width / 2, 430);
+    }
+
+    // Signature
+    if (signatureRef.current) {
+      const signatureX =
+        certificateSettings.signaturePosition === "right"
+          ? width * 0.7
+          : certificateSettings.signaturePosition === "left"
+            ? width * 0.3
+            : width / 2;
+
+      ctx.drawImage(signatureRef.current, signatureX - 75, 470, 150, 50);
+      ctx.font = `bold ${certificateSettings.fontSize * 0.6}px ${certificateSettings.fontFamily}`;
+      ctx.fillStyle = "#0f172a";
+      ctx.fillText(certificateSettings.signature, signatureX, 540);
+      ctx.font = `${certificateSettings.fontSize * 0.5}px ${certificateSettings.fontFamily}`;
+      ctx.fillStyle = "#64748b";
+      ctx.fillText("Instructor", signatureX, 560);
+    }
+
+    // Certificate ID
+    ctx.font = `${certificateSettings.fontSize * 0.4}px ${certificateSettings.fontFamily}`;
+    ctx.fillStyle = "#94a3b8";
+    ctx.textAlign = "center";
+    ctx.fillText(
+      `Certificate ID: CERT-${userData.id}-${Date.now().toString().slice(-6)}`,
+      width / 2,
+      height - 30
     );
-  }, [params?.courseId]);
+  };
 
-  const [isLocked, setIsLocked] = useState(
-    !topic?.isFree && topic?.chapter?.course?.enrollments?.length === 0
-  );
+  const handleGenerateCertificate = async () => {
+    const api = new APIClient();
 
-  useEffect(() => {
-    let flag =
-      !topic?.isFree && topic?.chapter?.course?.enrollments?.length === 0;
+    try {
+      setIsLoading(true);
 
-    setIsLocked(flag);
-  }, [topic?.isFree, topic?.chapter?.course?.enrollments]);
+      if (!courseData || !userData) {
+        toast.error("Course or user data not available");
+        return;
+      }
 
-  const [isCompleteOnEnd, setIsCompleteOnEnd] = useState(
-    topic?.chapter?.course?.enrollments?.length !== 0 &&
-      topic?.userProgress?.length === 0
-  );
+      // Render certificate to hidden canvas
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
-  useEffect(() => {
-    let flag =
-      topic?.chapter?.course?.enrollments?.length !== 0 &&
-      !topic?.userProgress?.[0]?.isCompleted;
+      canvas.width = 800; // Match DynamicCertificateGenerator dimensions
+      canvas.height = 600;
+      renderCertificate(canvas);
 
-    setIsCompleteOnEnd(flag);
-  }, [topic?.userProgress, topic?.chapter?.course?.enrollments]);
+      // Convert canvas to image
+      const certificateImage = canvas.toDataURL("image/png");
 
-  const [enrollmentActions, setEnrollmentActions] = useState({
-    clearState: clearEnrollmentState,
-    callbackFunction: () => {},
-  });
-  let pathname = usePathname();
+      // Create PDF with jsPDF
+      const doc = new jsPDF({
+        orientation: "landscape",
+        unit: "px",
+        format: [800, 600], // Match canvas size
+      });
 
-  useDynamicToast("EnrollmentStore", enrollmentActions, pathname);
+      // Add certificate image
+      doc.addImage(certificateImage, "PNG", 0, 0, 800, 600);
 
-  const [userProgressActions, setUserProgressActions] = useState({
-    clearState: clearUserProgressState,
-    callbackFunction: () => {},
-  });
+      // Add Watermark
+      doc.setFontSize(50);
+      doc.setTextColor(200, 200, 200); // Light gray
 
-  useDynamicToast("UserProgressStore", userProgressActions);
+      // Save PDF
+      doc.save(`${courseData.title}_Certificate_${userData.username}.pdf`);
+      await api.create("/certificate", {
+        userId: userData.id,
+        courseId: courseData.id,
+        certificateId = `CERT-${userData.id - Date.now().toString().slice(-6)}`,
+      });
+      toast.success("Certificate generated and downloaded!");
+    } catch (error: any) {
+      console.error(error);
+      toast.error("Failed to generate certificate");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <>
-      <ConfettiComponent />
-      {topic?.userProgress?.[0]?.isCompleted && (
-        <Banner variant="success" label="You already completed this topic" />
+    <div className="flex gap-3">
+      <Button
+        type="button"
+        variant={isCompleted ? "outline" : "success"}
+        className="w-full md:w-auto"
+        onClick={handleClick}
+        disabled={isLoading}
+      >
+        {isCompleted ? "Not Completed" : "Mark as complete"}
+        <Icon className="w-4 h-4 ml-2" />
+      </Button>
+      {!isCompleted && !nextTopicId && (
+        <Button
+          type="button"
+          variant="destructive"
+          className="w-full md:w-auto"
+          onClick={handleGenerateCertificate}
+          disabled={isLoading}
+        >
+          Generate Certificate
+          <ShieldCheck className="w-4 h-4 ml-2" />
+        </Button>
       )}
-      {isLocked && (
-        <Banner
-          variant="warning"
-          label="You need to purchase this course to watch this topic"
-        />
-      )}
-      <div className="flex flex-col max-w-4xl mx-auto pb-20">
-        <div className="p-2">
-          <VideoPlayer
-            topicId={params?.topicId}
-            nextTopicId={topic?.nextTopic?.id}
-            publicKey={topic?.publicKey}
-            isLocked={isLocked}
-            isCompleteOnEnd={isCompleteOnEnd}
-            courseId={params?.courseId}
-            title={topic?.title}
-            setActions={setUserProgressActions}
-            startConfetti={startConfetti}
-            nextType="TOPIC"
-          />
-        </div>
-        <div>
-          <div className="p-4 flex flex-col md:flex-row items-center justify-between">
-            <h2 className="text-2xl font-semibold mb-2">{topic?.title}</h2>
-            {topic?.chapter?.course?.enrollments?.length !== 0 && (
-              <CourseProgressButton
-                topicId={params?.topicId}
-                courseId={params?.courseId}
-                nextTopicId={topic?.nextTopic?.id}
-                isCompleted={!!topic?.userProgress?.[0]?.isCompleted}
-                setActions={setUserProgressActions}
-                startConfetti={startConfetti}
-                nextType="TOPIC"
-              />
-            )}
-            {topic?.chapter?.course?.enrollments?.length === 0 && (
-              <CourseEnrollButton
-                courseId={params?.courseId}
-                isFree={topic?.isFree}
-                price={topic?.chapter?.course?.price}
-                setActions={setEnrollmentActions}
-              />
-            )}
-          </div>
-          <Separator />
-          <div>
-            <Preview value={topic?.description!} />
-          </div>
-          {!!topic?.chapter?.resources?.length && (
-            <>
-              <Separator />
-              <div className="flex items-center gap-x-2">
-                <IconBadge icon={File} />
-                <h2 className="text-xl">Resources & Attachments</h2>
-              </div>
-              <Separator />
-              <div className="p-4">
-                <ResourceBar
-                  resources={topic?.chapter?.resources}
-                  isLocked={isLocked}
-                />
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-    </>
+      {/* Hidden canvas for rendering certificate */}
+      <canvas ref={canvasRef} style={{ display: "none" }} />
+    </div>
   );
 };
 
-export default TopicIdPage;
+export default CourseProgressButton;

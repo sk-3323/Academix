@@ -266,11 +266,12 @@ export default function CoursePage({
   }, []);
   useEffect(() => {
     if (user) {
-      const enrolledCourse = user?.enrollments?.map(
+      const enrolledCourse = user?.enrollments?.find(
         (enroll: any) => enroll?.course?.id === params?.courseId
       );
+      // console.log(enrolledCourse, "enroll");
 
-      if (enrolledCourse && enrolledCourse[0] === true) {
+      if (enrolledCourse) {
         return redirect(
           `/courses/${params?.courseId}/topics/${course?.chapters?.[0]?.topics?.[0]?.id}`
         );

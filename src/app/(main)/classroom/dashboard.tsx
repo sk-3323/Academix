@@ -76,7 +76,7 @@
 
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   BookOpen,
   Clock,
@@ -115,6 +115,7 @@ import GetProgress from "./_components/get-progress";
 export default function UserDashboard() {
   const { singleData } = useSelector((state: any) => state.UserStore);
 
+  const [totalProgress, setTotalProgress] = useState(0);
   const enrollments = singleData?.enrollments || [];
 
   // Calculate total statistics
@@ -124,17 +125,17 @@ export default function UserDashboard() {
       .length;
   }, [enrollments]);
 
-  const totalProgress = useMemo(() => {
-    const progress = enrollments.reduce((sum, enrollment) => {
-      const courseProgress =
-        enrollment.UserProgress?.reduce(
-          (total, progress) => total + progress.progress,
-          0
-        ) || 0;
-      return sum + courseProgress;
-    }, 0);
-    return enrollments.length > 0 ? progress / enrollments.length : 0;
-  }, [enrollments]);
+  // const totalProgress = useMemo(() => {
+  //   const progress = enrollments.reduce((sum, enrollment) => {
+  //     const courseProgress =
+  //       enrollment.UserProgress?.reduce(
+  //         (total, progress) => total + progress.progress,
+  //         0
+  //       ) || 0;
+  //     return sum + courseProgress;
+  //   }, 0);
+  //   return enrollments.length > 0 ? progress / enrollments.length : 0;
+  // }, [enrollments]);
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -248,8 +249,12 @@ export default function UserDashboard() {
                         )}
                         %
                       </span> */}
-                      <GetProgress enrollment={enrollment} />
-                    </div>  
+                      <GetProgress
+                        enrollment={enrollment}
+                        totalProgress={totalProgress}
+                        onProgressUpdate={setTotalProgress}
+                      />
+                    </div>
                   </TableCell>
                   {/* <TableCell className="text-right">
                     <DropdownMenu>

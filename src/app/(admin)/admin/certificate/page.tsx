@@ -49,6 +49,7 @@ import { AppDispatch } from "@/store/store";
 import { GetCourseApi } from "@/store/course/slice";
 import { Course } from "../../../../../types/allType";
 import { GetSingleUserProgressApi } from "@/store/user-progress/slice";
+import PageHeader from "@/components/LayoutContent/PageHeader";
 
 export default function DynamicCertificateGenerator() {
   const { singleData } = useSelector((state: any) => state.UserStore);
@@ -63,7 +64,7 @@ export default function DynamicCertificateGenerator() {
     title: `Certificate of ${selectedCourse?.title}`,
     subtitle: "has successfully completed the course",
     signature: singleData?.username || "Course Instructor",
-    signaturePosition: "right",
+    signaturePosition: "center",
     showLogo: true,
     showDate: true,
     showBorder: true,
@@ -72,7 +73,7 @@ export default function DynamicCertificateGenerator() {
     fontFamily: "serif",
     fontSize: 24,
     borderWidth: 5,
-    includeQR: true,
+    includeQR: false,
   });
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUser, setPreviewUser] = useState(null);
@@ -358,27 +359,34 @@ export default function DynamicCertificateGenerator() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-3xl font-bold">Certificate Generator</h1>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            disabled={!selectedCourse || !previewUser}
-            onClick={() => downloadCertificate(liveCanvasRef)}
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Download Preview
-          </Button>
-          <Button
-            disabled={!selectedCourse || selectedUsers.length === 0}
-            onClick={handleGenerateCertificates}
-            isLoading={isGenerating}
-          >
-            <Award className="h-4 w-4 mr-2" />
-            Generate Certificates
-          </Button>
-        </div>
-      </div>
+      {/* <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"> */}
+      <PageHeader
+        headerTitle="Certificate Generator"
+        renderRight={() => {
+          return (
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                disabled={!selectedCourse || !previewUser}
+                onClick={() => downloadCertificate(liveCanvasRef)}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download Preview
+              </Button>
+              <Button
+                disabled={!selectedCourse || selectedUsers.length === 0}
+                onClick={handleGenerateCertificates}
+                isLoading={isGenerating}
+              >
+                <Award className="h-4 w-4 mr-2" />
+                Generate Certificates
+              </Button>
+            </div>
+          );
+        }}
+      />
+
+      {/* </div> */}
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Left Column - Settings */}

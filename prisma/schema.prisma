@@ -260,8 +260,8 @@ model Blog {
 model Certificate {
   id               String    @id @default(auto()) @map("_id") @db.ObjectId
   issueDate        DateTime? @default(now())
-  template         String?
-  verificationCode String?   @unique
+  // template         String?
+  certificateId String?   @unique
 
   // Relations
   userId   String @db.ObjectId

@@ -10,6 +10,7 @@ import { GetCategoryApi } from "@/store/category/slice";
 import { GetUserApi } from "@/store/user/slice";
 import { utils, writeFile } from "xlsx";
 import { format } from "date-fns";
+import debounce from "lodash/debounce";
 import { toast } from "sonner";
 
 import {
@@ -32,7 +33,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import debounce from "lodash/debounce";
 import { Progress } from "@/components/ui/progress";
 import {
   FileSpreadsheet,
@@ -42,6 +42,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { DateRange } from "react-day-picker";
+import { Course } from "../../../../../types/allType";
 // import { DateRangePicker } from "@/components/date-range-picker";
 
 interface PriceRange {
@@ -58,13 +59,14 @@ interface FilterState {
 const page = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { data: session } = useSession();
-  const { singleData: userData } = useSelector((state: any) => state.UserStore);
   const { data: enrollments } = useSelector(
     (state: any) => state.EnrollmentStore
   );
   const { data: courses } = useSelector((state: any) => state.CourseStore);
   const { data: categories } = useSelector((state: any) => state.CategoryStore);
-  const { data: users } = useSelector((state: any) => state.UserStore.data);
+  const { data: users, singleData: userData } = useSelector(
+    (state: any) => state.UserStore
+  );
 
   const [reportType, setReportType] = useState<
     "course" | "enrollment" | "user"
@@ -121,29 +123,29 @@ const page = () => {
     const controller = new AbortController();
     const signal = controller.signal;
 
-    const fetchData = async () => {
-      try {
-        await Promise.all([
-          dispatch(GetEnrollmentApi({ searchParams: { userId }, signal })),
-          dispatch(GetCourseApi({ searchParams: {}, signal })),
-          dispatch(GetCategoryApi({ signal })),
-          dispatch(GetUserApi({ searchParams: {}, signal })),
-        ]);
-        hasFetchedInitialData.current = true; // Mark as fetched
-      } catch (error) {
-        if (error.name === "AbortError") return; // Ignore abort errors
-        console.error("Error fetching initial data:", error);
-        toast.error("Failed to load initial data.");
-      }
-    };
+    // const fetchData = async () => {
+    //   try {
+    //     await Promise.all([
+    //       dispatch(GetEnrollmentApi({ searchParams: { userId }, signal })),
+    //       dispatch(GetCourseApi({ searchParams: {}, signal })),
+    //       dispatch(GetCategoryApi({ signal })),
+    //       dispatch(GetUserApi({ searchParams: {}, signal })),
+    //     ]);
+    //     hasFetchedInitialData.current = true; // Mark as fetched
+    //   } catch (error) {
+    //     if (error.name === "AbortError") return; // Ignore abort errors
+    //     console.error("Error fetching initial data:", error);
+    //     toast.error("Failed to load initial data.");
+    //   }
+    // };
 
-    fetchData();
+    // fetchData();
 
     // Cleanup: Abort requests if component unmounts
     return () => {
       controller.abort();
     };
-  }, [dispatch, session?.user?.id]); // Only depend on userId and dispatch
+  }, []); // Only depend on userId and dispatch
 
   const authoredCourses = userData?.authoredCourses || [];
 
@@ -227,7 +229,7 @@ const page = () => {
         filteredItems = applyCourseFilters(filteredItems);
         break;
       case "enrollment":
-        filteredItems = authoredCourses.flatMap((course) =>
+        filteredItems = authoredCourses.flatMap((course: Course) =>
           course.enrollments.map((enrollment) => ({
             ...enrollment,
             courseTitle: course.title,
@@ -338,14 +340,14 @@ const page = () => {
 
   const getUniqueUsersFromEnrollments = () => {
     const userMap = new Map();
-    authoredCourses.forEach((course) => {
+    authoredCourses.forEach((course: any) => {
       course.enrollments.forEach((enrollment) => {
         if (enrollment.user && !userMap.has(enrollment.user.id)) {
           const userEnrollments = authoredCourses.flatMap((c) =>
             c.enrollments.filter((e) => e.user?.id === enrollment.user.id)
           );
           const totalSpent = userEnrollments.reduce(
-            (sum, e) => sum + (e.price || 0),
+            (sum: any, e: any) => sum + (e.price || 0),
             0
           );
           userMap.set(enrollment.user.id, {
@@ -353,7 +355,7 @@ const page = () => {
             totalSpent,
             coursesEnrolled: userEnrollments.length,
             lastEnrollment: userEnrollments.sort(
-              (a, b) =>
+              (a: any, b: any) =>
                 new Date(b.createdAt).getTime() -
                 new Date(a.createdAt).getTime()
             )[0]?.createdAt,
@@ -458,7 +460,7 @@ const page = () => {
           totalCourses > 0 ? totalRevenue / totalCourses : 0;
 
         // Category breakdown
-        const categoryStats = {};
+        const categoryStats: any = {};
         filteredData.forEach((course) => {
           const categoryName = course.category?.name || "Uncategorized";
           if (!categoryStats[categoryName]) {
@@ -476,7 +478,7 @@ const page = () => {
         });
 
         // Status breakdown
-        const statusStats = {};
+        const statusStats: any = {};
         filteredData.forEach((course) => {
           const status = course.status || "Unknown";
           if (!statusStats[status]) {

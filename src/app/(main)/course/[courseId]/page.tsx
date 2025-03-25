@@ -269,7 +269,6 @@ export default function CoursePage({
       const enrolledCourse = user?.enrollments?.map(
         (enroll: any) => enroll?.course?.id === params?.courseId
       );
-      console.log(enrolledCourse, "eno");
 
       if (enrolledCourse && enrolledCourse[0] === true) {
         return redirect(

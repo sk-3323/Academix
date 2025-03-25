@@ -74,9 +74,14 @@ export const HoverEffect = ({
                 className="object-cover ease-in-out transition-transform hover:scale-105"
                 priority
               />
-              {item.isFree && (
+              {item.isFree && item.status !== "DRAFT" && (
                 <Badge className="absolute right-2 top-2 px-3 bg-[#27e0b3] hover:bg-[#27e0b289]">
                   Free
+                </Badge>
+              )}
+              {item.status === "DRAFT" && (
+                <Badge className="absolute right-2 top-2 px-3 bg-black hover:bg-zinc-800">
+                  Coming Soon
                 </Badge>
               )}
               {/* <Badge

@@ -93,6 +93,8 @@ const ResourceForm = ({
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log(values, "Velauue");
+
     try {
       const formdata = new FormData();
       Object.entries(values).forEach(([key, val]) => {
@@ -250,7 +252,7 @@ const ResourceForm = ({
                   ],
                   multiple: false,
                   maxFiles: 1,
-                  resourceType: "image",
+                  resourceType: "auto",
                   folder: "academix-cloudinary-mongodb",
                 }}
               >

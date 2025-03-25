@@ -38,7 +38,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
-import createUserSchema from "@/schema/user/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   FormControl,
@@ -48,36 +47,30 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Badge } from "@/components/ui/badge";
-// import PageHeader from "@/components/LayoutContent/PageHeader";
-// import { User } from "../../../../types/User";
-// import { ApiResponse } from "../../../../types/ApiResponse";
-import { Ban, UserCheck, History, Shield, Mail, Download } from "lucide-react";
-import { ApiResponse } from "../../../../../types/ApiResponse";
 import PageHeader from "@/components/LayoutContent/PageHeader";
-import Loading from "@/components/Sidebar/Loading";
-import { Skeleton } from "@/components/ui/skeleton";
 import { APIClient } from "@/helpers/apiHelper";
-import ReportGenerator from "@/components/Report/user-report";
 import { User } from "../../../../../types/allType";
+import { ApiResponse } from "../../../../../types/ApiResponse";
+import { Ban, UserCheck } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { EditUserApi } from "@/store/user/slice";
 import { toast } from "sonner";
 
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "Name is required and must be at least 2 characters long",
   }),
-  email: z.string().email({
-    message: "Invalid email address",
-  }),
-  phone: z.string().min(10, {
-    message: "Phone number must be at least 10 digits long",
-  }),
-  role: z.string().min(1, {
-    message: "Role is required",
-  }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters long",
-  }),
+  email: z.string().email({ message: "Invalid email address" }),
+  phone: z
+    .string()
+    .min(10, { message: "Phone number must be at least 10 digits long" }),
+  role: z.string().min(1, { message: "Role is required" }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long" }),
 });
+
 export default function UserManagement() {
   const api = new APIClient();
 
@@ -85,27 +78,22 @@ export default function UserManagement() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState<string>("all"); // New state for role filter
+  const [statusFilter, setStatusFilter] = useState<string>("all"); // New state for status filter
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showBlockDialog, setShowBlockDialog] = useState(false);
-
   const [showupdateRoleDialog, setShowupdateRoleDialog] = useState(false);
-  const [updatedUser, setUpdatedUser] = useState({
-    userId: "",
-    newRole: "",
-  });
+  const [updatedUser, setUpdatedUser] = useState({ userId: "", newRole: "" });
+  const dispatch = useDispatch<AppDispatch>();
   const getUsers = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-
     try {
-      const response: any = api.get("/api/users");
-
-      if (response?.data?.status === false) {
-        throw new Error("Failed to fetch users");
-      }
-
-      const { result } = response?.data;
+      const response = await fetch("/api/users", { method: "GET" });
+      if (!response.ok) throw new Error("Failed to fetch users");
+      const jsonRes: ApiResponse = await response.json();
+      const { result } = jsonRes;
       const exceptAdmin = result?.filter((res: User) => res.role !== "ADMIN");
       setUsers(exceptAdmin as User[]);
     } catch (err) {
@@ -130,25 +118,13 @@ export default function UserManagement() {
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const formData = new FormData();
-
-      // Populate formData with values, ensuring strings
       Object.entries(values).forEach(([key, val]) => {
-        if (val !== undefined && val !== null) {
-          formData.set(key, String(val));
-        }
+        if (val !== undefined && val !== null) formData.set(key, String(val));
       });
-
-      // Send to API
-      const response: any = await api.create("/users", formData, {
+      const response = await api.create("/users", formData, {
         "Content-Type": "multipart/form-data",
       });
-
-      if (response.status === true) {
-        toast.success(response?.message);
-      } else {
-        toast.error(response?.message);
-      }
-
+      if (!response.status) throw new Error("Failed to create user");
       await getUsers();
       form.reset();
     } catch (error: any) {
@@ -160,7 +136,6 @@ export default function UserManagement() {
   const handleUpdateRole = async () => {
     const formData = new FormData();
     formData.append("role", updatedUser.newRole);
-
     try {
       const response = await api.update(
         `/users/${updatedUser.userId}`,
@@ -169,15 +144,7 @@ export default function UserManagement() {
           "Content-Type": "multipart/form-data",
         }
       );
-
-      if (!response?.data) {
-        throw new Error("Failed to update user role");
-      }
-
-      if (response?.data?.status === true) {
-        toast.success(response?.data?.message);
-      }
-
+      if (!response) throw new Error("Failed to update user role");
       await getUsers();
     } catch (error) {
       console.error(error);
@@ -185,64 +152,32 @@ export default function UserManagement() {
   };
 
   const handleBlockUser = async (userId: string) => {
-    try {
-      const formData = new FormData();
-      const value = !selectedUser?.isBlocked;
-      formData.append("isBlocked", String(value));
-      const response = await api.update(`/users/${userId}`, formData, {
-        "Content-Type": "multipart/form-data",
-      });
-      if (!response?.data) {
-        throw new Error("Failed to block user");
-      }
-
-      if (response?.data?.status === true) {
-        toast.success(response?.data?.message);
-      }
-      await getUsers();
-    } catch (error) {
-      console.error(error);
-    }
+    const formData = new FormData();
+    formData.append("isBlocked", !selectedUser?.isBlocked);
+    await dispatch(
+      EditUserApi({
+        id: userId,
+        values: formData,
+      })
+    );
+    await getUsers();
   };
 
-  const handleDeleteUser = async (userId: string) => {
-    // try {
-    //   const response = await fetch(`/api/users/${userId}`, {
-    //     method: "DELETE",
-    //   });
-    //   if (!response.ok) {
-    //     throw new Error("Failed to delete user");
-    //   }
-    //   await getUsers();
-    //   setShowDeleteDialog(false);
-    // } catch (error) {
-    //   console.error(error);
-    // }
-  };
-
-  const handleSendPasswordReset = async (userId: string) => {
-    // try {
-    //   const response = await fetch(`/api/users/${userId}/reset-password`, {
-    //     method: "POST",
-    //   });
-    //   if (!response.ok) {
-    //     throw new Error("Failed to send password reset");
-    //   }
-    //   // Show success message
-    // } catch (error) {
-    //   console.error(error);
-    // }
-  };
-
-  const filteredUsers = users.filter(
-    (user) =>
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
       user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = roleFilter === "all" || user.role === roleFilter;
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "active" && !user.isBlocked) ||
+      (statusFilter === "blocked" && user.isBlocked);
+    return matchesSearch && matchesRole && matchesStatus;
+  });
 
   useEffect(() => {
     getUsers();
-  }, []);
+  }, [getUsers]);
 
   return (
     <div className="space-y-6">
@@ -250,7 +185,6 @@ export default function UserManagement() {
         headerTitle="User Management"
         renderRight={() => (
           <div className="flex justify-center items-center">
-            <ReportGenerator userData={users} />
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline">Add User</Button>
@@ -354,20 +288,38 @@ export default function UserManagement() {
         )}
       />
 
-      <div className="flex justify-between items-center">
-        {/* <div className="flex items-center gap-2">
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
-            Export Data
-          </Button>
-        </div> */}
+      <div className="flex justify-between items-center space-x-4">
+        <div className="flex items-center gap-4">
+          {/* Role Filter */}
+          <Select value={roleFilter} onValueChange={setRoleFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Filter by Role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Roles</SelectItem>
+              <SelectItem value="STUDENT">Student</SelectItem>
+              <SelectItem value="TEACHER">Instructor</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <Input
-          className="w-64"
-          placeholder="Search users..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+          {/* Status Filter */}
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Filter by Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="blocked">Blocked</SelectItem>
+            </SelectContent>
+          </Select>
+          <Input
+            className="w-64"
+            placeholder="Search users..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
       </div>
 
       {filteredUsers.length === 0 && <div>No Data Found</div>}
@@ -391,10 +343,7 @@ export default function UserManagement() {
                   defaultValue={user.role}
                   onValueChange={(value) => {
                     setShowupdateRoleDialog(true);
-                    setUpdatedUser({
-                      userId: user.id,
-                      newRole: value,
-                    });
+                    setUpdatedUser({ userId: user.id, newRole: value });
                   }}
                 >
                   <SelectTrigger className="w-[180px]">
@@ -426,23 +375,6 @@ export default function UserManagement() {
                     <Ban className="h-4 w-4" />
                   )}
                 </Button>
-                {/* <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => handleSendPasswordReset(user.id)}
-                >
-                  <Mail className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  onClick={() => {
-                    setSelectedUser(user);
-                    setShowDeleteDialog(true);
-                  }}
-                >
-                  <Shield className="h-4 w-4" />
-                </Button> */}
               </TableCell>
             </TableRow>
           ))}
@@ -494,6 +426,7 @@ export default function UserManagement() {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Update Role Dialog */}
       <AlertDialog
         open={showupdateRoleDialog}
         onOpenChange={setShowupdateRoleDialog}

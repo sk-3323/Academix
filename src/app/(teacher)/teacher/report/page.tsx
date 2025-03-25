@@ -64,7 +64,7 @@ const page = () => {
   );
   const { data: courses } = useSelector((state: any) => state.CourseStore);
   const { data: categories } = useSelector((state: any) => state.CategoryStore);
-  const { data: users } = useSelector((state: any) => state.UserStore.data);
+  const { data: users } = useSelector((state: any) => state.UserStore);
 
   const [reportType, setReportType] = useState<
     "course" | "enrollment" | "user"
@@ -124,10 +124,16 @@ const page = () => {
     const fetchData = async () => {
       try {
         await Promise.all([
-          dispatch(GetEnrollmentApi({ searchParams: { userId }, signal })),
-          dispatch(GetCourseApi({ searchParams: {}, signal })),
-          dispatch(GetCategoryApi({ signal })),
-          dispatch(GetUserApi({ searchParams: {}, signal })),
+          // dispatch(GetEnrollmentApi({ searchParams: { userId }, signal })),
+          dispatch(
+            GetCourseApi({
+              searchParams: {
+                instructorId: userData.id,
+              },
+              signal,
+            })
+          ),
+          // dispatch(GetUserApi({ searchParams: {}, signal })),
         ]);
         hasFetchedInitialData.current = true; // Mark as fetched
       } catch (error) {
@@ -458,22 +464,22 @@ const page = () => {
           totalCourses > 0 ? totalRevenue / totalCourses : 0;
 
         // Category breakdown
-        const categoryStats = {};
-        filteredData.forEach((course) => {
-          const categoryName = course.category?.name || "Uncategorized";
-          if (!categoryStats[categoryName]) {
-            categoryStats[categoryName] = {
-              courses: 0,
-              enrollments: 0,
-              revenue: 0,
-            };
-          }
-          categoryStats[categoryName].courses++;
-          categoryStats[categoryName].enrollments +=
-            course.enrollments?.length || 0;
-          categoryStats[categoryName].revenue +=
-            (course.price || 0) * (course.enrollments?.length || 0);
-        });
+        // const categoryStats = {};
+        // filteredData.forEach((course) => {
+        //   const categoryName = course.category?.name || "Uncategorized";
+        //   if (!categoryStats[categoryName]) {
+        //     categoryStats[categoryName] = {
+        //       courses: 0,
+        //       enrollments: 0,
+        //       revenue: 0,
+        //     };
+        //   }
+        //   categoryStats[categoryName].courses++;
+        //   categoryStats[categoryName].enrollments +=
+        //     course.enrollments?.length || 0;
+        //   categoryStats[categoryName].revenue +=
+        //     (course.price || 0) * (course.enrollments?.length || 0);
+        // });
 
         // Status breakdown
         const statusStats = {};

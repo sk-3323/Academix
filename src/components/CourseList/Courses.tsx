@@ -3,7 +3,7 @@ import { HoverEffect } from "../ui/card-hover-effect";
 
 const Courses = () => {
   const { data } = useSelector((state: any) => state.HomeStore);
-  
+
   return (
     <div className="w-full p-10 min-h-screen my-10">
       <h1 className="font-bold text-2xl">

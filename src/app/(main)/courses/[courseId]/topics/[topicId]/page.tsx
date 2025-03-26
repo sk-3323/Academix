@@ -877,7 +877,8 @@ const CourseProgressButton = ({
       await api.create("/certificate", {
         userId: userData.id,
         courseId: courseData.id,
-        certificateId = `CERT-${userData.id - Date.now().toString().slice(-6)}`,
+
+        // certificateId = `CERT-${userData.id - Date.now().toString().slice(-6)}`,
       });
       toast.success("Certificate generated and downloaded!");
     } catch (error: any) {

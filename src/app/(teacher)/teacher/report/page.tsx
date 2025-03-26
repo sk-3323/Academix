@@ -65,7 +65,6 @@ const page = () => {
   const { data: courses } = useSelector((state: any) => state.CourseStore);
   const { data: categories } = useSelector((state: any) => state.CategoryStore);
   const { data: users } = useSelector((state: any) => state.UserStore);
-  console.log(courses);
 
   const [reportType, setReportType] = useState<
     "course" | "enrollment" | "user"

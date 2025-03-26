@@ -33,7 +33,7 @@ const courseIdLayout = ({
   const { isMobile } = useSidebar();
   return (
     <>
-      <CustomCursor />
+      {/* <CustomCursor /> */}
       <div className="flex min-h-screen w-full overflow-x-hidden">
         {!isMobile && (
           <aside className="h-screen sticky top-0 overflow-y-auto min-w-[20rem]">

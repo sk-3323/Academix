@@ -7,7 +7,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const POST = apiHandler(async (req: NextRequest, content: any) => {
   let email = await req.json();
-  console.log(email);
 
   let result = await prisma.user.findFirst({
     where: {
@@ -19,7 +18,6 @@ export const POST = apiHandler(async (req: NextRequest, content: any) => {
   }
   const link = `${NODE_APP_URL}/account/reset-password/${result.id}`;
   const emailRes = await sendResetPasswordLink(email, result.username, link);
-  console.log(emailRes, "result");
 
   return NextResponse.json({
     status: true,

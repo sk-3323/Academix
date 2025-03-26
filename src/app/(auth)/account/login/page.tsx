@@ -161,7 +161,6 @@ const page = () => {
                 const result = await signIn("google", {
                   callbackUrl: "https://academix-learning.netlify.app",
                 });
-                console.log(result, "res from google");
               }}
               className="w-full rounded-full"
             >

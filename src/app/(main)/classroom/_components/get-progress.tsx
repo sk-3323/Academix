@@ -28,7 +28,6 @@ const GetProgress = ({
   useEffect(() => {
     getProgressUser();
   }, []);
-  console.log(totalProgress);
 
   return (
     <div className="w-full">

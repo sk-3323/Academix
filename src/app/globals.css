@@ -15,9 +15,8 @@ body {
 }
 
 *::selection {
-  color: #fffaa5;
-  background-color: #27e0b3;
-  text-shadow: 2px 2px #31808c;
+  color: #1d8078;
+  background-color: #ccfbf1;
 }
 
 @layer utilities {

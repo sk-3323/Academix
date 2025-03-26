@@ -11,7 +11,6 @@ const CourseProgressComponent = ({ course }: { course: Course }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { data: session } = useSession();
   const { singleData } = useSelector((state: any) => state["CourseStore"]);
-  console.log(singleData, "coursedata");
 
   useEffect(() => {
     dispatch(
@@ -21,7 +20,6 @@ const CourseProgressComponent = ({ course }: { course: Course }) => {
     );
   }, [course.id]);
   const data = useSelector((state: any) => state["EnrollmentStore"]);
-  console.log(data, "enroll");
   
   useEffect(() => {
     if (course?.id && session?.user?.id) {

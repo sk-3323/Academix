@@ -40,9 +40,12 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
 export const POST = apiHandler(async (request: NextRequest, content: any) => {
   let formdata = await request.formData();
   let uploadedFileKey: string | null = null;
+
   try {
+    // Convert form data to JSON, excluding files
     let data = formDataToJsonWithoutFiles(formdata);
 
+    // Find the chapter
     const chapterFound = await prisma.chapter.findFirst({
       where: {
         id: data?.chapterId,
@@ -57,17 +60,14 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
       throw new ErrorHandler("Chapter not found", 404);
     }
 
+    // Validate the data against the schema
     data = await validateData(createResourceSchema, data);
 
-    let url = formdata?.get("url") as File;
-    if (url) {
-      const uploadedFile = await utapi.uploadFiles(url);
-      data.url = uploadedFile?.data?.url;
-      data.publicKey = uploadedFile?.data?.key;
-      uploadedFileKey = uploadedFile?.data?.key || null;
-    }
+    // Handle file upload
+    const url = formdata?.get("url");
 
-    let result = await prisma.$transaction(async (tx) => {
+    // Create the resource in a transaction
+    const result = await prisma.$transaction(async (tx) => {
       return await tx.resource.create({
         data: data,
         include: {
@@ -79,15 +79,16 @@ export const POST = apiHandler(async (request: NextRequest, content: any) => {
     return NextResponse.json(
       {
         status: true,
-        message: "resource created successfully",
+        message: "Resource created successfully",
         result,
       },
       { status: 201 }
     );
   } catch (error) {
+    // Cleanup uploaded file if it exists
     if (uploadedFileKey) {
-      await utapi.deleteFiles(uploadedFileKey); // Cleanup if an error occurs
+      await utapi.deleteFiles(uploadedFileKey);
     }
-    throw error;
+    throw error; // Let the apiHandler handle the error response
   }
 });

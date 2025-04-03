@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSelector } from "react-redux";
+import PageHeader from "@/components/LayoutContent/PageHeader";
 
 // Type definitions
 interface Quiz {
@@ -110,7 +111,45 @@ export default function QuizModule() {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <Card className="mb-8">
+      <PageHeader headerTitle="Quiz Management" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Total Quizzes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">{allQuizzes.length}</div>
+            <p className="text-sm text-muted-foreground mt-1">
+              Across all courses
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Published Quizzes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {allQuizzes.filter((q: Quiz) => q.status === "PUBLISHED").length}
+            </div>
+            <p className="text-sm text-muted-foreground mt-1">
+              Ready for students
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Draft Quizzes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {allQuizzes.filter((q: Quiz) => q.status === "DRAFT").length}
+            </div>
+            <p className="text-sm text-muted-foreground mt-1">In preparation</p>
+          </CardContent>
+        </Card>
+      </div>
+      <Card className="mt-8">
         <CardHeader>
           <CardTitle className="text-2xl">Quiz Module</CardTitle>
           <CardDescription>
@@ -258,44 +297,6 @@ export default function QuizModule() {
           </div>
         </CardContent>
       </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Total Quizzes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{allQuizzes.length}</div>
-            <p className="text-sm text-muted-foreground mt-1">
-              Across all courses
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Published Quizzes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">
-              {allQuizzes.filter((q: Quiz) => q.status === "PUBLISHED").length}
-            </div>
-            <p className="text-sm text-muted-foreground mt-1">
-              Ready for students
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Draft Quizzes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">
-              {allQuizzes.filter((q: Quiz) => q.status === "DRAFT").length}
-            </div>
-            <p className="text-sm text-muted-foreground mt-1">In preparation</p>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 }

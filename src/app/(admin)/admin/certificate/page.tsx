@@ -362,28 +362,28 @@ export default function DynamicCertificateGenerator() {
       {/* <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"> */}
       <PageHeader
         headerTitle="Certificate Generator"
-        renderRight={() => {
-          return (
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                disabled={!selectedCourse || !previewUser}
-                onClick={() => downloadCertificate(liveCanvasRef)}
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Download Preview
-              </Button>
-              <Button
-                disabled={!selectedCourse || selectedUsers.length === 0}
-                onClick={handleGenerateCertificates}
-                isLoading={isGenerating}
-              >
-                <Award className="h-4 w-4 mr-2" />
-                Generate Certificates
-              </Button>
-            </div>
-          );
-        }}
+        // renderRight={() => {
+        //   return (
+        //     <div className="flex gap-2">
+        //       <Button
+        //         variant="outline"
+        //         disabled={!selectedCourse || !previewUser}
+        //         onClick={() => downloadCertificate(liveCanvasRef)}
+        //       >
+        //         <Download className="h-4 w-4 mr-2" />
+        //         Download Preview
+        //       </Button>
+        //       <Button
+        //         disabled={!selectedCourse || selectedUsers.length === 0}
+        //         onClick={handleGenerateCertificates}
+        //         isLoading={isGenerating}
+        //       >
+        //         <Award className="h-4 w-4 mr-2" />
+        //         Generate Certificates
+        //       </Button>
+        //     </div>
+        //   );
+        // }}
       />
 
       {/* </div> */}

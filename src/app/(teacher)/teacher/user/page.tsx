@@ -100,150 +100,6 @@ export default function TeacherStudentPage() {
   const { data: session } = useSession();
   const [expandedCourse, setExpandedCourse] = useState<string | null>(null);
 
-  // In a real app, you would fetch this data from an API
-  // const coursesData: Course[] = [
-  //   {
-  //     id: "67cad724b9c1cb55b541a809",
-  //     title: "Machine Learning",
-  //     description:
-  //       "<p>Machine Learning is a branch of artificial intelligence that focuses on the development of algorithms and statistical models that enable computers to perform tasks without explicit instructions. It involves training models on large datasets to identify patterns and make predictions or decisions. Applications range from image and speech recognition to recommendation systems and autonomous vehicles, making it a key technology in various industries. Machine Learning techniques include supervised learning, unsupervised learning, and reinforcement learning, each suited to different types of problems.</p>",
-  //     thumbnail:
-  //       "https://res.cloudinary.com/dlh3tav1v/image/upload/v1742232189/academix-cloudinary-mongodb/thumbnail-1d20b798-239f-4adf-b27e-36f948d14069_sewwhu.jpg",
-  //     price: 120,
-  //     isFree: false,
-  //     status: "PUBLISHED",
-  //     level: "BEGINNER",
-  //     instructor: {
-  //       id: "67a1ec4b200bb812be247609",
-  //       email: "gladecoder@gmail.com",
-  //       username: "Rishi Gaiwala",
-  //       role: "ADMIN",
-  //       avatar:
-  //         "https://utfs.io/f/cc4169f1-034f-4be3-aa16-eff0ba193dd2-2sc3ex.png",
-  //       isVerified: true,
-  //     },
-  //     category: {
-  //       id: "679deb5a7a62432324c386c5",
-  //       name: "Engineering",
-  //     },
-  //     chapters: [
-  //       {
-  //         id: "67cad8d6b9c1cb55b541a80a",
-  //         title: "Introduction to Machine Learning",
-  //         status: "DRAFT",
-  //         topics: [
-  //           {
-  //             id: "67dc61ad1052b0af3d241fb1",
-  //             title: "Introduction to Machine Learning",
-  //             status: "PUBLISHED",
-  //             isFree: true,
-  //           },
-  //           {
-  //             id: "67dc62146811dbcb84d11a37",
-  //             title: "History and Evolution of ML",
-  //             status: "PUBLISHED",
-  //             isFree: false,
-  //           },
-  //         ],
-  //         quiz: [],
-  //         resources: [],
-  //       },
-  //     ],
-  //     enrollments: [
-  //       {
-  //         id: "67dda8b11eea07f151e8058d",
-  //         status: "ACTIVE",
-  //         payment_status: "PAID",
-  //         price: 120,
-  //         createdAt: "2025-03-21T17:58:09.930Z",
-  //         user: {
-  //           id: "67cf27d8ac20d184e1f8122b",
-  //           email: "vipulkaniya1001@gmail.com",
-  //           username: "Shubham Kaniya",
-  //           role: "STUDENT",
-  //           avatar:
-  //             "https://api.dicebear.com/9.x/avataaars/svg?seed=Sagar Dalwala",
-  //           isVerified: true,
-  //         },
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: "67c426f58048cd8311a1868e",
-  //     title: "Introduction to Web Development",
-  //     description: "<p>Introduction to Web Development DESCRIPTIONS</p>",
-  //     thumbnail:
-  //       "https://utfs.io/f/5c6d7422-7707-46b3-ba41-d6864310bc94-zaot3k.jpg",
-  //     price: 0,
-  //     isFree: true,
-  //     status: "PUBLISHED",
-  //     level: "BEGINNER",
-  //     instructor: {
-  //       id: "67a1ec4b200bb812be247609",
-  //       email: "gladecoder@gmail.com",
-  //       username: "Rishi Gaiwala",
-  //       role: "ADMIN",
-  //       avatar:
-  //         "https://utfs.io/f/cc4169f1-034f-4be3-aa16-eff0ba193dd2-2sc3ex.png",
-  //       isVerified: true,
-  //     },
-  //     category: {
-  //       id: "67a3590408f221a7bf140396",
-  //       name: "Direct Marketing Designer",
-  //     },
-  //     chapters: [
-  //       {
-  //         id: "67c4271f8048cd8311a1868f",
-  //         title: "HTML Fundamentals",
-  //         status: "PUBLISHED",
-  //         topics: [
-  //           {
-  //             id: "67c42bea8048cd8311a18694",
-  //             title: "HTML5 Features",
-  //             status: "PUBLISHED",
-  //             isFree: false,
-  //           },
-  //         ],
-  //         quiz: [],
-  //         resources: [],
-  //       },
-  //     ],
-  //     enrollments: [
-  //       {
-  //         id: "67ddae2b582fea2decd15ba7",
-  //         status: "ACTIVE",
-  //         payment_status: "PAID",
-  //         price: 0,
-  //         createdAt: "2025-03-21T18:21:31.565Z",
-  //         user: {
-  //           id: "67ddab9517b0cdd9d2ae92d3",
-  //           email: "triveditisha18@gmail.com",
-  //           username: "Trivedi Tisha",
-  //           role: "STUDENT",
-  //           avatar:
-  //             "https://api.dicebear.com/9.x/avataaars/svg?seed=TrivediTisha",
-  //           isVerified: true,
-  //         },
-  //       },
-  //       {
-  //         id: "67ddae4d582fea2decd15ba8",
-  //         status: "ACTIVE",
-  //         payment_status: "PAID",
-  //         price: 0,
-  //         createdAt: "2025-03-21T18:22:05.005Z",
-  //         user: {
-  //           id: "67a1ec4b200bb812be247609",
-  //           email: "gladecoder@gmail.com",
-  //           username: "Rishi Gaiwala",
-  //           role: "ADMIN",
-  //           avatar:
-  //             "https://utfs.io/f/cc4169f1-034f-4be3-aa16-eff0ba193dd2-2sc3ex.png",
-  //           isVerified: true,
-  //         },
-  //       },
-  //     ],
-  //   },
-  // ];
   const { data: coursesData } = useSelector((state: any) => state.CourseStore);
 
   const dispatch = useDispatch<AppDispatch>();
@@ -293,20 +149,20 @@ export default function TeacherStudentPage() {
       <div className="flex flex-col gap-6">
         <PageHeader
           headerTitle="Student Management"
-          renderRight={() => {
-            return (
-              <div className="flex items-center gap-2">
-                <Button variant="outline">
-                  <Download className="mr-2 h-4 w-4" />
-                  Export Data
-                </Button>
-                <Button>
-                  <FileText className="mr-2 h-4 w-4" />
-                  Generate Report
-                </Button>
-              </div>
-            );
-          }}
+          // renderRight={() => {
+          //   return (
+          //     <div className="flex items-center gap-2">
+          //       <Button variant="outline">
+          //         <Download className="mr-2 h-4 w-4" />
+          //         Export Data
+          //       </Button>
+          //       <Button>
+          //         <FileText className="mr-2 h-4 w-4" />
+          //         Generate Report
+          //       </Button>
+          //     </div>
+          //   );
+          // }}
         />
         {/* <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>

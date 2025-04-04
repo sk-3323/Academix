@@ -155,8 +155,6 @@ export const authOption: NextAuthOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      console.log(url, baseUrl, "url baseurl");
-
       return baseUrl;
     },
   },

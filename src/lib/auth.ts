@@ -154,8 +154,8 @@ export const authOption: NextAuthOptions = {
       }
       return session;
     },
-    async redirect({ url, baseUrl }) {
-      return baseUrl;
-    },
+    // async redirect({ url, baseUrl }) {
+    //   return baseUrl;
+    // },
   },
 };

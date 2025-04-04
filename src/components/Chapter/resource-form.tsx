@@ -93,7 +93,6 @@ const ResourceForm = ({
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values, "Velauue");
 
     try {
       const formdata = new FormData();

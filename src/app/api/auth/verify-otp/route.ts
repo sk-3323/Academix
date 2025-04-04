@@ -12,7 +12,7 @@ export const POST = apiHandler(async (request: NextRequest) => {
   const { email: id, otp } = await request.json();
 
   // Verify the OTP and update the user's account status
-  console.log(id, otp);
+  
 
   const userExistByEmail = await prisma.user.findUnique({
     where: {

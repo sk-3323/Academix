@@ -44,6 +44,7 @@ import { DollarSign, ArrowUpRight, Calendar, User } from "lucide-react";
 import { toast } from "sonner";
 import { APIClient } from "@/helpers/apiHelper";
 import { useSelector } from "react-redux";
+import Revenue from "@/components/Revenue";
 
 export default function WalletPage() {
   const [transactions, setTransactions] = useState([]);
@@ -53,25 +54,25 @@ export default function WalletPage() {
     (state: any) => state.UserStore
   );
   // Fetch transactions - replace with your API call
-  const getTransactions = async () => {
-    try {
-      const api = new APIClient();
-      const res: any = await api.get("/transaction");
-      setTransactions(res.result);
+  // const getTransactions = async () => {
+  //   try {
+  //     const api = new APIClient();
+  //     const res: any = await api.get("/transaction");
+  //     setTransactions(res.result);
 
-      const balance = res?.result?.reduce((total, transaction) => {
-        const isAdmin = transaction?.user?.id === currentUser.id;
-        return isAdmin ? total + transaction.amount : total; // Add amount only if Admin
-      }, 0); // Initial value is 0
-      setWalletBalance(balance);
-    } catch (error: any) {
-      console.log(error);
-      toast.error(error.message);
-    }
-  };
-  useEffect(() => {
-    getTransactions();
-  }, []);
+  //     const balance = res?.result?.reduce((total, transaction) => {
+  //       const isAdmin = transaction?.user?.id === currentUser.id;
+  //       return isAdmin ? total + transaction.amount : total; // Add amount only if Admin
+  //     }, 0); // Initial value is 0
+  //     setWalletBalance(balance);
+  //   } catch (error: any) {
+  //     console.log(error);
+  //     toast.error(error.message);
+  //   }
+  // };
+  // useEffect(() => {
+  //   getTransactions();
+  // }, []);
 
   // Format date to readable format
   const formatDate = (dateString) => {
@@ -116,7 +117,7 @@ export default function WalletPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ₹{walletBalance.toFixed(2)}
+              <Revenue userId={currentUser.id} />
             </div>
             <p className="text-xs text-muted-foreground">
               {currentUser.role === "ADMIN"

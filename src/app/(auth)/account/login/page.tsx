@@ -159,7 +159,6 @@ const page = () => {
               variant="outline"
               onClick={async () => {
                 const result = await signIn("google");
-                console.log(result);
               }}
               className="w-full rounded-full"
             >

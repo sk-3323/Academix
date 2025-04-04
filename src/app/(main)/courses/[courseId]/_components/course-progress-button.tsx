@@ -148,10 +148,12 @@ import { GetPublishedTopicWithProgressApi } from "@/store/topic/slice";
 import { AddUserProgressApi } from "@/store/user-progress/slice";
 import { CheckCircle, ShieldCheck, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { jsPDF } from "jspdf"; // Import jsPDF
+import { APIClient } from "@/helpers/apiHelper";
+import { useSession } from "next-auth/react";
 
 interface CourseProgressButtonProps {
   topicId: string;
@@ -176,8 +178,41 @@ const CourseProgressButton = ({
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const [isLoading, setIsLoading] = useState(false);
-  const { singleData: courseData } = useSelector((state: any) => state.CourseStore);
+  const { singleData: courseData } = useSelector(
+    (state: any) => state.CourseStore
+  );
 
+  const { data: userData } = useSession();
+  const certificateSettings = {
+    template: "standard",
+    title: "Certificate of Completion",
+    subtitle: "has successfully completed the course",
+    signature: courseData?.instructor?.username || "Course Instructor",
+    signaturePosition: "center",
+    showLogo: true,
+    showDate: true,
+    showBorder: true,
+    primaryColor: "#0ea5e9",
+    secondaryColor: "#8b5cf6",
+    fontFamily: "serif",
+    fontSize: 24,
+    borderWidth: 5,
+    includeQR: false,
+  };
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const logoRef = useRef<HTMLImageElement | null>(null);
+  const signatureRef = useRef<HTMLImageElement | null>(null);
+  useEffect(() => {
+    const logo = new Image();
+    logo.src = "/assets/logos/light-h-logo-with-name.svg"; // Adjust path
+    logo.crossOrigin = "anonymous";
+    logoRef.current = logo;
+
+    const signature = new Image();
+    signature.src = "/assets/logos/light-name.svg"; // Adjust path
+    signature.crossOrigin = "anonymous";
+    signatureRef.current = signature;
+  }, []);
   const handleSuccess = async () => {
     try {
       dispatch(GetSingleCourseWithProgressApi({ id: courseId }));
@@ -205,7 +240,10 @@ const CourseProgressButton = ({
   const handleClick = async () => {
     try {
       setIsLoading(true);
-      setActions((current: any) => ({ ...current, callbackFunction: handleSuccess }));
+      setActions((current: any) => ({
+        ...current,
+        callbackFunction: handleSuccess,
+      }));
       await dispatch(
         AddUserProgressApi({
           values: { isCompleted: !isCompleted, topicId },
@@ -221,100 +259,148 @@ const CourseProgressButton = ({
     }
   };
 
+  const renderCertificate = (canvas: HTMLCanvasElement) => {
+    if (!canvas || !courseData) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const width = canvas.width;
+    const height = canvas.height;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, width, height);
+
+    // Background
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, "#ffffff");
+    gradient.addColorStop(1, "#f8fafc");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+
+    // Border
+    if (certificateSettings.showBorder) {
+      ctx.strokeStyle = certificateSettings.primaryColor;
+      ctx.lineWidth = certificateSettings.borderWidth;
+      ctx.strokeRect(
+        certificateSettings.borderWidth / 2,
+        certificateSettings.borderWidth / 2,
+        width - certificateSettings.borderWidth,
+        height - certificateSettings.borderWidth
+      );
+    }
+
+    // Logo
+    if (certificateSettings.showLogo && logoRef.current) {
+      ctx.drawImage(logoRef.current, width / 2 - 75, 50, 200, 150); // Proportional increase
+    }
+
+    // Title
+    ctx.font = `bold ${certificateSettings.fontSize}px ${certificateSettings.fontFamily}`;
+    ctx.fillStyle = certificateSettings.primaryColor;
+    ctx.textAlign = "center";
+    ctx.fillText(certificateSettings.title, width / 2, 200);
+
+    // Subtitle
+    ctx.font = `italic ${certificateSettings.fontSize * 0.6}px ${certificateSettings.fontFamily}`;
+    ctx.fillStyle = "#64748b";
+    ctx.fillText("This is to certify that", width / 2, 250);
+
+    // Student Name
+    ctx.font = `bold ${certificateSettings.fontSize * 1.2}px ${certificateSettings.fontFamily}`;
+    ctx.fillStyle = certificateSettings.secondaryColor;
+    ctx.fillText(userData.user.username, width / 2, 300);
+
+    // Course Completion Text
+    ctx.font = `${certificateSettings.fontSize * 0.6}px ${certificateSettings.fontFamily}`;
+    ctx.fillStyle = "#64748b";
+    ctx.fillText(certificateSettings.subtitle, width / 2, 340);
+
+    // Course Name
+    ctx.font = `bold ${certificateSettings.fontSize * 0.8}px ${certificateSettings.fontFamily}`;
+    ctx.fillStyle = "#0f172a";
+    ctx.fillText(courseData.title, width / 2, 380);
+
+    // Date
+    if (certificateSettings.showDate) {
+      const completionDate = new Date().toLocaleDateString(); // Use actual completion date if available
+      ctx.font = `${certificateSettings.fontSize * 0.6}px ${certificateSettings.fontFamily}`;
+      ctx.fillStyle = "#64748b";
+      ctx.fillText(`Issued on ${completionDate}`, width / 2, 430);
+    }
+
+    // Signature
+    if (signatureRef.current) {
+      const signatureX =
+        certificateSettings.signaturePosition === "right"
+          ? width * 0.7
+          : certificateSettings.signaturePosition === "left"
+            ? width * 0.3
+            : width / 2;
+
+      ctx.drawImage(signatureRef.current, signatureX - 75, 470, 150, 50);
+      ctx.font = `bold ${certificateSettings.fontSize * 0.6}px ${certificateSettings.fontFamily}`;
+      ctx.fillStyle = "#0f172a";
+      ctx.fillText(certificateSettings.signature, signatureX, 540);
+      ctx.font = `${certificateSettings.fontSize * 0.5}px ${certificateSettings.fontFamily}`;
+      ctx.fillStyle = "#64748b";
+      ctx.fillText("Instructor", signatureX, 560);
+    }
+
+    // Certificate ID
+    ctx.font = `${certificateSettings.fontSize * 0.4}px ${certificateSettings.fontFamily}`;
+    ctx.fillStyle = "#94a3b8";
+    ctx.textAlign = "center";
+    ctx.fillText(
+      `Certificate ID: CERT-${userData.user.id}-${Date.now().toString().slice(-6)}`,
+      width / 2,
+      height - 30
+    );
+  };
+
   const handleGenerateCertificate = async () => {
+    const api = new APIClient();
+
     try {
       setIsLoading(true);
 
-      // Ensure course data is available
       if (!courseData) {
-        toast.error("Course data not available");
+        toast.error("Course or user data not available");
         return;
       }
 
-      // Create a new jsPDF instance
+      // Render certificate to hidden canvas
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      canvas.width = 900; // Match DynamicCertificateGenerator dimensions
+      canvas.height = 500;
+      renderCertificate(canvas);
+
+      // Convert canvas to image
+      const certificateImage = canvas.toDataURL("image/png");
+
+      // Create PDF with jsPDF
       const doc = new jsPDF({
         orientation: "landscape",
-        unit: "mm",
-        format: "a4",
+        unit: "px",
+        format: [800, 600], // Match canvas size
       });
 
-      // Certificate Dimensions (A4: 297mm x 210mm in landscape)
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
+      // Add certificate image
+      doc.addImage(certificateImage, "PNG", 0, 0, 800, 600);
 
-      // Add Watermark (diagonal text)
+      // Add Watermark
       doc.setFontSize(50);
-      doc.setTextColor(200, 200, 200); // Light gray for watermark
-      doc.text("ACADEMIX CERTIFICATE", pageWidth / 2, pageHeight / 2, {
-        angle: 45,
-        align: "center",
+      doc.setTextColor(200, 200, 200); // Light gray
+
+      // Save PDF
+      doc.save(`${courseData.title}_Certificate_${userData.user.username}.pdf`);
+      const res = await api.create("/certificate", {
+        courseId: courseData.id,
+        // certificateId = `CERT-${userData.id - Date.now().toString().slice(-6)}`,
       });
-
-      // Reset text color for main content
-      doc.setTextColor(0, 0, 0);
-
-      // Certificate Border
-      doc.setLineWidth(1);
-      doc.rect(10, 10, pageWidth - 20, pageHeight - 20); // Border 10mm from edges
-
-      // Title
-      doc.setFontSize(30);
-      doc.setFont("helvetica", "bold");
-      doc.text("Certificate of Completion", pageWidth / 2, 40, { align: "center" });
-
-      // Course Title
-      doc.setFontSize(20);
-      doc.setFont("helvetica", "normal");
-      doc.text(`Course: ${courseData.title}`, pageWidth / 2, 70, { align: "center" });
-
-      // Issued To
-      doc.setFontSize(16);
-      doc.text(
-        `Issued to: ${courseData.instructor.username}`,
-        pageWidth / 2,
-        90,
-        { align: "center" }
-      );
-
-      // Description
-      doc.setFontSize(12);
-      const descriptionLines = doc.splitTextToSize(
-        "This certificate is awarded for successfully completing the course, demonstrating proficiency in the subject matter.",
-        pageWidth - 40
-      );
-      doc.text(descriptionLines, pageWidth / 2, 110, { align: "center" });
-
-      // Additional Details
-      doc.setFontSize(14);
-      doc.text(`Level: ${courseData.level}`, 20, 150);
-      doc.text(`Category: ${courseData.category.name}`, 20, 165);
-      doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 180);
-
-      // Instructor
-      doc.text(
-        `Instructor: ${courseData.instructor.username}`,
-        pageWidth - 20,
-        150,
-        { align: "right" }
-      );
-
-      // Signature Line
-      doc.setLineWidth(0.5);
-      doc.line(pageWidth - 100, 165, pageWidth - 20, 165); // Signature line
-      doc.text("(Signature)", pageWidth - 60, 170, { align: "center" });
-
-      // Footer
-      doc.setFontSize(10);
-      doc.setTextColor(100, 100, 100);
-      doc.text(
-        "Generated by Academix",
-        pageWidth / 2,
-        pageHeight - 15,
-        { align: "center" }
-      );
-
-      // Save the PDF
-      doc.save(`${courseData.title}_Certificate.pdf`);
+      console.log(res);
       toast.success("Certificate generated and downloaded!");
     } catch (error: any) {
       console.error(error);
@@ -336,18 +422,19 @@ const CourseProgressButton = ({
         {isCompleted ? "Not Completed" : "Mark as complete"}
         <Icon className="w-4 h-4 ml-2" />
       </Button>
-      {!isCompleted && !nextTopicId && (
+      {isCompleted && (
         <Button
           type="button"
           variant="destructive"
           className="w-full md:w-auto"
           onClick={handleGenerateCertificate}
-          disabled={isLoading}
+          // disabled={isLoading}
         >
           Generate Certificate
           <ShieldCheck className="w-4 h-4 ml-2" />
         </Button>
       )}
+      <canvas ref={canvasRef} style={{ display: "none" }} />
     </div>
   );
 };

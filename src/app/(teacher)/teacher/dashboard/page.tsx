@@ -179,12 +179,14 @@ export default function TeacherDashboard() {
 
   // Prepare data for charts
   const courseData = useMemo(() => {
-    return authoredCourses.map((course: any, index: any) => ({
-      name: course.title,
-      students: course.enrollments.length,
-      value: course.enrollments.length,
-      color: COLORS[index % COLORS.length],
-    }));
+    return authoredCourses
+      .filter((course: any) => course.enrollments.length !== 0)
+      .map((course: any, index: any) => ({
+        name: course.title,
+        students: course.enrollments.length,
+        value: course.enrollments.length,
+        color: COLORS[index % COLORS.length],
+      }));
   }, [authoredCourses]);
 
   const monthlyData = useMemo(() => {

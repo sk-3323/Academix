@@ -116,7 +116,7 @@ export const PUT = apiHandler(async (request: NextRequest, content: any) => {
       date: new Date().toLocaleString(),
     };
     if (!enrollemnt.user.email) {
-      console.log("Email not found");
+      new ErrorHandler("Email not found");
     }
     await sendReceiptEmail(receiptData);
     return enrollemnt;

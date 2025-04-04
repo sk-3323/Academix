@@ -50,6 +50,7 @@ import { GetCourseApi } from "@/store/course/slice";
 import { Course } from "../../../../../types/allType";
 import { GetSingleUserProgressApi } from "@/store/user-progress/slice";
 import PageHeader from "@/components/LayoutContent/PageHeader";
+import { APIClient } from "@/helpers/apiHelper";
 
 export default function DynamicCertificateGenerator() {
   const { singleData } = useSelector((state: any) => state.UserStore);
@@ -126,8 +127,12 @@ export default function DynamicCertificateGenerator() {
         setCourses(singleData?.authoredCourses || []);
       }
     };
-
+    const fetchCertificate = async () => {
+      const api = new APIClient();
+      const res = await api.get("/certificate");
+    };
     fetchCourses();
+    fetchCertificate();
   }, [singleData, dispatch]);
 
   useEffect(() => {

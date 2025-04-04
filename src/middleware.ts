@@ -3,7 +3,6 @@ import { getToken } from "next-auth/jwt";
 import { apiHandler, ErrorHandler } from "./lib/errorHandler";
 export { default } from "next-auth/middleware";
 
-
 const publicRoutesRegex =
   /^\/$|^\/(about|contact|api\/home|courses(?:\/.*)?|api\/course(?:\/.*)?|assets\/logos\/light-h-logo-with-name\.svg)$/;
 
@@ -17,11 +16,12 @@ export const middleware = apiHandler(async (request: NextRequest) => {
   const token = await getToken({
     req: request,
     secret: process.env.NEXTAUTH_SECRET,
-    raw: true,
+    // raw: true,
   });
+  // console.log(token, "tokne");
 
   if (token) {
-    request.headers.set("x-user-token", token);
+    request.headers.set("x-user-token", JSON.stringify(token));
   }
 
   if (publicRoutesRegex.test(path)) {

@@ -158,9 +158,8 @@ const page = () => {
             <Button
               variant="outline"
               onClick={async () => {
-                const result = await signIn("google", {
-                  callbackUrl: "https://academix-learning.netlify.app",
-                });
+                const result = await signIn("google");
+                console.log(result);
               }}
               className="w-full rounded-full"
             >

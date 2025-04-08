@@ -158,7 +158,15 @@ const page = () => {
             <Button
               variant="outline"
               onClick={async () => {
-                const result = await signIn("google");
+                const result = await signIn("google", {
+                  redirect: false,
+                });
+
+                if (result?.error) {
+                  toast.error(result?.error);
+                } else if (result?.ok) {
+                  toast.success("Login successful");
+                }
               }}
               className="w-full rounded-full"
             >

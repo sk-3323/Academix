@@ -56,7 +56,7 @@ export function LayoutContent({
 
   return (
     <>
-      {/* <CustomCursor /> */}
+      <CustomCursor />
       <div className="grid min-h-screen w-full">
         <div
           className={`grid ${isSidebar ? "grid-cols-[auto_1fr]" : "grid-cols-1"}`}

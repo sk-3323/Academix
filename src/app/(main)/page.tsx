@@ -10,6 +10,8 @@ import { useSelector } from "react-redux";
 
 export default function Home() {
   const { data } = useSelector((state: any) => state.HomeStore);
+  console.log(data);
+  
   const quotes = ["Learn Smarter", "Not Harder"];
   const router = useRouter();
 

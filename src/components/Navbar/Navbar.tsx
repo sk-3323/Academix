@@ -258,7 +258,7 @@ const Navbar = ({ isMobile }: { isMobile: boolean }) => {
                 variant="ghost"
                 size="sm"
                 className="hidden sm:inline-flex"
-                onClick={() => router.push("/account/register")}
+                onClick={() => router.push("/account/signup")}
               >
                 Register
               </Button>

@@ -143,64 +143,68 @@ const ExploreCourses = () => {
       <div className="sticky top-0 z-10 bg-background pb-2">
         <div className="flex gap-2 border-b">
           <AnimatePresence>
-            {categories.map((category: any) => (
-              <TabButton
-                key={category.id}
-                category={category}
-                isActive={activeCategory === category.id}
-                onClick={() => setActiveCategory(category.id)}
-                availableCourseCount={getAvailableCourseCount(category)}
-              />
-            ))}
+            {categories
+              .filter((category: any) => category.course.length > 0)
+              .map((category: any) => (
+                <TabButton
+                  key={category.id}
+                  category={category}
+                  isActive={activeCategory === category.id}
+                  onClick={() => setActiveCategory(category.id)}
+                  availableCourseCount={getAvailableCourseCount(category)}
+                />
+              ))}
           </AnimatePresence>
         </div>
       </div>
 
       {/* Course Content */}
       <AnimatePresence mode="wait">
-        {categories.map(
-          (category: any) =>
-            activeCategory === category.id && (
-              <motion.div
-                key={category.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-                className="mt-8"
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {getAvailableCourses(category.course).map(
-                    (course: Course) => (
-                      <CourseCard key={course.id} course={course} />
-                    )
-                  )}
-                </div>
-
-                {getAvailableCourses(category.course).length === 0 && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-center py-12 space-y-4"
-                  >
-                    <p className="text-muted-foreground">
-                      {enrolledCourseIds.length > 0
-                        ? "You've enrolled in all available courses in this category!"
-                        : "No published courses in this category."}
-                    </p>
-                    {enrolledCourseIds.length > 0 && (
-                      <Link
-                        href="/classroom"
-                        className="text-primary hover:underline inline-block"
-                      >
-                        View your enrolled courses
-                      </Link>
+        {categories
+          .filter((category: any) => category.course.length > 0)
+          .map(
+            (category: any) =>
+              activeCategory === category.id && (
+                <motion.div
+                  key={category.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="mt-8"
+                >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {getAvailableCourses(category.course).map(
+                      (course: Course) => (
+                        <CourseCard key={course.id} course={course} />
+                      )
                     )}
-                  </motion.div>
-                )}
-              </motion.div>
-            )
-        )}
+                  </div>
+
+                  {getAvailableCourses(category.course).length === 0 && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-center py-12 space-y-4"
+                    >
+                      <p className="text-muted-foreground">
+                        {enrolledCourseIds.length > 0
+                          ? "You've enrolled in all available courses in this category!"
+                          : "No published courses in this category."}
+                      </p>
+                      {enrolledCourseIds.length > 0 && (
+                        <Link
+                          href="/classroom"
+                          className="text-primary hover:underline inline-block"
+                        >
+                          View your enrolled courses
+                        </Link>
+                      )}
+                    </motion.div>
+                  )}
+                </motion.div>
+              )
+          )}
       </AnimatePresence>
     </div>
   );

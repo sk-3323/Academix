@@ -29,7 +29,7 @@ const page = () => {
   return (
     <div className="w-full min-h-screen my-10">
       <UserDashboard />
-      <div className="flex-1 space-y-6 p-6 md:p-8">
+      <div className="flex-1 p-6 md:p-8">
         <h1 className="text-3xl  font-bold tracking-tight">
           My <span className="text-[#27e0b3]">Enrolled Course</span>
         </h1>

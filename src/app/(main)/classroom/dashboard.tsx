@@ -150,18 +150,25 @@ export default function UserDashboard() {
 
   return (
     <div className="flex-1 space-y-6 p-6 md:p-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          My <span className="text-[#27e0b3]">Learning Dashboard</span>
-        </h1>
-        <p className="text-muted-foreground">
-          Welcome back, {singleData?.username}! Here's an overview of your
-          learning progress.
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            My <span className="text-[#27e0b3]">Learning Dashboard</span>
+          </h1>
+          <p className="text-muted-foreground">
+            Welcome back, {singleData?.username}! Here's an overview of your
+            learning progress.
+          </p>
+        </div>
+        <Button
+          onClick={() => window.open("https://discord.gg/dPBBFrFr", "_blank")}
+        >
+          Any Query?
+        </Button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 ">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -184,7 +191,7 @@ export default function UserDashboard() {
             <div className="text-2xl font-bold">{completedCourses}</div>
           </CardContent>
         </Card>
-        <Card>
+        {/* <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Overall Progress
@@ -197,7 +204,7 @@ export default function UserDashboard() {
             </div>
             <Progress value={totalProgress} className="mt-2" />
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       {/* Enrolled Courses Table */}

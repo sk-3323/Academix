@@ -17,7 +17,7 @@ const courseIdPage = ({ params }: { params: { courseId: string } }) => {
     );
   }, [params?.courseId]);
 
-  if (singleData?.chapters?.[0]?.topics?.[0]?.id) {
+  if (params?.courseId && singleData?.chapters?.[0]?.topics?.[0]?.id) {
     return redirect(
       `/courses/${params?.courseId}/topics/${singleData?.chapters?.[0]?.topics?.[0]?.id}`
     );

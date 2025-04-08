@@ -45,6 +45,19 @@ export const sendReceiptEmail = async (receiptData: paymentDataType) => {
               padding-bottom: 20px;
               border-bottom: 1px solid #e1e1e1;
             }
+                .logo{
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       width: 100%;
+       }
+          .brand{
+          color: #27e0b3;
+          font-size: 32px;
+          font-weight: bold;
+          text-align: center;
+
+        }
             .header img {
               max-width: 150px;
             }
@@ -80,8 +93,7 @@ export const sendReceiptEmail = async (receiptData: paymentDataType) => {
         </head>
         <body>
           <div class="container">
-            <div class="header">
-              <img src="https://utfs.io/f/5de60556-de08-43ed-ae96-1248d5892fe8-al67x0.svg" alt="Acedemix Logo" />
+            <div class="header"><h1 class="brand">Academix</h1>
             </div>
             <div class="content">
               <h1>Payment Receipt</h1>

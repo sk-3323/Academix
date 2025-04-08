@@ -311,7 +311,7 @@ export default function QuizDetail({ params }: { params: { id: string } }) {
             <Button variant="outline" onClick={() => router.back()}>
               Back to Quizzes
             </Button>
-            <Button>Preview Quiz</Button>
+            {/* <Button>Preview Quiz</Button> */}
           </div>
         </CardFooter>
       </Card>

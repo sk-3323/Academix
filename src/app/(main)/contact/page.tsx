@@ -1,4 +1,34 @@
+"use client";
+import { APIClient } from "@/helpers/apiHelper";
+import { sendContactus } from "@/helpers/sendContactUs";
+import { useState } from "react";
+
 const page = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      // const { email, message, name } = formData;
+      const api = new APIClient();
+      const res = await api.create("/contact", formData);
+      console.log(res);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  };
   return (
     <div>
       <div className="min-h-screen flex justify-center items-center">
@@ -9,7 +39,7 @@ const page = () => {
             and we'll get back to you as soon as possible.
           </p>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 max-w-3xl mx-auto">
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                 <div>
                   <label
@@ -21,8 +51,10 @@ const page = () => {
                   <input
                     type="text"
                     id="name"
+                    name="name"
                     className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
                     placeholder="Enter your name"
+                    onChange={handleChange}
                   />
                 </div>
                 <div>
@@ -35,6 +67,8 @@ const page = () => {
                   <input
                     type="email"
                     id="email"
+                    name="email"
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
                     placeholder="Enter your email"
                   />
@@ -50,6 +84,8 @@ const page = () => {
                 <textarea
                   id="message"
                   rows={5}
+                  name="message"
+                  onChange={handleChange}
                   className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
                   placeholder="Write your message here..."
                 ></textarea>

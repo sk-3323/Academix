@@ -50,8 +50,9 @@ export async function sendEmailVerification(
 
        .logo{
        display: flex;
-       justify-content:center;
+       justify-content: center;
        align-items: center;
+       width: 100%;
        }
 
         .subheader {
@@ -67,6 +68,14 @@ export async function sendEmailVerification(
             font-size: 16px;
             line-height: 24px;
             margin: 16px 0;
+        }
+
+        .brand{
+          color: #27e0b3;
+          font-size: 32px;
+          font-weight: bold;
+          text-align: center;
+
         }
 
         .otp-container {
@@ -98,7 +107,7 @@ export async function sendEmailVerification(
 <body>
     <div class="container">
        <div class="logo">
-        <img src="https://utfs.io/f/5de60556-de08-43ed-ae96-1248d5892fe8-al67x0.svg"/>
+       <h1 class="brand">Academix</h1>
        </div>
         
         <div class="content-section">

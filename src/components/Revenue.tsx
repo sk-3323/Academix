@@ -21,8 +21,10 @@ const Revenue = ({ userId }: { userId: string }) => {
     }
   };
   useEffect(() => {
-    getTransactions();
-  }, []);
+    if (userId) {
+      getTransactions();
+    }
+  }, [userId]);
   return <div>₹ {toalRevenue}</div>;
 };
 

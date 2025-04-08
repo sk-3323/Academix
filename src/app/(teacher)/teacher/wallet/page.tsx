@@ -54,25 +54,25 @@ export default function WalletPage() {
     (state: any) => state.UserStore
   );
   // Fetch transactions - replace with your API call
-  // const getTransactions = async () => {
-  //   try {
-  //     const api = new APIClient();
-  //     const res: any = await api.get("/transaction");
-  //     setTransactions(res.result);
+  const getTransactions = async () => {
+    try {
+      const api = new APIClient();
+      const res: any = await api.get("/transaction");
+      setTransactions(res.result);
 
-  //     const balance = res?.result?.reduce((total, transaction) => {
-  //       const isAdmin = transaction?.user?.id === currentUser.id;
-  //       return isAdmin ? total + transaction.amount : total; // Add amount only if Admin
-  //     }, 0); // Initial value is 0
-  //     setWalletBalance(balance);
-  //   } catch (error: any) {
-  //     console.log(error);
-  //     toast.error(error.message);
-  //   }
-  // };
-  // useEffect(() => {
-  //   getTransactions();
-  // }, []);
+      const balance = res?.result?.reduce((total, transaction) => {
+        const isAdmin = transaction?.user?.id === currentUser.id;
+        return isAdmin ? total + transaction.amount : total; // Add amount only if Admin
+      }, 0); // Initial value is 0
+      setWalletBalance(balance);
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+  useEffect(() => {
+    getTransactions();
+  }, []);
 
   // Format date to readable format
   const formatDate = (dateString) => {

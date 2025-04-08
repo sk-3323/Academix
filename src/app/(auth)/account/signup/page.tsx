@@ -233,7 +233,7 @@ const page = () => {
           </Form>
         </CardContent>
         <CardFooter className="flex justify-between gap-3">
-          <div className="btngoogle w-full">
+          {/* <div className="btngoogle w-full">
             <Button
               variant="outline"
               onClick={async () => {
@@ -250,7 +250,7 @@ const page = () => {
               />
               Continue with Google
             </Button>
-          </div>
+          </div> */}
           {/* <div>
             <Button
               variant="outline"

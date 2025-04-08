@@ -134,7 +134,6 @@ export const DELETE = apiHandler(async (request: NextRequest, content: any) => {
 
     for (let topic of chapterFound?.topics) {
       if (topic?.muxData?.assetId) {
-        console.log("aave aave aave :>>");
         await videoAsset.assets.delete(topic?.muxData?.assetId);
       }
     }

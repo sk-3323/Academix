@@ -71,7 +71,6 @@ export const POST = apiHandler(async (request: NextRequest) => {
     verifyCode
   );
 
-  console.log("emailResponse :>>", emailResponse);
 
   if (!emailResponse.status) {
     throw new ErrorHandler(emailResponse.message, 500);

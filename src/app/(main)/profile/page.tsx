@@ -382,13 +382,13 @@ const ProfileManagement = () => {
                       className="border p-4 rounded-lg space-y-2"
                     >
                       <p className="font-medium">
-                        Certificate for Course: {certificate.courseId}
+                        Certificate for Course: {certificate?.course?.title}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         Issued On:{" "}
-                        {certificate.issuedAt
+                        {certificate.issueDate
                           ? format(
-                              new Date(certificate.issuedAt),
+                              new Date(certificate?.issueDate),
                               "yyyy-MM-dd HH:mm:ss"
                             )
                           : "Unknown"}

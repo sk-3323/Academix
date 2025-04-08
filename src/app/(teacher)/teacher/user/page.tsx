@@ -254,7 +254,7 @@ export default function TeacherStudentPage() {
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-4">
                       <div className="relative h-16 w-16 overflow-hidden rounded-md">
-                        <Image
+                        <img
                           src={
                             course?.thumbnail ||
                             "/placeholder.svg?height=64&width=64"

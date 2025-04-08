@@ -5,7 +5,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const POST = apiHandler(async (req: NextRequest, content: any) => {
   const data: any = await req.json();
-  console.log(data, "data");
 
   const token: any = req.headers.get("x-user-token");
   const { id: userId } = await decryptToken(token);

@@ -81,7 +81,6 @@ export default function DynamicCertificateGenerator({ isAdmin = false }) {
   }, []);
 
   useEffect(() => {
-    console.log(isPreviewOpen, selectedCertificate, canvasRef.current);
 
     if (isPreviewOpen && selectedCertificate) {
       // Add a small delay to ensure the canvas is properly mounted in the DOM

@@ -25,7 +25,9 @@ export const GET = apiHandler(async (request: NextRequest, content: any) => {
     const userId = searchParams.get("userId");
 
     if (userId) {
-      conditions.userId = userId;
+      const removeQuesMark = userId.substring(0, userId.length - 1);
+
+      conditions.userId = removeQuesMark;
     }
 
     return await tx.transaction.findMany({

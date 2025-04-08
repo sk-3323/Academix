@@ -1,12 +1,11 @@
 import { ApiResponse } from "../../types/ApiResponse";
 import nodemailer from "nodemailer";
 import { transporter } from "./sendVerificationMail";
-import logo from "../../public/assets/logos/light-h-logo-with-name.svg";
-import { NODE_APP_URL } from "@/constants/config";
-export async function sendResetPasswordLink(
+
+export async function sendContactus(
   email: string,
-  username: string,
-  link: string
+  name: string,
+  message: string
 ): Promise<ApiResponse> {
   try {
     const content = `<!DOCTYPE html>
@@ -14,7 +13,7 @@ export async function sendResetPasswordLink(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acedemix OTP Email</title>
+    <title>Acedemix Contact Us</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
@@ -26,19 +25,7 @@ export async function sendResetPasswordLink(
             align-items: center;
             min-height: 100vh;
         }
-  .logo{
-       display: flex;
-       justify-content: center;
-       align-items: center;
-       width: 100%;
-       }
-          .brand{
-          color: #27e0b3;
-          font-size: 32px;
-          font-weight: bold;
-          text-align: center;
 
-        }
         .container {
             margin: 0 auto;
             padding: 20px 0 48px;
@@ -53,14 +40,7 @@ export async function sendResetPasswordLink(
             padding: 24px;
         }
 
-        .header {
-            color: #27e0b3;
-            font-size: 32px;
-            font-weight: bold;
-            text-align: center;
-            margin: 16px 0;
-        }
-
+   
         .subheader {
             color: #333;
             font-size: 24px;
@@ -76,8 +56,27 @@ export async function sendResetPasswordLink(
             margin: 16px 0;
         }
 
-     
+        .otp-container {
+            background: #f0f7ff;
+            border: 1px solid #cce5ff;
+            border-radius: 4px;
+            margin: 24px 0;
+            padding: 16px;
+            text-align: center;
+        }
+ .logo{
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       width: 100%;
+       }
+          .brand{
+          color: #27e0b3;
+          font-size: 32px;
+          font-weight: bold;
+          text-align: center;
 
+        }
         .otp-text {
             color: #0066cc;
             font-size: 36px;
@@ -97,24 +96,23 @@ export async function sendResetPasswordLink(
 </head>
 <body>
     <div class="container">
-    
-    <div class="content-section">
-          <div class="logo">
+       <div class="logo">
         <h1 class="brand">Academix</h1>
        </div>
-            <h2 class="subheader">Reset Password Link</h2>
+        
+        <div class="content-section">
+            <h2 class="subheader">Academix Contact</h2>
             
-            <p class="text">Hello ${username}</p>
             
-            <p class="text">Your Password Reset Link:</p>
+            <div class="otp-container">
+                 <p class="text">From : Name = ${name} & Email = ${email}</p>
+            <p class="text">Message : ${message}</p>
+           
+            </div>
             
-            <a href="${link}">Click for Password Reset</a>
+            <p class="text">This Person is Trying To Reach You</p>
             
-            <p class="text">This LINK is valid for 2 minutes.</p>
             
-            <p class="text">
-                If you didn't request this LINK, please ignore this email.
-            </p>
         </div>
         
         <p class="footer">© ${new Date().getFullYear()} <a href="https://academix-learning.netlify.app/">Academix</a>. All rights reserved.</p>
@@ -123,18 +121,20 @@ export async function sendResetPasswordLink(
 </html>`;
 
     const emailResponse = await transporter.sendMail({
-      from: `"Acedemix" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: "Password Reset Link | Acedemix",
+      from: `"Acedemix" <${email}>`,
+      to: process.env.EMAIL_USER,
+      subject: "Contact Us",
       html: content,
     });
 
+    console.log("Email sent: %s", emailResponse);
+
     return {
       status: true,
-      message: "Password reset link sent successfully",
+      message: "Email Sent Successfully",
     };
   } catch (emailError) {
-    console.error("Error sending link", emailError);
+    console.error("Error sending email verification", emailError);
     throw emailError;
   }
 }

@@ -127,21 +127,21 @@ export default function TeacherStudentPage() {
     }
   };
 
-  const filteredCourses = coursesData.filter(
+  const filteredCourses = coursesData?.filter(
     (course: Course) =>
-      course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      course.category.name.toLowerCase().includes(searchTerm.toLowerCase())
+      course?.title?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+      course?.category?.name?.toLowerCase()?.includes(searchTerm.toLowerCase())
   );
 
-  const totalStudents = coursesData.reduce(
-    (total: any, course: Course) => total + course.enrollments.length,
+  const totalStudents = coursesData?.reduce(
+    (total: any, course: Course) => total + (course?.enrollments?.length ?? 0),
     0
   );
 
-  const totalCourses = coursesData.length;
+  const totalCourses = coursesData?.length;
 
-  const totalPublishedCourses = coursesData.filter(
-    (course: Course) => course.status === "PUBLISHED"
+  const totalPublishedCourses = coursesData?.filter(
+    (course: Course) => course?.status === "PUBLISHED"
   ).length;
 
   return (
@@ -245,37 +245,37 @@ export default function TeacherStudentPage() {
             <TabsTrigger value="students">Students</TabsTrigger>
           </TabsList>
           <TabsContent value="courses" className="space-y-4">
-            {filteredCourses.map((course) => (
-              <Card key={course.id} className="overflow-hidden">
+            {filteredCourses?.map((course: any) => (
+              <Card key={course?.id} className="overflow-hidden">
                 <CardHeader
                   className="cursor-pointer"
-                  onClick={() => toggleCourseExpansion(course.id)}
+                  onClick={() => toggleCourseExpansion(course?.id)}
                 >
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-4">
                       <div className="relative h-16 w-16 overflow-hidden rounded-md">
                         <Image
                           src={
-                            course.thumbnail ||
+                            course?.thumbnail ||
                             "/placeholder.svg?height=64&width=64"
                           }
-                          alt={course.title}
+                          alt={course?.title}
                           fill
                           className="object-cover"
                         />
                       </div>
                       <div>
                         <CardTitle className="text-lg">
-                          {course.title}
+                          {course?.title}
                         </CardTitle>
                         <CardDescription>
-                          {course.category.name} • {course.level} •
-                          {course.isFree ? (
+                          {course?.category?.name} • {course?.level} •
+                          {course?.isFree ? (
                             <Badge variant="outline" className="ml-2">
                               Free
                             </Badge>
                           ) : (
-                            <span className="ml-2">${course.price}</span>
+                            <span className="ml-2">${course?.price}</span>
                           )}
                         </CardDescription>
                       </div>
@@ -283,18 +283,18 @@ export default function TeacherStudentPage() {
                     <div className="flex items-center gap-4">
                       <Badge
                         variant={
-                          course.status === "PUBLISHED"
+                          course?.status === "PUBLISHED"
                             ? "default"
                             : "secondary"
                         }
                       >
-                        {course.status}
+                        {course?.status}
                       </Badge>
                       <div className="flex items-center gap-1">
                         <Users className="h-4 w-4" />
-                        <span>{course.enrollments.length}</span>
+                        <span>{course?.enrollments?.length}</span>
                       </div>
-                      {expandedCourse === course.id ? (
+                      {expandedCourse === course?.id ? (
                         <ChevronUp className="h-5 w-5" />
                       ) : (
                         <ChevronDown className="h-5 w-5" />
@@ -302,14 +302,14 @@ export default function TeacherStudentPage() {
                     </div>
                   </div>
                 </CardHeader>
-                {expandedCourse === course.id && (
+                {expandedCourse === course?.id && (
                   <CardContent>
                     <div className="space-y-4">
                       <div>
                         <h3 className="font-medium mb-2">
-                          Enrolled Students ({course.enrollments.length})
+                          Enrolled Students ({course?.enrollments?.length})
                         </h3>
-                        {course.enrollments.length > 0 ? (
+                        {course?.enrollments?.length > 0 ? (
                           <Table>
                             <TableHeader>
                               <TableRow>
@@ -323,17 +323,17 @@ export default function TeacherStudentPage() {
                               </TableRow>
                             </TableHeader>
                             <TableBody>
-                              {course.enrollments.map((enrollment) => (
-                                <TableRow key={enrollment.id}>
+                              {course?.enrollments?.map((enrollment: any) => (
+                                <TableRow key={enrollment?.id}>
                                   <TableCell>
                                     <div className="flex items-center gap-2">
                                       <Avatar className="h-8 w-8">
                                         <AvatarImage
-                                          src={enrollment.user.avatar}
-                                          alt={enrollment.user.username}
+                                          src={enrollment?.user?.avatar}
+                                          alt={enrollment?.user?.username}
                                         />
                                         <AvatarFallback>
-                                          {enrollment.user.username.substring(
+                                          {enrollment?.user?.username?.substring(
                                             0,
                                             2
                                           )}
@@ -341,10 +341,10 @@ export default function TeacherStudentPage() {
                                       </Avatar>
                                       <div>
                                         <div className="font-medium">
-                                          {enrollment.user.username}
+                                          {enrollment?.user?.username}
                                         </div>
                                         <div className="text-xs text-muted-foreground">
-                                          {enrollment.user.email}
+                                          {enrollment?.user?.email}
                                         </div>
                                       </div>
                                     </div>
@@ -352,28 +352,28 @@ export default function TeacherStudentPage() {
                                   <TableCell>
                                     <Badge
                                       variant={
-                                        enrollment.status === "ACTIVE"
+                                        enrollment?.status === "ACTIVE"
                                           ? "default"
                                           : "secondary"
                                       }
                                     >
-                                      {enrollment.status}
+                                      {enrollment?.status}
                                     </Badge>
                                   </TableCell>
                                   <TableCell>
                                     {new Date(
-                                      enrollment.createdAt
+                                      enrollment?.createdAt
                                     ).toLocaleDateString()}
                                   </TableCell>
                                   <TableCell>
                                     <Badge
                                       variant={
-                                        enrollment.payment_status === "PAID"
+                                        enrollment?.payment_status === "PAID"
                                           ? "default"
                                           : "destructive"
                                       }
                                     >
-                                      {enrollment.payment_status}
+                                      {enrollment?.payment_status}
                                     </Badge>
                                   </TableCell>
                                   {/* <TableCell className="text-right">
@@ -399,30 +399,30 @@ export default function TeacherStudentPage() {
                       <div>
                         <h3 className="font-medium mb-2">Course Content</h3>
                         <div className="space-y-2">
-                          {course.chapters.map((chapter) => (
+                          {course?.chapters?.map((chapter: any) => (
                             <div
-                              key={chapter.id}
+                              key={chapter?.id}
                               className="border rounded-md p-3"
                             >
                               <div className="flex justify-between items-center">
                                 <div>
                                   <h4 className="font-medium">
-                                    {chapter.title}
+                                    {chapter?.title}
                                   </h4>
                                   <p className="text-xs text-muted-foreground">
-                                    {chapter.topics.length} topics •{" "}
-                                    {chapter.quiz.length} quizzes •{" "}
-                                    {chapter.resources.length} resources
+                                    {chapter?.topics?.length} topics •{" "}
+                                    {chapter?.quiz?.length} quizzes •{" "}
+                                    {chapter?.resources?.length} resources
                                   </p>
                                 </div>
                                 <Badge
                                   variant={
-                                    chapter.status === "PUBLISHED"
+                                    chapter?.status === "PUBLISHED"
                                       ? "default"
                                       : "secondary"
                                   }
                                 >
-                                  {chapter.status}
+                                  {chapter?.status}
                                 </Badge>
                               </div>
                             </div>
@@ -432,7 +432,7 @@ export default function TeacherStudentPage() {
 
                       <div className="flex justify-end gap-2">
                         <Button asChild>
-                          <Link href={`/teacher/courses/${course.id}`}>
+                          <Link href={`/teacher/courses/${course?.id}`}>
                             Manage Course
                           </Link>
                         </Button>
@@ -447,7 +447,7 @@ export default function TeacherStudentPage() {
                 )}
               </Card>
             ))}
-            {filteredCourses.length === 0 && (
+            {filteredCourses?.length === 0 && (
               <div className="text-center py-10">
                 <h3 className="text-lg font-medium">No courses found</h3>
                 <p className="text-muted-foreground">
@@ -478,46 +478,55 @@ export default function TeacherStudentPage() {
                     {/* Create a unique list of students from all enrollments */}
                     {Array.from(
                       new Set(
-                        coursesData.flatMap((course) =>
-                          course.enrollments.map(
-                            (enrollment) => enrollment.user.id
-                          )
-                        )
+                        coursesData?.flatMap((course: any) =>
+                          course?.enrollments
+                            ?.filter(
+                              (enrollment: any) =>
+                                enrollment?.user && enrollment?.user?.id
+                            )
+                            ?.map((enrollment: any) => enrollment?.user?.id)
+                        ) ?? []
                       )
-                    ).map((userId) => {
+                    ).map((userId, i) => {
                       // Find the first enrollment with this user to get user details
                       const userEnrollment = coursesData
-                        .flatMap((course) => course.enrollments)
-                        .find((enrollment) => enrollment.user.id === userId);
+                        ?.flatMap((course: any) => course?.enrollments ?? [])
+                        ?.find(
+                          (enrollment: any) => enrollment?.user?.id === userId
+                        );
 
                       if (!userEnrollment) return null;
 
                       // Count courses this user is enrolled in
-                      const enrolledCourseCount = coursesData.filter((course) =>
-                        course.enrollments.some(
-                          (enrollment) => enrollment.user.id === userId
-                        )
+                      const enrolledCourseCount = coursesData?.filter(
+                        (course: any) =>
+                          course.enrollments?.some(
+                            (enrollment: any) => enrollment?.user?.id === userId
+                          )
                       ).length;
 
                       return (
-                        <TableRow key={userId}>
+                        <TableRow key={i}>
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <Avatar className="h-8 w-8">
                                 <AvatarImage
-                                  src={userEnrollment.user.avatar}
-                                  alt={userEnrollment.user.username}
+                                  src={userEnrollment?.user?.avatar}
+                                  alt={userEnrollment?.user?.username}
                                 />
                                 <AvatarFallback>
-                                  {userEnrollment.user.username.substring(0, 2)}
+                                  {userEnrollment?.user?.username?.substring(
+                                    0,
+                                    2
+                                  )}
                                 </AvatarFallback>
                               </Avatar>
                               <div>
                                 <div className="font-medium">
-                                  {userEnrollment.user.username}
+                                  {userEnrollment?.user?.username}
                                 </div>
                                 <div className="text-xs text-muted-foreground">
-                                  {userEnrollment.user.email}
+                                  {userEnrollment?.user?.email}
                                 </div>
                               </div>
                             </div>
@@ -526,12 +535,12 @@ export default function TeacherStudentPage() {
                           <TableCell>
                             <Badge
                               variant={
-                                userEnrollment.user.isVerified
+                                userEnrollment?.user?.isVerified
                                   ? "default"
                                   : "secondary"
                               }
                             >
-                              {userEnrollment.user.isVerified
+                              {userEnrollment?.user?.isVerified
                                 ? "Verified"
                                 : "Unverified"}
                             </Badge>

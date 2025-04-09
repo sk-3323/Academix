@@ -435,10 +435,10 @@ export default function TeacherDashboard() {
             </DialogContent>
           </Dialog>
 
-          <Button variant="outline">
+          {/* <Button variant="outline">
             <Download className="mr-2 h-4 w-4" />
             Export Data
-          </Button>
+          </Button> */}
         </div>
       </div>
 

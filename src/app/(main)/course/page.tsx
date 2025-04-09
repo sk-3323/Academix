@@ -55,7 +55,7 @@ const CourseCard = ({ course }: { course: Course }) => (
       className="group bg-card rounded-lg overflow-hidden border shadow-sm hover:shadow-xl transition-all duration-300"
     >
       <div className="relative aspect-video overflow-hidden">
-        <Image
+        <img
           src={course.thumbnail || "/placeholder.svg"}
           alt={course.title}
           fill

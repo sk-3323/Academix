@@ -85,23 +85,55 @@ export default function AdminDashboard() {
   const totalEnrollments = allEnrollments.length;
 
   // Prepare data for revenue chart
-  const revenueData = useMemo(() => {
+  // const revenueData = useMemo(() => {
+  //   const monthlyStats = {};
+  //   allEnrollments.forEach((enrollment: any) => {
+  //     const date = new Date(enrollment.createdAt);
+  //     const monthYear = `${date.getMonth() + 1}/${date.getFullYear()}`;
+  //     if (!monthlyStats[monthYear]) {
+  //       monthlyStats[monthYear] = { revenue: 0 };
+  //     }
+  //     monthlyStats[monthYear].revenue += enrollment.price || 0;
+  //   });
+
+  //   return Object.entries(monthlyStats).map(([name, stats]) => ({
+  //     name,
+  //     ...stats,
+  //   }));
+  // }, [allEnrollments]);
+  const revenueStats = useMemo(() => {
     const monthlyStats = {};
+    let total = 0;
+
     allEnrollments.forEach((enrollment: any) => {
       const date = new Date(enrollment.createdAt);
       const monthYear = `${date.getMonth() + 1}/${date.getFullYear()}`;
+      const price = enrollment.price || 0;
+
       if (!monthlyStats[monthYear]) {
-        monthlyStats[monthYear] = { revenue: 0 };
+        monthlyStats[monthYear] = { revenue: 0, count: 0 };
       }
-      monthlyStats[monthYear].revenue += enrollment.price || 0;
+      monthlyStats[monthYear].revenue += price;
+      monthlyStats[monthYear].count += 1;
+      total += price;
     });
 
-    return Object.entries(monthlyStats).map(([name, stats]) => ({
-      name,
-      ...stats,
-    }));
+    return {
+      totalRevenue: total,
+      monthlyData: Object.entries(monthlyStats)
+        .map(([name, stats]: [string, any]) => ({
+          name,
+          revenue: stats.revenue,
+          enrollments: stats.count,
+        }))
+        .sort((a, b) => {
+          // Sort by date (assuming MM/YYYY format)
+          const [monthA, yearA] = a.name.split("/").map(Number);
+          const [monthB, yearB] = b.name.split("/").map(Number);
+          return yearB - yearA || monthB - monthA;
+        }),
+    };
   }, [allEnrollments]);
-
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "PUBLISHED":
@@ -279,7 +311,11 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ₹{totalRevenue.toLocaleString()}
+              ₹
+              {revenueStats.totalRevenue.toLocaleString("en-IN", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </div>
           </CardContent>
         </Card>
@@ -296,7 +332,7 @@ export default function AdminDashboard() {
         <CardContent className="px-2">
           <ResponsiveContainer width="100%" height={300}>
             <BarChart
-              data={revenueData}
+              data={revenueStats.monthlyData}
               margin={{
                 top: 5,
                 right: 30,

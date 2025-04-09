@@ -1,4 +1,6 @@
 "use client";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { APIClient } from "@/helpers/apiHelper";
 import { sendContactus } from "@/helpers/sendContactUs";
 import { useState } from "react";
@@ -98,6 +100,21 @@ const page = () => {
               </button>
             </form>
           </div>
+
+          <Card className="p-5 rounded text-center bg-transparent mt-4 w-full">
+            <CardHeader>
+              <CardTitle>You want to be a Teacher?</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Button
+                onClick={() =>
+                  window.open("https://discord.gg/T9JZmBqSAz", "_blank")
+                }
+              >
+                Join Now
+              </Button>
+            </CardContent>
+          </Card>
         </section>
       </div>
     </div>
